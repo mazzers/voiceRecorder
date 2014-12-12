@@ -18,7 +18,7 @@ public class WriteToXML implements Runnable {
     //private String audioName, message, filePathBook;
     private File fileBook;
     private FileOutputStream outputStream;
-    private String TAG_LOG = "myLogs";
+    private String TAG_LOG = "Write&Parse";
     private Long time;
 
     public WriteToXML(File fileBook,long time) {

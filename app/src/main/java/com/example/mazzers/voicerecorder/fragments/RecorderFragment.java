@@ -138,8 +138,7 @@ public class RecorderFragment extends Fragment{
         } catch (Exception e) {
             Log.d(TAG_LOG, "RecorderFragment: "+e.toString());
         }
-        //filePathBook = Environment.getExternalStorageDirectory() + "/" + fileAudioName + ".xml";
-        //return fileAudioNameTemp;
+
     }
 
     public static String getFileAudioName(){

@@ -20,7 +20,7 @@ public class ReadFromXML {
     private StringReader stringReader;
     private FileInputStream fileInputStream;
     private File inputFile;
-    private String TAG_LOG = "myLogs";
+    private String TAG_LOG = "Write&Parse";
 
     public ReadFromXML(File inputFile) {
         this.inputFile = inputFile;

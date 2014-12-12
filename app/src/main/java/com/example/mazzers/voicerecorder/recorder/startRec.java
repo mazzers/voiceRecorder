@@ -24,7 +24,7 @@ public class startRec implements Runnable {
     Long startTime;
     File fileAudio, fileBook;
     FileOutputStream outputStream;
-    //String name;
+
 
 
     public startRec(MediaRecorder r, int rgOut, boolean quality, String fileAudioName, Long startTime) {
@@ -43,21 +43,10 @@ public class startRec implements Runnable {
         Log.d(TAG_LOG, "startRec: IN RUN start Recording");
         startRecording();
     }
-//    public String getFileAudioName(){
-//        return fileAudioName;
-//    }
+
 
 
     public void startRecording() {
-//        try {
-//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-//            Date now = new Date();
-//            fileAudioName = formatter.format(now);
-//        } catch (Exception e) {
-//            Log.d(TAG_LOG, e.toString());
-//        }
-        //releaseRecorder();
-        //startTime = System.currentTimeMillis();
         Log.d(TAG_LOG, "startRec: IN Method start Recording");
         try {
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -108,9 +97,7 @@ public class startRec implements Runnable {
         }
         Log.d(TAG_LOG, "startRec: Prepare OK");
         recorder.start();
-        //createXML();
-        //doTimerTask();
-        //MainActivity.startChrono();
+
 
     }
 
@@ -137,9 +124,6 @@ public class startRec implements Runnable {
 
     }
 
-//    public static String getAudioName(){
-//        return fileAudioName;
-//    }
 
     public String fillXML() throws IllegalArgumentException, IllegalStateException, IOException {
         Log.d(TAG_LOG, "startRec: fillXML");

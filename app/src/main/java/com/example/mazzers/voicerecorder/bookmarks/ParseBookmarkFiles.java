@@ -12,7 +12,7 @@ public class ParseBookmarkFiles implements Runnable {
     private File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
     private static Bookmark[] bookmarks;
     private ReadFromXML obj;
-    private String TAG_LOG = "myLogs";
+    private String TAG_LOG = "Write&Parse";
     public static boolean traverseFinish;
     @Override
     public void run() {

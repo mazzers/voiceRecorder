@@ -1,9 +1,12 @@
 package com.example.mazzers.voicerecorder.utils;
 
+import android.util.Log;
+
 /**
  * Created by mazzers on 12. 12. 2014.
  */
 public class Utils {
+    private static String TAG_LOG = "myLogs";
 
     /**
      * Function to convert milliseconds time to
@@ -11,6 +14,7 @@ public class Utils {
      * Hours:Minutes:Seconds
      * */
     public String milliSecondsToTimer(long milliseconds){
+        Log.d(TAG_LOG,"Utils: milliSecondsToTimer ");
         String finalTimerString = "";
         String secondsString = "";
 
@@ -41,6 +45,7 @@ public class Utils {
      * @param totalDuration
      * */
     public int getProgressPercentage(long currentDuration, long totalDuration){
+        Log.d(TAG_LOG,"Utils: get progressPercentage");
         Double percentage = (double) 0;
 
         long currentSeconds = (int) (currentDuration / 1000);
@@ -60,6 +65,7 @@ public class Utils {
      * returns current duration in milliseconds
      * */
     public int progressToTimer(int progress, int totalDuration) {
+        Log.d(TAG_LOG,"Utils: progressToTimer");
         int currentDuration = 0;
         totalDuration = (int) (totalDuration / 1000);
         currentDuration = (int) ((((double)progress) / 100) * totalDuration);
