@@ -44,7 +44,7 @@ public class BookmarkFragment extends ListFragment {
     public void fillStrings() {
 
         if (bookmarksList == null) {
-            Log.d(TAG_LOG,"BookmarkFragment: bookmarklist is empty");
+            Log.d(TAG_LOG,"BookmarkFragment: bookmarkList is empty");
             bookmarksList = ParseBookmarkFiles.getBookmarks();
         }
         for (int i = 0; i < bookmarksList.length; i++) {

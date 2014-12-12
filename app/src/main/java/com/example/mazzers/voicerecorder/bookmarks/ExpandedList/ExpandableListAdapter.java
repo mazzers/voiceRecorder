@@ -1,4 +1,5 @@
-package com.example.mazzers.voicerecorder.bookmarks;
+package com.example.mazzers.voicerecorder.bookmarks.ExpandedList;
+
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -9,19 +10,18 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.example.mazzers.voicerecorder.R;
+import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by mazzers on 10. 12. 2014.
- */
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<String>> _listDataChild;
+    private HashMap<String, List<Bookmark>> bookmarkList;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<String>> listChildData) {
@@ -40,7 +40,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public long getChildId(int groupPosition, int childPosition) {
         return childPosition;
     }
-
 
     @Override
     public View getChildView(int groupPosition, final int childPosition,

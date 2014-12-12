@@ -130,6 +130,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        //TODO add coplete seek bar thread stop
 
 
     }

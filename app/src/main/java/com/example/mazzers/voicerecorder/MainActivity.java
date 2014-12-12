@@ -10,11 +10,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
-import com.example.mazzers.voicerecorder.fragments.BookmarkFragment;
+import com.example.mazzers.voicerecorder.fragments.ExpandableBookmarks;
 import com.example.mazzers.voicerecorder.fragments.PlayerFragment;
 import com.example.mazzers.voicerecorder.fragments.RecorderFragment;
 
@@ -33,14 +31,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG_LOG, "Start");
+        Log.d(TAG_LOG, "Main activity: Start");
         File recordsDirectory = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
         if (!recordsDirectory.exists()){
             Log.d(TAG_LOG,"Main activity: directory not exist");
             recordsDirectory.mkdirs();
             if (!recordsDirectory.mkdirs()){
-                Toast.makeText(this,"Не создал",Toast.LENGTH_SHORT).show();
-                Log.d(TAG_LOG,"Пошёл нахуй");
             }
             Log.d(TAG_LOG,"Main activity: directories created");
         }
@@ -57,12 +53,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
 
-        Log.d(TAG_LOG, "onCreate");
+        Log.d(TAG_LOG, "Main activity: onCreate");
 
     }
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Log.d(TAG_LOG,"onNavigationDrawerItemSelected");
+        Log.d(TAG_LOG,"Main activity: onNavigationDrawerItemSelected");
         Fragment fragment;
 
         // update the main content by replacing fragments
@@ -81,8 +77,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 mTitle = getString(R.string.title_section2);
                 break;
             case 2:
-                fragment = new BookmarkFragment();
+                //fragment = new BookmarkFragment();
                 //fragment = new LineupFragment();
+                fragment = new ExpandableBookmarks();
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, fragment).commit();
                 mTitle = getString(R.string.title_section3);
@@ -127,7 +124,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
 
-            Toast.makeText(this,"test",Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -135,11 +131,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     }
 
 
-
-
-    public void showBookmarks(View v) {
-
-    }
 
     @Override
     protected void onDestroy() {
