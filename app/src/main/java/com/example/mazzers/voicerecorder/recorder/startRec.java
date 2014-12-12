@@ -46,6 +46,7 @@ public class startRec implements Runnable {
 
 
     public void startRecording() {
+        //todo settings debug
         Log.d(TAG_LOG, "startRec: IN Method start Recording");
         try {
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);

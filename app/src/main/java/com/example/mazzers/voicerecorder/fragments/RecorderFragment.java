@@ -59,12 +59,14 @@ public class RecorderFragment extends Fragment{
 
    // @Nullable
     @Override
+    //todo rework recorder view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
        View rootView = inflater.inflate(R.layout.recorder_layout,container,false);
         Log.d(TAG_LOG,"RecorderFragment: onCreateView");
         btnRecord = (Button) rootView.findViewById(R.id.btnRecord);
         btnStop = (Button) rootView.findViewById(R.id.btnStop);
         btnBook = (Button) rootView.findViewById(R.id.btnBook);
+        //todo hide record settings
         rgOut = (RadioGroup) rootView.findViewById(R.id.rgOut);
         btn3Gpp = (RadioButton) rootView.findViewById(R.id.btn3GPP);
         btnAMR = (RadioButton) rootView.findViewById(R.id.btnAMR);

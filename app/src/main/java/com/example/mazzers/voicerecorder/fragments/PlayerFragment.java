@@ -44,6 +44,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     @Nullable
     @Override
+    //todo player view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 View rootView = inflater.inflate(R.layout.player_layout,container,false);
         btnPlay = (Button) rootView.findViewById(R.id.btnPlay);
@@ -79,6 +80,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
 
     }
+    //todo seekbar optimisation
     Runnable run = new Runnable() {
         public void run() {
             Log.d(TAG_LOG,"PlayerFragment: in run()");
@@ -129,6 +131,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
     @Override
+    //todo seekbar thread control
     public void onCompletion(MediaPlayer mp) {
         //TODO add coplete seek bar thread stop
 

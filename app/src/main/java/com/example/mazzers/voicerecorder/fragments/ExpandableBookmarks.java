@@ -30,6 +30,7 @@ public class ExpandableBookmarks extends Fragment {
     private HashMap<String, List<Bookmark>> mItems;
 
     public ExpandableBookmarks() {
+        //todo dynamic listChange
     }
 
 
@@ -118,7 +119,6 @@ public class ExpandableBookmarks extends Fragment {
         listDataHeader.add(groupName);
 
         for (int i = 0; i < bookmarksList.length; i++) {
-            //todo change from strings to bookmark or whatver
             if (!bookmarksList[i].getName().equals(groupName)) {
                 //new group
                 //add array to previous group
