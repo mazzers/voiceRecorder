@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            />
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -21,13 +34,7 @@
             android:text="Stop"
             android:id="@+id/btnStopPlayer"
             android:textColor="@android:color/holo_blue_dark"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ChooseFile"
-            android:enabled="false"
-            android:id="@+id/btnChoose"
-            android:textColor="@android:color/holo_blue_dark"/>
+
 
 
 
@@ -35,19 +42,7 @@
 
 
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Bookmarks"
-            android:id="@+id/btnShow"
-            android:enabled="false"
-            android:textColor="@android:color/holo_blue_dark"/>
 
-    </LinearLayout>
 
 
 </LinearLayout>

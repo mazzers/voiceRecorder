@@ -32,7 +32,7 @@ public class WriteToXML implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG_LOG, "writexml run");
+        Log.d(TAG_LOG, "WriteToXML: writexml run");
         createXML();
 
 
@@ -65,13 +65,13 @@ public class WriteToXML implements Runnable {
         try {
             outputStream = new FileOutputStream(fileBook);
             outputStream.write(WriteDataToXML().getBytes());
-            Log.d(TAG_LOG, "In try createBookmarkFile: write");
+            Log.d(TAG_LOG, "WriteToXML: In try createBookmarkFile: write");
             outputStream.close();
-            Log.d(TAG_LOG, "Closed");
+            Log.d(TAG_LOG, "WriteToXML: Closed");
 
         } catch (Exception e) {
 
-            Log.d(TAG_LOG, "create xml error");
+            Log.d(TAG_LOG, "WriteToXML: create xml error");
             Log.d(TAG_LOG, e.toString());
 
         }

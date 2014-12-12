@@ -47,9 +47,9 @@ public class ParseBookmarkFiles implements Runnable {
                     //bookmarkTemp = new Bookmark(pathTemp,timeTemp);
                     Log.d(TAG_LOG,"ParseBookmarkFiles: Fill bookmark i-teration");
                     bookmarks[i] = new Bookmark(obj.getPath(),obj.getName(),obj.getTime());
-                    Log.d(TAG_LOG,"---->filled path: "+bookmarks[i].getPath());
-                    Log.d(TAG_LOG,"---->filled name: "+bookmarks[i].getName());
-                    Log.d(TAG_LOG,"---->filled time at: "+String.valueOf(bookmarks[i].getTime()));
+                    Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled path: "+bookmarks[i].getPath());
+                    Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled name: "+bookmarks[i].getName());
+                    Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled time at: "+String.valueOf(bookmarks[i].getTime()));
 
 
 
@@ -57,7 +57,7 @@ public class ParseBookmarkFiles implements Runnable {
                 }
             }
         }else {
-            Log.d(TAG_LOG,"dir not exist");
+            Log.d(TAG_LOG,"ParseBookmarkFiles: dir not exist");
         }
         traverseFinish = true;
     }

@@ -1,5 +1,6 @@
 package com.example.mazzers.voicerecorder.fragments;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -99,7 +100,7 @@ public class BookmarkFragment extends ListFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG_LOG, "Bookmarkfragment: onCreate");
+        Log.d(TAG_LOG, "BookmarkFragment: onCreate");
         super.onCreate(savedInstanceState);
 
         mItems = new ArrayList<Bookmark>();
@@ -183,8 +184,15 @@ public class BookmarkFragment extends ListFragment {
         // retrieve theListView item
         Bookmark item = mItems.get(position);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.container, new PlayerFragment()).commit();
-        PlayerFragment.callBookmarkPlay(item.getPath(),item.getTime());
+        Fragment fragment = new PlayerFragment();
+        Log.d(TAG_LOG,"BookmarkFragment: Start play on: "+ item.getTime());
+
+        Bundle bundle = new Bundle();
+        bundle.putString("filePath",item.getPath());
+        bundle.putInt("fileTime",item.getTime());
+        fragment.setArguments(bundle);
+        fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+        //PlayerFragment.callBookmarkPlay(item.getPath(),item.getTime());
 
 
         // do something

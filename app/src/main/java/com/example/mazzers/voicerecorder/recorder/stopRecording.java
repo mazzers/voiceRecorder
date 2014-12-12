@@ -14,15 +14,15 @@ public class stopRecording implements Runnable {
     }
 
     public void run() {
-        Log.d(TAG_LOG, "stop rec run start");
+        Log.d(TAG_LOG, "stopRecording: stop rec run start");
 
         stopRec();
-        Log.d(TAG_LOG, "end of run stop");
+        Log.d(TAG_LOG, "stopRecording: end of run stop");
 
     }
 
     private void stopRec() {
-        Log.d(TAG_LOG, "stop method");
+        Log.d(TAG_LOG, "stopRecording: stop method");
         //stopChrono();
         if (recorder != null) {
             recorder.stop();

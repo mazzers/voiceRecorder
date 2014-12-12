@@ -82,16 +82,16 @@ public class RecorderFragment extends Fragment{
     class btnStartRecordClick implements View.OnClickListener {
         public void onClick(View arg0) {
             count = 1;
-            Log.d(TAG_LOG, "Start Clicked...");
+            Log.d(TAG_LOG, "RecorderFragment: Start Clicked...");
             releaseRecorder();
             mediaRecorder = new MediaRecorder();
             generateName();
             startTime = System.currentTimeMillis();
             Thread startThread = new Thread(new startRec(mediaRecorder, rgOut.getCheckedRadioButtonId(), chkQuality.isChecked(), fileAudioName, startTime));
-            Log.d(TAG_LOG, "start Thread Created");
+            Log.d(TAG_LOG, "RecorderFragment: start Thread Created");
 
             startThread.start();
-            Log.d(TAG_LOG, "start Recording");
+            Log.d(TAG_LOG, "RecorderFragment: start Recording");
             startChrono();
 
         }
@@ -102,7 +102,7 @@ public class RecorderFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            Log.d(TAG_LOG,"onclick Stop Record");
+            Log.d(TAG_LOG,"RecorderFragment: onclick Stop Record");
             count = 0;
             Thread stopThread = new Thread(new stopRecording(mediaRecorder));
             stopThread.start();
@@ -115,9 +115,9 @@ public class RecorderFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            Log.d(TAG_LOG,"OnClick bookmark");
+            Log.d(TAG_LOG,"RecorderFragment: OnClick bookmark");
             filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName +"_"+ count + ".xml";
-            Log.d(TAG_LOG,filePathBook);
+            Log.d(TAG_LOG,"RecorderFragment: "+filePathBook);
             count++;
 
             fileBook = new File(filePathBook);
@@ -136,7 +136,7 @@ public class RecorderFragment extends Fragment{
             Date now = new Date();
             fileAudioName = formatter.format(now);
         } catch (Exception e) {
-            Log.d(TAG_LOG, e.toString());
+            Log.d(TAG_LOG, "RecorderFragment: "+e.toString());
         }
         //filePathBook = Environment.getExternalStorageDirectory() + "/" + fileAudioName + ".xml";
         //return fileAudioNameTemp;
@@ -157,7 +157,7 @@ public class RecorderFragment extends Fragment{
     }
 
     private void releaseRecorder() {
-        Log.d(TAG_LOG, "Release method");
+        Log.d(TAG_LOG, "RecorderFragment: Release method");
         if (mediaRecorder != null) {
             mediaRecorder.release();
             mediaRecorder = null;

@@ -28,7 +28,7 @@ public class startRec implements Runnable {
 
 
     public startRec(MediaRecorder r, int rgOut, boolean quality, String fileAudioName, Long startTime) {
-        Log.d(TAG_LOG, "start cons");
+        Log.d(TAG_LOG, "startRec: start cons");
         this.recorder = r;
         this.rgOut = rgOut;
         this.quality = quality;
@@ -40,7 +40,7 @@ public class startRec implements Runnable {
 
     public void run() {
         // TODO Auto-generated method stub
-        Log.d(TAG_LOG, "IN RUN start Recording");
+        Log.d(TAG_LOG, "startRec: IN RUN start Recording");
         startRecording();
     }
 //    public String getFileAudioName(){
@@ -58,7 +58,7 @@ public class startRec implements Runnable {
 //        }
         //releaseRecorder();
         //startTime = System.currentTimeMillis();
-        Log.d(TAG_LOG, "IN Method start Recording");
+        Log.d(TAG_LOG, "startRec: IN Method start Recording");
         try {
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         } catch (Exception e) {
@@ -66,15 +66,15 @@ public class startRec implements Runnable {
         }
         //recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         //filePathAudio = Environment.getExternalStorageDirectory() + "/" + fileAudioName + ".3gpp";
-        Log.d(TAG_LOG, "Set mic source");
+        Log.d(TAG_LOG, "startRec: Set mic source");
         switch (rgOut) {
             case R.id.btn3GPP:
-                Log.d(TAG_LOG, "3gpp");
+                Log.d(TAG_LOG, "startRec: 3gpp");
                 recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder/" + fileAudioName + ".3gpp";
                 break;
             case R.id.btnAMR:
-                Log.d(TAG_LOG, "Amr");
+                Log.d(TAG_LOG, "startRec: Amr");
                 recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
                 filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder" + fileAudioName + ".amr";
 
@@ -86,7 +86,7 @@ public class startRec implements Runnable {
         }
 
         if (quality) {
-            Log.d(TAG_LOG, "Quality checked");
+            Log.d(TAG_LOG, "startRec: Quality checked");
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
         } else {
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
@@ -94,20 +94,19 @@ public class startRec implements Runnable {
 
 
         fileAudio = new File(filePathAudio);
-        Log.d(TAG_LOG, "blalalala");
-        Log.d(TAG_LOG, filePathAudio);
+        Log.d(TAG_LOG, "startRec: "+filePathAudio);
         recorder.setOutputFile(filePathAudio);
 
-        Log.d(TAG_LOG, "Try to prepare");
+        Log.d(TAG_LOG, "startRec: Try to prepare");
         try {
-            Log.d(TAG_LOG, "In try");
+            Log.d(TAG_LOG, "startRec: In try");
             recorder.prepare();
-            Log.d(TAG_LOG, "After prepare");
+            Log.d(TAG_LOG, "startRec: After prepare");
         } catch (IOException e) {
-            Log.d(TAG_LOG, "Prerape fail");
+            Log.d(TAG_LOG, "startRec: Prepare fail");
             Log.d(TAG_LOG, e.toString());
         }
-        Log.d(TAG_LOG, "Prepare OK");
+        Log.d(TAG_LOG, "startRec: Prepare OK");
         recorder.start();
         //createXML();
         //doTimerTask();
@@ -121,13 +120,13 @@ public class startRec implements Runnable {
         try {
             outputStream = new FileOutputStream(fileBook);
             outputStream.write((fillXML() + "\n").getBytes());
-            Log.d(TAG_LOG, "In try createBookmarkFile: write");
+            Log.d(TAG_LOG, "startRec: In try createBookmarkFile: write");
             outputStream.close();
-            Log.d(TAG_LOG, "Closed");
+            Log.d(TAG_LOG, "startRec: Closed");
 
         } catch (Exception e) {
 
-            Log.d(TAG_LOG, "create xml error");
+            Log.d(TAG_LOG, "startRec: create xml error");
             Log.d(TAG_LOG, e.toString());
 
         }
@@ -143,7 +142,7 @@ public class startRec implements Runnable {
 //    }
 
     public String fillXML() throws IllegalArgumentException, IllegalStateException, IOException {
-        Log.d(TAG_LOG, "fillXML");
+        Log.d(TAG_LOG, "startRec: fillXML");
 
 
         XmlSerializer xmlSt = Xml.newSerializer();
