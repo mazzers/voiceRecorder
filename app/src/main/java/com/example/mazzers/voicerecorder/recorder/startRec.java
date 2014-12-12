@@ -39,7 +39,6 @@ public class startRec implements Runnable {
     }
 
     public void run() {
-        // TODO Auto-generated method stub
         Log.d(TAG_LOG, "startRec: IN RUN start Recording");
         startRecording();
     }

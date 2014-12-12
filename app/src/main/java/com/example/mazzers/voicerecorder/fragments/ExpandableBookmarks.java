@@ -27,11 +27,10 @@ public class ExpandableBookmarks extends Fragment {
     HashMap<String, List<String>> listDataChild;
     View rootView;
     private static Bookmark[] bookmarksList;
-    private List<Bookmark> mItems;
+    private HashMap<String, List<Bookmark>> mItems;
 
     public ExpandableBookmarks() {
     }
-
 
 
     @Override
@@ -42,7 +41,7 @@ public class ExpandableBookmarks extends Fragment {
         // preparing list data
         prepareListData();
 
-        listAdapter = new ExpandableListAdapter(rootView.getContext(), listDataHeader, listDataChild);
+        listAdapter = new ExpandableListAdapter(rootView.getContext(), listDataHeader, mItems);
 
         // setting list adapter
         expandableListView.setAdapter(listAdapter);
@@ -88,14 +87,15 @@ public class ExpandableBookmarks extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                // TODO Auto-generated method stub
+                //Bookmark child = (Bookmark) rootView.getChild(groupPosition, childPosition);
+
                 Toast.makeText(
                         rootView.getContext(),
                         listDataHeader.get(groupPosition)
                                 + " : "
-                                + listDataChild.get(
+                                + (mItems.get(
                                 listDataHeader.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
+                                childPosition).getTime()), Toast.LENGTH_SHORT)
                         .show();
                 return false;
             }
@@ -106,70 +106,44 @@ public class ExpandableBookmarks extends Fragment {
 
     private void prepareListData() {
         listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
-        List<String> tempArray = new ArrayList<String>();
-        bookmarksList= ParseBookmarkFiles.getBookmarks();
-        String groupName=bookmarksList[0].getName();
-        int groupCount=1;
+        //listDataChild = new HashMap<String, List<String>>();
+        //listDataChildTime = new HashMap<String,Bookmark>();
+
+        mItems = new HashMap<String, List<Bookmark>>();
+
+        List<Bookmark> tempArray = new ArrayList<Bookmark>();
+        bookmarksList = ParseBookmarkFiles.getBookmarks();
+        String groupName = bookmarksList[0].getName();
+        int groupCount = 1;
         listDataHeader.add(groupName);
 
-        for (int i=0;i<bookmarksList.length;i++){
-            if (!bookmarksList[i].getName().equals(groupName)){
+        for (int i = 0; i < bookmarksList.length; i++) {
+            //todo change from strings to bookmark or whatver
+            if (!bookmarksList[i].getName().equals(groupName)) {
                 //new group
                 //add array to previous group
-                listDataChild.put(listDataHeader.get(groupCount-1), tempArray);
+                //listDataChild.put(listDataHeader.get(groupCount-1), tempArray);
+                mItems.put(listDataHeader.get(groupCount - 1), tempArray);
+                //listDataChildTime.put(listDataHeader.get(groupCount-1),tempArrayTime);
                 //increase group pointer
                 groupCount++;
                 //reinitialize array
-                tempArray = new ArrayList<String>();
+                tempArray = new ArrayList<Bookmark>();
+                //tempArrayTime = new ArrayList<String>();
                 //set new group name
-                groupName=bookmarksList[i].getName();
+                groupName = bookmarksList[i].getName();
                 //add groupname to array
                 listDataHeader.add(groupName);
-            }
-            else {
+            } else {
 
 
             }
-            tempArray.add(bookmarksList[i].getName()+" "+bookmarksList[i].getTime());
+            tempArray.add(bookmarksList[i]);
+            //tempArrayTime.add(String.valueOf(bookmarksList[i].getTime()));
 
         }
 
-        // Adding child data
-//        listDataHeader.add("Top 250");
-//        listDataHeader.add("Now Showing");
-//        listDataHeader.add("Coming Soon..");
-
-        // Adding child data
-//        List<String> top250 = new ArrayList<String>();
-//        top250.add("The Shawshank Redemption");
-//        top250.add("The Godfather");
-//        top250.add("The Godfather: Part II");
-//        top250.add("Pulp Fiction");
-//        top250.add("The Good, the Bad and the Ugly");
-//        top250.add("The Dark Knight");
-//        top250.add("12 Angry Men");
-
-//        List<String> nowShowing = new ArrayList<String>();
-//        nowShowing.add("The Conjuring");
-//        nowShowing.add("Despicable Me 2");
-//        nowShowing.add("Turbo");
-//        nowShowing.add("Grown Ups 2");
-//        nowShowing.add("Red 2");
-//        nowShowing.add("The Wolverine");
-//
-//        List<String> comingSoon = new ArrayList<String>();
-//        comingSoon.add("2 Guns");
-//        comingSoon.add("The Smurfs 2");
-//        comingSoon.add("The Spectacular Now");
-//        comingSoon.add("The Canyons");
-//        comingSoon.add("Europa Report");
-
-//        listDataChild.put(listDataHeader.get(0), top250); // Header, Child data
-//        listDataChild.put(listDataHeader.get(1), nowShowing);
-//        listDataChild.put(listDataHeader.get(2), comingSoon);
     }
-
 
 
 }

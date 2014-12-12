@@ -20,11 +20,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context _context;
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
-    private HashMap<String, List<String>> _listDataChild;
-    private HashMap<String, List<Bookmark>> bookmarkList;
+    private HashMap<String, List<Bookmark>> _listDataChild;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
-                                 HashMap<String, List<String>> listChildData) {
+                                 HashMap<String, List<Bookmark>> listChildData) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -36,6 +35,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 .get(childPosititon);
     }
 
+
     @Override
     public long getChildId(int groupPosition, int childPosition) {
         return childPosition;
@@ -45,7 +45,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final String childText = (String) getChild(groupPosition, childPosition);
+        Bookmark child =(Bookmark) getChild(groupPosition, childPosition);
+        //final String childTime = (String) getChild(groupPosition,childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -56,7 +57,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView txtListChild = (TextView) convertView
                 .findViewById(R.id.lblListItem);
 
-        txtListChild.setText(childText);
+        TextView txtListChildTime = (TextView) convertView
+                .findViewById(R.id.lblListItemTime);
+
+        txtListChild.setText("Bookmark at: "+String.valueOf(child.getTime())+" sec.");
+        //txtListChildTime.setText(child.getTime());
         return convertView;
     }
 
