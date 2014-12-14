@@ -43,6 +43,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             Log.d(TAG_LOG,"Main activity: directories created");
         }
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+        //todo asynctasts and handlers
         parseBookmarkFiles.start();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -80,7 +81,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 break;
             case 2:
                 //fragment = new BookmarkFragment();
-                //fragment = new LineupFragment();
                 fragment = new ExpandableBookmarks();
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, fragment).commit();

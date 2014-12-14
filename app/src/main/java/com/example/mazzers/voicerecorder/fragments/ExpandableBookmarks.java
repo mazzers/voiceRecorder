@@ -1,7 +1,9 @@
 package com.example.mazzers.voicerecorder.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ public class ExpandableBookmarks extends Fragment {
     View rootView;
     private static Bookmark[] bookmarksList;
     private HashMap<String, List<Bookmark>> mItems;
+    private String TAG_LOG = "myLogs";
 
     public ExpandableBookmarks() {
         //todo dynamic listChange
@@ -98,6 +101,16 @@ public class ExpandableBookmarks extends Fragment {
                                 listDataHeader.get(groupPosition)).get(
                                 childPosition).getTime()), Toast.LENGTH_SHORT)
                         .show();
+                Bookmark item = mItems.get(listDataHeader.get(groupPosition)).get(childPosition);
+                FragmentManager fragmentManager = getFragmentManager();
+                Fragment fragment = new PlayerFragment();
+                Log.d(TAG_LOG, "BookmarkFragment: Start play on: " + item.getTime());
+
+                Bundle bundle = new Bundle();
+                bundle.putString("filePath", item.getPath());
+                bundle.putInt("fileTime", item.getTime());
+                fragment.setArguments(bundle);
+                fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
                 return false;
             }
         });

@@ -78,11 +78,11 @@ public class startRec implements Runnable {
 
         if (quality) {
             Log.d(TAG_LOG, "startRec: Quality checked");
-            filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder" + fileAudioName + ".aac";
+            filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder/" + fileAudioName + ".aac";
             recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         } else {
-            filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder" + fileAudioName + ".3gpp";
+            filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder/" + fileAudioName + ".3gpp";
             recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         }
