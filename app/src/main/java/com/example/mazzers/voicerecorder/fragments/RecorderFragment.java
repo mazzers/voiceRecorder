@@ -89,7 +89,8 @@ public class RecorderFragment extends Fragment{
             mediaRecorder = new MediaRecorder();
             generateName();
             startTime = System.currentTimeMillis();
-            Thread startThread = new Thread(new startRec(mediaRecorder, rgOut.getCheckedRadioButtonId(), chkQuality.isChecked(), fileAudioName, startTime));
+            //Thread startThread = new Thread(new startRec(mediaRecorder, rgOut.getCheckedRadioButtonId(), chkQuality.isChecked(), fileAudioName, startTime));
+            Thread startThread = new Thread(new startRec(mediaRecorder, chkQuality.isChecked(), fileAudioName, startTime));
             Log.d(TAG_LOG, "RecorderFragment: start Thread Created");
 
             startThread.start();

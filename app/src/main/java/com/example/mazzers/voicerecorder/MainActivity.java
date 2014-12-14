@@ -30,6 +30,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //todo debug orientation change
+        //TODO add widget/notification
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG_LOG, "Main activity: Start");

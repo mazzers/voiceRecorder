@@ -13,7 +13,7 @@ public class ParseBookmarkFiles implements Runnable {
     private static Bookmark[] bookmarks;
     private ReadFromXML obj;
     private String TAG_LOG = "Write&Parse";
-    public static boolean traverseFinish;
+   // public static boolean traverseFinish;
     @Override
     public void run() {
         Log.d(TAG_LOG,"ParseBookmarkFiles: in run");
@@ -22,13 +22,10 @@ public class ParseBookmarkFiles implements Runnable {
     }
     public void traverse (File dir) {
         if (dir.exists()) {
-            traverseFinish = false;
+           // traverseFinish = false;
             Log.d(TAG_LOG,"ParseBookmarkFiles: folder exist");
             File[] files = dir.listFiles();
             bookmarks = new Bookmark[files.length];
-            Bookmark bookmarkTemp;
-            String pathTemp;
-            int timeTemp;
             Log.d(TAG_LOG,"ParseBookmarkFiles: create array od bookmarks");
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
@@ -36,6 +33,7 @@ public class ParseBookmarkFiles implements Runnable {
                     traverse(file);
                 } else {
                     Log.d(TAG_LOG,file.getPath());
+                    //todo bad file exception
                     obj = new ReadFromXML(file);
                     obj.fetchXML();
                     while(obj.parsingComplete);
@@ -45,7 +43,7 @@ public class ParseBookmarkFiles implements Runnable {
                     //bookmarks[i].setTime(obj.getTime());
                     //timeTemp = obj.getTime();
                     //bookmarkTemp = new Bookmark(pathTemp,timeTemp);
-                    Log.d(TAG_LOG,"ParseBookmarkFiles: Fill bookmark i-teration");
+                    Log.d(TAG_LOG,"ParseBookmarkFiles: Fill bookmark i-iteration");
                     bookmarks[i] = new Bookmark(obj.getPath(),obj.getName(),obj.getTime());
                     Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled path: "+bookmarks[i].getPath());
                     Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled name: "+bookmarks[i].getName());
@@ -59,12 +57,12 @@ public class ParseBookmarkFiles implements Runnable {
         }else {
             Log.d(TAG_LOG,"ParseBookmarkFiles: dir not exist");
         }
-        traverseFinish = true;
+        //traverseFinish = true;
     }
 
-    public static boolean getTraverse(){
-        return traverseFinish;
-    }
+   // public static boolean getTraverse(){
+    //    return traverseFinish;
+    //}
     public static Bookmark[] getBookmarks(){
         return bookmarks;
 

@@ -25,7 +25,14 @@ public class stopRecording implements Runnable {
         Log.d(TAG_LOG, "stopRecording: stop method");
         //stopChrono();
         if (recorder != null) {
-            recorder.stop();
+            try {
+
+
+                recorder.stop();
+            }catch (Exception e){
+                Log.e(TAG_LOG,e.toString());
+            }
+
         }
     }
 }
