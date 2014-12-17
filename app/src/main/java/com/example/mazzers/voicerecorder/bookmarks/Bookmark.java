@@ -5,15 +5,18 @@ package com.example.mazzers.voicerecorder.bookmarks;
  */
 public class Bookmark {
     //todo add message possibility
-    private String path,fileName;
+    private String path,fileName,message;
     private int time;
 
-    public Bookmark(String path,String fileName, int time) {
+    public Bookmark(String path,String fileName, int time,String message) {
         this.path = path;
         this.time = time;
         this.fileName = fileName;
+        this.message = message;
 
     }
+
+
 
 
 
@@ -33,5 +36,9 @@ public class Bookmark {
 
     public void setTime(int time) {
         this.time = time;
+    }
+
+    public String getMessage(){
+        return message;
     }
 }

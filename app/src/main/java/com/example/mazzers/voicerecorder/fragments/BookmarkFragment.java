@@ -78,6 +78,7 @@ public class BookmarkFragment extends ListFragment {
         Bundle bundle = new Bundle();
         bundle.putString("filePath", item.getPath());
         bundle.putInt("fileTime", item.getTime());
+        bundle.putBoolean("fromDrawer",false);
         fragment.setArguments(bundle);
         fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
 

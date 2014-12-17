@@ -32,7 +32,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private static String TAG_LOG = "myLogs";
     private static String path;
     private static int time;
-    boolean shouldRun = true;
+    private boolean fromDrawer;
     private Bundle bundle;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
@@ -63,17 +63,23 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         Log.d(TAG_LOG, "PlayerFragment: try to get arguments ");
         bundle = getArguments();
         Log.d(TAG_LOG, "PlayerFragment: put extra in string");
-        try {
+        if (bundle.getBoolean("fromDrawer")) {
+            btnPlay.setEnabled(false);
+            btnStop.setEnabled(false);
+        } else {
             path = bundle.getString("filePath");
             Log.d(TAG_LOG, "PlayerFragment: path= " + path);
             time = bundle.getInt("fileTime");
             Log.d(TAG_LOG, "PlayerFragment: time=" + time);
-        } catch (Exception e) {
-            Log.d(TAG_LOG, e.toString());
+            btnPlay.setEnabled(true);
+            //btnStop.setEnabled(true);
+            prepareMediaPlayer();
+            //} catch (Exception e) {
+            //    Log.d(TAG_LOG, e.toString());
         }
-        if (path == null) {
-            btnPlay.setEnabled(false);
-        }
+//        if (path == null) {
+//            btnPlay.setEnabled(false);
+//        }
         //seekBar.setMax(mediaPlayer.getDuration());
 
         //pathToFile = startRec.getFilePathAudio();
@@ -170,76 +176,118 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 //                    // Changing button image to play button
 //                    //btnPlay.setImageResource(R.drawable.btn_play);
 //                }
-                //mediaPlayer = new MediaPlayer();
-                try {
-                    mediaPlayer.setDataSource(path);
-                } catch (IOException e) {
-                    Log.d(TAG_LOG, e.toString());
-                    e.printStackTrace();
+            //mediaPlayer = new MediaPlayer();
+//            try {
+//                mediaPlayer.setDataSource(path);
+//            } catch (IOException e) {
+//                Log.d(TAG_LOG, e.toString());
+//                e.printStackTrace();
+//            }
+//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//            try {
+//                mediaPlayer.prepare();
+//            } catch (Exception e) {
+//                Log.d(TAG_LOG, "PlayerFragment: player prepare fail");
+//                Log.d(TAG_LOG, e.toString());
+//            }
+//            mediaPlayer.seekTo(time * 1000);
+//            mediaPlayer.start();
+            if(mediaPlayer.isPlaying()){
+                if(mediaPlayer!=null){
+                    mediaPlayer.pause();
+                    // Changing button image to play button
+                    btnPlay.setImageResource(R.drawable.icon_start_play);
                 }
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    mediaPlayer.prepare();
-                } catch (Exception e) {
-                    Log.d(TAG_LOG, "PlayerFragment: player prepare fail");
-                    Log.d(TAG_LOG, e.toString());
+            }else{
+                // Resume song
+                if(mediaPlayer!=null){
+                    mediaPlayer.start();
+                    // Changing button image to pause button
+                    btnPlay.setImageResource(R.drawable.icon_pause);
                 }
-                mediaPlayer.seekTo(time * 1000);
-                mediaPlayer.start();
-                seekBar.setProgress(0);
-                seekBar.setMax(100);
-                Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
-                //stopped=false;
-                updateProgressBar();
-
-                //btnStop.setEnabled(true);
-
-                Log.d(TAG_LOG, "PlayerFragment: DURATION: " + mediaPlayer.getDuration());
-                //seekBar.setMax(mediaPlayer.getDuration());
-
-
-                //} catch (Exception e) {
-                //   Log.d(TAG_LOG, "PlayerFragment: NO file to play");
-                //    Log.d(TAG_LOG, e.toString());
-                //}
-
-
             }
+//            seekBar.setProgress(0);
+//            seekBar.setMax(100);
+//            Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
+//            //stopped=false;
+//            updateProgressBar();
+//
+//            //btnStop.setEnabled(true);
+//
+//            Log.d(TAG_LOG, "PlayerFragment: DURATION: " + mediaPlayer.getDuration());
+            //seekBar.setMax(mediaPlayer.getDuration());
+
+
+            //} catch (Exception e) {
+            //   Log.d(TAG_LOG, "PlayerFragment: NO file to play");
+            //    Log.d(TAG_LOG, e.toString());
+            //}
+
+
         }
+    }
     //}
 
 
-        class btnStopClick implements View.OnClickListener {
-
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG_LOG, "PlayerFragment: stop Called");
-                if (mediaPlayer != null) {
-                    mediaPlayer.pause();
-                    handler.removeCallbacks(run);
-
-                    //stopped=true;
-                    //btnStop.setEnabled(false);
-                    //seekBar.setEnabled(false);
-                }
-                // if (mediaPlayer2!=null){mediaPlayer2.stop();}
-
-
-            }
-        }
+    class btnStopClick implements View.OnClickListener {
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
-            super.onCreate(savedInstanceState);
+        public void onClick(View v) {
+            Log.d(TAG_LOG, "PlayerFragment: stop Called");
+            if (mediaPlayer != null) {
+                //mediaPlayer.pause();
+                seekBar.setProgress(100);
+                mediaPlayer.stop();
+                handler.removeCallbacks(run);
+
+                //stopped=true;
+                //btnStop.setEnabled(false);
+                //seekBar.setEnabled(false);
+            }
+            // if (mediaPlayer2!=null){mediaPlayer2.stop();}
+
 
         }
+    }
 
-
-        public void updateProgressBar() {
-            Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
-            handler.postDelayed(run, 100);
-        }
-
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
+        super.onCreate(savedInstanceState);
 
     }
+
+
+    public void updateProgressBar() {
+        Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
+        handler.postDelayed(run, 100);
+    }
+    public void prepareMediaPlayer(){
+        try {
+            mediaPlayer.setDataSource(path);
+        } catch (IOException e) {
+            Log.d(TAG_LOG, e.toString());
+            e.printStackTrace();
+        }
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.prepare();
+        } catch (Exception e) {
+            Log.d(TAG_LOG, "PlayerFragment: player prepare fail");
+            Log.d(TAG_LOG, e.toString());
+        }
+        mediaPlayer.seekTo(time * 1000);
+        //mediaPlayer.start();
+        seekBar.setProgress(0);
+        seekBar.setMax(100);
+        Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
+        //stopped=false;
+        updateProgressBar();
+
+        //btnStop.setEnabled(true);
+
+        Log.d(TAG_LOG, "PlayerFragment: DURATION: " + mediaPlayer.getDuration());
+
+    }
+
+}

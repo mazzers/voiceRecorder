@@ -1,7 +1,9 @@
 package com.example.mazzers.voicerecorder.fragments;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
@@ -39,10 +43,11 @@ public class RecorderFragment extends Fragment {
     String filePath;
     static String fileAudioName;
     private MediaRecorder mediaRecorder;
-    private Long startTime;
+    private Long startTime,pressTime;
     private DialogFragment messageDialog;
     private String message;
     private Bundle bundle;
+    private TextView bookmarkMSG;
 
 
     public RecorderFragment() {
@@ -65,6 +70,7 @@ public class RecorderFragment extends Fragment {
         btnRecord = (ImageButton) rootView.findViewById(R.id.btnRecord);
         btnStop = (ImageButton) rootView.findViewById(R.id.btnStop);
         btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
+        bookmarkMSG = (TextView) rootView.findViewById(R.id.bookmark_message_TV);
         messageDialog = new MessageDialog();
         //todo hide record settings
         chkQuality = (CheckBox) rootView.findViewById(R.id.chkQuality);
@@ -120,21 +126,24 @@ public class RecorderFragment extends Fragment {
             //TODO return case
             if (startRec.isRecording()) {
             //try {
-            messageDialog.show(getFragmentManager(), "messageDialog");
+            //messageDialog.show(getFragmentManager(), "messageDialog");
+              pressTime=System.currentTimeMillis();
+              showInputDialog();
+
             //bundle.getString("message");
             //message = bundle.getString("message");
             //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
-            filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
-            Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
-            count++;
-
-            fileBook = new File(filePathBook);
-            Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
-            xmlCreateThread.start();
-            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-            parseBookmarkFiles.start();
-            Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+//            Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
+//            filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
+//            Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
+//            count++;
+//
+//            fileBook = new File(filePathBook);
+//            Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
+//            xmlCreateThread.start();
+//            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+//            parseBookmarkFiles.start();
+//            Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
             //}catch(NullPointerException e)
             //} else {
             //    Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
@@ -178,6 +187,62 @@ public class RecorderFragment extends Fragment {
             mediaRecorder.release();
             mediaRecorder = null;
         }
+    }
+
+    protected void showInputDialog() {
+
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.message_dialog_layout, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                getActivity());
+        alertDialogBuilder.setView(promptView);
+
+        final EditText editText = (EditText) promptView
+                .findViewById(R.id.message_editText);
+        // setup a dialog window
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        bookmarkMSG.setText(editText.getText());
+                        postDialog();
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                bookmarkMSG.setText("");
+                                dialog.cancel();
+                                postDialog();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+
+    }
+
+    public void postDialog(){
+        Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
+        filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
+        Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
+        count++;
+
+        fileBook = new File(filePathBook);
+        long duration = (int) ((pressTime - startTime) / 1000);
+        Toast.makeText(getActivity(), "Bookmark added"+duration, Toast.LENGTH_SHORT).show();
+
+        Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, duration,getMessage()));
+        xmlCreateThread.start();
+        Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+        parseBookmarkFiles.start();
+        Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+    }
+
+    public String getMessage(){
+        return bookmarkMSG.getText().toString();
     }
 
 }

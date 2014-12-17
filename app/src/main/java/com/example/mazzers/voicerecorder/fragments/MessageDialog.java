@@ -15,7 +15,7 @@ import com.example.mazzers.voicerecorder.R;
 /**
  * Created by mazzers on 17. 12. 2014.
  */
-public class MessageDialog extends DialogFragment implements View.OnClickListener {
+public class MessageDialog extends DialogFragment  {
     Button btnYes,btnCancel;
     EditText message_editText;
     public static String message;
@@ -23,14 +23,14 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getDialog().setTitle("Title!");
+        getDialog().setTitle("Add message");
         View v = inflater.inflate(R.layout.message_dialog_layout, null);
-        btnYes = (Button) v.findViewById(R.id.btnYes);
-        btnCancel = (Button) v.findViewById(R.id.btnNo);
+        //btnYes = (Button) v.findViewById(R.id.btnYes);
+        //btnCancel = (Button) v.findViewById(R.id.btnNo);
         message_editText = (EditText) v.findViewById(R.id.message_editText);
 
-        v.findViewById(R.id.btnYes).setOnClickListener(this);
-        v.findViewById(R.id.btnNo).setOnClickListener(this);
+        //v.findViewById(R.id.btnYes).setOnClickListener(this);
+        //.findViewById(R.id.btnNo).setOnClickListener(this);
         //v.findViewById(R.id.btnMaybe).setOnClickListener(this);
         bundle = new Bundle();
         return v;
@@ -49,23 +49,23 @@ public class MessageDialog extends DialogFragment implements View.OnClickListene
 
 
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btnYes:
-                callYes();
-                dismiss();
-                break;
-            case R.id.btnNo:
-                callNo();
-                dismiss();
-                break;
-
-
-
-        }
-
-    }
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()){
+//            case R.id.btnYes:
+//                callYes();
+//                dismiss();
+//                break;
+//            case R.id.btnNo:
+//                callNo();
+//                dismiss();
+//                break;
+//
+//
+//
+//        }
+//
+//    }
 
     @Override
     public void onDismiss(DialogInterface dialog) {

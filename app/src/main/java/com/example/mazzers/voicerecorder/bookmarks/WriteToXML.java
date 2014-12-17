@@ -19,13 +19,24 @@ public class WriteToXML implements Runnable {
     private File fileBook;
     private FileOutputStream outputStream;
     private String TAG_LOG = "Write&Parse";
-    private Long time;
+    private Long startTime,pressTime;
+    private String message;
+    private Long duration;
 
     public WriteToXML(File fileBook,long time) {
         //this.audioName = audioName;
         this.fileBook = fileBook;
-        this.time = time;
+        this.startTime = time;
         //this.message = null;
+
+    }
+
+    public WriteToXML(File fileBook,long duration,String message){
+        this.fileBook = fileBook;
+        this.duration = duration;
+        //this.startTime = startTime;
+        //this.pressTime = pressTime;
+        this.message = message;
 
     }
 
@@ -39,7 +50,6 @@ public class WriteToXML implements Runnable {
     }
     private String WriteDataToXML() throws IOException {
         //String pathToAudio = startRec.getFilePathAudio();
-        long duration = (int) ((System.currentTimeMillis() - time) / 1000);
         XmlSerializer xmlSerializer = Xml.newSerializer();
         StringWriter writter = new StringWriter();
         xmlSerializer.setOutput(writter);
@@ -54,6 +64,9 @@ public class WriteToXML implements Runnable {
         xmlSerializer.startTag("","time");
         xmlSerializer.attribute("","value",String.valueOf(duration));
         xmlSerializer.endTag("","time");
+        xmlSerializer.startTag("","message");
+        xmlSerializer.attribute("","value",message);
+        xmlSerializer.endTag("","message");
         xmlSerializer.endTag("","root");
         xmlSerializer.endDocument();
 

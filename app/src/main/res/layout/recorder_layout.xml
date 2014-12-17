@@ -18,6 +18,10 @@
             android:id="@+id/chrono"
             android:textSize="48dp"
             android:textColor="@android:color/primary_text_light" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bookmark_message_TV"/>
 
         <LinearLayout
             android:layout_width="match_parent"

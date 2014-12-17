@@ -22,6 +22,7 @@ import java.io.File;
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    private Bundle bundle;
 
 
     final String TAG_LOG = "myLogs";
@@ -49,6 +50,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+        bundle = new Bundle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -69,12 +71,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         switch (position){
             case 0:
                 fragment = new RecorderFragment();
+
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, fragment).commit();
                 mTitle = getString(R.string.title_section1);
                 break;
             case 1:
                 fragment = new PlayerFragment();
+                bundle.putBoolean("fromDrawer",true);
+                fragment.setArguments(bundle);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, fragment).commit();
                 mTitle = getString(R.string.title_section2);

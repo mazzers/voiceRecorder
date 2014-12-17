@@ -61,7 +61,7 @@ public class ParseBookmarkFiles implements Runnable {
                         //bookmarkTemp = new Bookmark(pathTemp,timeTemp);
                         Log.d(TAG_LOG, "ParseBookmarkFiles: Fill bookmark i-iteration");
                         //bookmarks[i] = new Bookmark(obj.getPath(),obj.getName(),obj.getTime());
-                        bookmarkArrayList.add(new Bookmark(obj.getPath(), obj.getName(), obj.getTime()));
+                        bookmarkArrayList.add(new Bookmark(obj.getPath(), obj.getName(), obj.getTime(),obj.getMessage()));
 //                    Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled path: "+bookmarks[i].getPath());
 //                    Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled name: "+bookmarks[i].getName());
 //                    Log.d(TAG_LOG,"ParseBookmarkFiles: ---->filled time at: "+String.valueOf(bookmarks[i].getTime()));
