@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="left"
-            android:textColor="#eeeeee"
+            android:textColor="#04cbde"
             android:textStyle="bold"/>
         <!-- Total Duration Label -->
         <TextView
@@ -50,19 +50,20 @@
         android:layout_alignParentBottom="true"
         android:gravity="center">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnPlay"
-            android:text="Play"
-            android:textColor="@android:color/holo_blue_dark" />
+            android:src="@drawable/icon_start_play"
+            android:background="@null" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stop"
+            android:src="@drawable/icon_stop"
+            android:background="@null"
             android:id="@+id/btnStopPlayer"
-            android:textColor="@android:color/holo_blue_dark" />
+             />
 
 
     </LinearLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,96 +10,63 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".MyActivity">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Chronometer
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/chrono"
-                android:textSize="24dp"
-                android:textColor="@android:color/holo_blue_dark"/>
-        </LinearLayout>
+
+        <Chronometer
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/chrono"
+            android:textSize="48dp"
+            android:textColor="@android:color/primary_text_light" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            >
-            <Button
+            android:gravity="center">
+
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Record"
+                android:text="@string/start_record"
                 android:id="@+id/btnRecord"
+                android:src="@drawable/start_record_holo"
                 android:layout_gravity="left"
-                android:textColor="@android:color/holo_blue_dark"/>
-            <Button
+                android:background="@null" />
+
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Stop"
-                android:layout_marginLeft="10dp"
+                android:src="@drawable/icon_stop"
+                android:background="@null"
                 android:id="@+id/btnStop"
+
                 android:layout_gravity="top"
-                android:textColor="@android:color/holo_blue_dark"/>
-
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <Button
+                android:textColor="@android:color/holo_blue_dark" />
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnBook"
-                android:text="BookIt"
-                android:textColor="@android:color/holo_blue_dark"/>
-
-
-
+                android:src="@drawable/bookmark_icon"
+                android:background="@null"
+                android:textColor="@android:color/holo_blue_dark" />
 
 
         </LinearLayout>
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <RadioGroup
-                android:id="@+id/rgOut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <RadioButton
-                    android:id="@+id/btn3GPP"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="3GPP"
-                    android:enabled="false"
-                    >
-                </RadioButton>
-                <RadioButton
-                    android:id="@+id/btnAMR"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="AMR"
-                    android:enabled="false"
-                    >
-                </RadioButton>
 
-            </RadioGroup>
+
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="High quality"
-                android:id="@+id/chkQuality"
-                />
+                android:text="@string/high_quality"
+                android:id="@+id/chkQuality" />
         </LinearLayout>
-
-
 
 
     </LinearLayout>

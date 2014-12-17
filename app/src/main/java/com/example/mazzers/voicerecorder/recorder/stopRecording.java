@@ -24,11 +24,12 @@ public class stopRecording implements Runnable {
     private void stopRec() {
         Log.d(TAG_LOG, "stopRecording: stop method");
         //stopChrono();
-        if (recorder != null) {
+        if (recorder != null&startRec.isRecording()) {
             try {
 
 
                 recorder.stop();
+                startRec.stpRecording();
             }catch (Exception e){
                 Log.e(TAG_LOG,e.toString());
             }

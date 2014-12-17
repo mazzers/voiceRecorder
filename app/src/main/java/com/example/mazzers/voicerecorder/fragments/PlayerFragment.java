@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,8 +23,8 @@ import java.io.IOException;
  * Created by mazzers on 26. 11. 2014.
  */
 public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
-    private Button btnStop;
-    private Button btnPlay;
+    private ImageButton btnStop;
+    private ImageButton btnPlay;
     private Utils utils;
 
     private static SeekBar seekBar;
@@ -32,23 +32,23 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private static String TAG_LOG = "myLogs";
     private static String path;
     private static int time;
-    private static boolean bookmark = false;
+    boolean shouldRun = true;
     private Bundle bundle;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
     Handler handler = new Handler();
+
     public PlayerFragment() {
     }
-
 
 
     @Nullable
     @Override
     //todo player view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-                View rootView = inflater.inflate(R.layout.player_layout,container,false);
-        btnPlay = (Button) rootView.findViewById(R.id.btnPlay);
-        btnStop = (Button) rootView.findViewById(R.id.btnStopPlayer);
+        View rootView = inflater.inflate(R.layout.player_layout, container, false);
+        btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
+        btnStop = (ImageButton) rootView.findViewById(R.id.btnStopPlayer);
         songCurrentDurationLabel = (TextView) rootView.findViewById(R.id.songCurrentDurationLabel);
         songTotalDurationLabel = (TextView) rootView.findViewById(R.id.songTotalDurationLabel);
 
@@ -57,19 +57,21 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
         btnStop.setOnClickListener(new btnStopClick());
         seekBar.setOnSeekBarChangeListener(this);
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(this);
         utils = new Utils();
-        Log.d(TAG_LOG,"PlayerFragment: try to get arguments ");
+        Log.d(TAG_LOG, "PlayerFragment: try to get arguments ");
         bundle = getArguments();
-        Log.d(TAG_LOG,"PlayerFragment: put extra in string");
+        Log.d(TAG_LOG, "PlayerFragment: put extra in string");
         try {
             path = bundle.getString("filePath");
-            Log.d(TAG_LOG,"PlayerFragment: path= "+path);
+            Log.d(TAG_LOG, "PlayerFragment: path= " + path);
             time = bundle.getInt("fileTime");
-            Log.d(TAG_LOG,"PlayerFragment: time="+time);
-        }catch (Exception e){
-            Log.d(TAG_LOG,e.toString());
+            Log.d(TAG_LOG, "PlayerFragment: time=" + time);
+        } catch (Exception e) {
+            Log.d(TAG_LOG, e.toString());
         }
-        if (path==null){
+        if (path == null) {
             btnPlay.setEnabled(false);
         }
         //seekBar.setMax(mediaPlayer.getDuration());
@@ -80,32 +82,34 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
 
     }
+
     //todo seekbar optimisation
     Runnable run = new Runnable() {
         public void run() {
-            Log.d(TAG_LOG,"PlayerFragment: in run()");
+            //while (shouldRun) {
+            Log.d(TAG_LOG, "PlayerFragment: in run()");
             long totalDuration = mediaPlayer.getDuration();
-            Log.d(TAG_LOG,"PlayerFragment: duration= "+String.valueOf(totalDuration));
+            Log.d(TAG_LOG, "PlayerFragment: duration= " + String.valueOf(totalDuration));
 
             long currentDuration = mediaPlayer.getCurrentPosition();
-            Log.d(TAG_LOG,"PlayerFragment: current="+String.valueOf(currentDuration));
+            Log.d(TAG_LOG, "PlayerFragment: current=" + String.valueOf(currentDuration));
 
             // Displaying Total Duration time
-            songTotalDurationLabel.setText(""+utils.milliSecondsToTimer(totalDuration));
+            songTotalDurationLabel.setText("" + utils.milliSecondsToTimer(totalDuration));
             // Displaying time completed playing
-            songCurrentDurationLabel.setText(""+utils.milliSecondsToTimer(currentDuration));
+            songCurrentDurationLabel.setText("" + utils.milliSecondsToTimer(currentDuration));
 
             // Updating progress bar
-            int progress = (int)(utils.getProgressPercentage(currentDuration, totalDuration));
+            int progress = (int) (utils.getProgressPercentage(currentDuration, totalDuration));
             //Log.d("Progress", ""+progress);
-            Log.d(TAG_LOG,"PlayerFragment: progress"+ progress);
+            Log.d(TAG_LOG, "PlayerFragment: progress =" + progress);
             seekBar.setProgress(progress);
 
             // Running this thread after 100 milliseconds
             handler.postDelayed(this, 100);
+            //}
         }
     };
-
 
 
     @Override
@@ -115,18 +119,25 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-         handler.removeCallbacks(run);
+        handler.removeCallbacks(run);
 
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        handler.removeCallbacks(run);
-        int totalDuration = mediaPlayer.getDuration();
-        int currentPosition = utils.progressToTimer(seekBar.getProgress(),totalDuration);
-        mediaPlayer.seekTo(currentPosition);
-        updateProgressBar();
+        try {
 
+
+            handler.removeCallbacks(run);
+            int totalDuration = mediaPlayer.getDuration();
+            int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
+            mediaPlayer.seekTo(currentPosition);
+            updateProgressBar();
+            mediaPlayer.start();
+
+        } catch (Exception e) {
+            Log.e(TAG_LOG, e.toString());
+        }
 
     }
 
@@ -134,6 +145,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     //todo seekbar thread control
     public void onCompletion(MediaPlayer mp) {
         //TODO add coplete seek bar thread stop
+        //seekBar.setProgress(0);
+        //stopped=true;
+        handler.removeCallbacks(run);
 
 
     }
@@ -145,71 +159,87 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         @Override
         public void onClick(View v) {
 
-            try {
+            //try {
 
-                if (path!=null){
-                    btnPlay.setEnabled(true);
-                }
-                mediaPlayer = new MediaPlayer();
+            if (path != null) {
+                btnPlay.setEnabled(true);
+            }
+//            if (mediaPlayer.isPlaying()) {
+//                if (mediaPlayer != null) {
+//                    mediaPlayer.pause();
+//                    // Changing button image to play button
+//                    //btnPlay.setImageResource(R.drawable.btn_play);
+//                }
+                //mediaPlayer = new MediaPlayer();
                 try {
                     mediaPlayer.setDataSource(path);
                 } catch (IOException e) {
-                    Log.d(TAG_LOG,e.toString());
+                    Log.d(TAG_LOG, e.toString());
                     e.printStackTrace();
                 }
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     mediaPlayer.prepare();
-                }catch (Exception e){
-                    Log.d(TAG_LOG,"PlayerFragment: player prepare fail");
-                    Log.d(TAG_LOG,e.toString());
+                } catch (Exception e) {
+                    Log.d(TAG_LOG, "PlayerFragment: player prepare fail");
+                    Log.d(TAG_LOG, e.toString());
                 }
-                mediaPlayer.seekTo(time*1000);
+                mediaPlayer.seekTo(time * 1000);
                 mediaPlayer.start();
                 seekBar.setProgress(0);
                 seekBar.setMax(100);
-                Log.d(TAG_LOG,"PlayerFragment: call updateProgressBar()");
+                Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
+                //stopped=false;
                 updateProgressBar();
-                Log.d(TAG_LOG,"PlayerFragment: DURATION: "+mediaPlayer.getDuration());
+
+                //btnStop.setEnabled(true);
+
+                Log.d(TAG_LOG, "PlayerFragment: DURATION: " + mediaPlayer.getDuration());
                 //seekBar.setMax(mediaPlayer.getDuration());
 
 
-            }catch (Exception e){
-                Log.d(TAG_LOG,"PlayerFragment: NO file to play");
-                Log.d(TAG_LOG,e.toString());
+                //} catch (Exception e) {
+                //   Log.d(TAG_LOG, "PlayerFragment: NO file to play");
+                //    Log.d(TAG_LOG, e.toString());
+                //}
+
+
             }
-
-
         }
-    }
+    //}
 
 
-    class btnStopClick implements View.OnClickListener{
+        class btnStopClick implements View.OnClickListener {
+
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG_LOG, "PlayerFragment: stop Called");
+                if (mediaPlayer != null) {
+                    mediaPlayer.pause();
+                    handler.removeCallbacks(run);
+
+                    //stopped=true;
+                    //btnStop.setEnabled(false);
+                    //seekBar.setEnabled(false);
+                }
+                // if (mediaPlayer2!=null){mediaPlayer2.stop();}
+
+
+            }
+        }
 
         @Override
-        public void onClick(View v) {
-            if (mediaPlayer!=null) {
-                mediaPlayer.pause();
-            }
-           // if (mediaPlayer2!=null){mediaPlayer2.stop();}
-
+        public void onCreate(Bundle savedInstanceState) {
+            Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
+            super.onCreate(savedInstanceState);
 
         }
+
+
+        public void updateProgressBar() {
+            Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
+            handler.postDelayed(run, 100);
+        }
+
+
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG_LOG,"PlayerFragment: onCrete PlayerFragment");
-        super.onCreate(savedInstanceState);
-
-    }
-
-
-
-    public void updateProgressBar() {
-        Log.d(TAG_LOG,"PlayerFragment: in updateProgressBar");
-        handler.postDelayed(run, 100);
-    }
-
-
-}

@@ -9,11 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
@@ -29,11 +27,9 @@ import java.util.Date;
 /**
  * Created by mazzers on 26. 11. 2014.
  */
-public class RecorderFragment extends Fragment{
+public class RecorderFragment extends Fragment {
     private String TAG_LOG = "myLogs";
-    Button btnRecord, btnStop, btnBook, btnCallPlayer, btnShowBookmarks;
-    RadioGroup rgOut;
-    RadioButton btnAMR, btn3Gpp;
+    ImageButton btnRecord, btnStop, btnBook;
     CheckBox chkQuality;
     private Chronometer chronometer;
     private int count = 0;
@@ -53,23 +49,19 @@ public class RecorderFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
 
-
     }
 
 
-   // @Nullable
+    // @Nullable
     @Override
     //todo rework recorder view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-       View rootView = inflater.inflate(R.layout.recorder_layout,container,false);
-        Log.d(TAG_LOG,"RecorderFragment: onCreateView");
-        btnRecord = (Button) rootView.findViewById(R.id.btnRecord);
-        btnStop = (Button) rootView.findViewById(R.id.btnStop);
-        btnBook = (Button) rootView.findViewById(R.id.btnBook);
+        View rootView = inflater.inflate(R.layout.recorder_layout, container, false);
+        Log.d(TAG_LOG, "RecorderFragment: onCreateView");
+        btnRecord = (ImageButton) rootView.findViewById(R.id.btnRecord);
+        btnStop = (ImageButton) rootView.findViewById(R.id.btnStop);
+        btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
         //todo hide record settings
-        rgOut = (RadioGroup) rootView.findViewById(R.id.rgOut);
-        btn3Gpp = (RadioButton) rootView.findViewById(R.id.btn3GPP);
-        btnAMR = (RadioButton) rootView.findViewById(R.id.btnAMR);
         chkQuality = (CheckBox) rootView.findViewById(R.id.chkQuality);
         chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
         btnRecord.setOnClickListener(new btnStartRecordClick());
@@ -81,6 +73,7 @@ public class RecorderFragment extends Fragment{
 
         return rootView;
     }
+
     class btnStartRecordClick implements View.OnClickListener {
         public void onClick(View arg0) {
             count = 1;
@@ -105,7 +98,7 @@ public class RecorderFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            Log.d(TAG_LOG,"RecorderFragment: onclick Stop Record");
+            Log.d(TAG_LOG, "RecorderFragment: onclick Stop Record");
             count = 0;
             Thread stopThread = new Thread(new stopRecording(mediaRecorder));
             stopThread.start();
@@ -118,20 +111,30 @@ public class RecorderFragment extends Fragment{
 
         @Override
         public void onClick(View v) {
-            Log.d(TAG_LOG,"RecorderFragment: OnClick bookmark");
-            filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName +"_"+ count + ".xml";
-            Log.d(TAG_LOG,"RecorderFragment: "+filePathBook);
-            count++;
+            if (startRec.isRecording()) {
+                //try {
+                Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
+                filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
+                Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
+                count++;
 
-            fileBook = new File(filePathBook);
-            Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
-            xmlCreateThread.start();
-            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-            parseBookmarkFiles.start();
-            Toast.makeText(getActivity(),"bookmark added",Toast.LENGTH_SHORT).show();
+                fileBook = new File(filePathBook);
+                Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
+                xmlCreateThread.start();
+                Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+                parseBookmarkFiles.start();
+                Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+                //}catch(NullPointerException e)
+            } else {
+                Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
+            }
+            //}else {
+            //    Toast.makeText(getActivity(),"Can't add bookmark: no player",Toast.LENGTH_SHORT).show();
+            //}
 
         }
     }
+
     private void generateName() {
 
         try {
@@ -139,12 +142,12 @@ public class RecorderFragment extends Fragment{
             Date now = new Date();
             fileAudioName = formatter.format(now);
         } catch (Exception e) {
-            Log.d(TAG_LOG, "RecorderFragment: "+e.toString());
+            Log.d(TAG_LOG, "RecorderFragment: " + e.toString());
         }
 
     }
 
-    public static String getFileAudioName(){
+    public static String getFileAudioName() {
         return fileAudioName;
     }
 

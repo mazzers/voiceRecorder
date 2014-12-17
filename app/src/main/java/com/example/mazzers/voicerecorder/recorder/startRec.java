@@ -18,6 +18,7 @@ public class startRec implements Runnable {
     Long startTime;
     File fileAudio, fileBook;
     FileOutputStream outputStream;
+    public static boolean isRecording = false;
 
 
     public startRec(MediaRecorder r, int rgOut, boolean quality, String fileAudioName, Long startTime) {
@@ -104,10 +105,20 @@ public class startRec implements Runnable {
         Log.d(TAG_LOG, "startRec: Prepare OK");
         try {
             recorder.start();
+            isRecording=true;
         } catch (Exception e) {
             Log.e(TAG_LOG, e.toString());
         }
 
+
+    }
+
+    public static boolean isRecording(){
+        return isRecording;
+    }
+
+    public static void stpRecording(){
+        isRecording=false;
 
     }
 
