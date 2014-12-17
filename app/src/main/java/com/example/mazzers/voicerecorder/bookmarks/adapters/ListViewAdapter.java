@@ -1,4 +1,4 @@
-package com.example.mazzers.voicerecorder.bookmarks;
+package com.example.mazzers.voicerecorder.bookmarks.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.mazzers.voicerecorder.R;
+import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

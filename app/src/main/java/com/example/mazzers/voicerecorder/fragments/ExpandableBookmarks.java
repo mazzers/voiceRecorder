@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
-import com.example.mazzers.voicerecorder.bookmarks.ExpandedList.ExpandableListAdapter;
+import com.example.mazzers.voicerecorder.bookmarks.adapters.ExpandableListAdapter;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
 
 import java.util.ArrayList;
@@ -151,10 +151,13 @@ public class ExpandableBookmarks extends Fragment {
 
 
             }
+
             tempArray.add(bookmarksList[i]);
             //tempArrayTime.add(String.valueOf(bookmarksList[i].getTime()));
 
         }
+        mItems.put(listDataHeader.get(groupCount - 1), tempArray);
+
 
     }
 

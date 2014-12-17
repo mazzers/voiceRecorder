@@ -92,7 +92,7 @@ public class ParseBookmarkFiles implements Runnable {
 
     class FileExtensionFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
-            return (name.endsWith(".xml") || name.endsWith(".XML"));
+            return (name.endsWith(".xml"));
         }
     }
 }

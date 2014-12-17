@@ -10,7 +10,7 @@ import android.widget.ListView;
 
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
-import com.example.mazzers.voicerecorder.bookmarks.ListViewAdapter;
+import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
 
 import java.util.ArrayList;

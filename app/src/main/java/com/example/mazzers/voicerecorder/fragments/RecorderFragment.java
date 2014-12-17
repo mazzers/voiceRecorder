@@ -1,5 +1,6 @@
 package com.example.mazzers.voicerecorder.fragments;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -39,6 +40,9 @@ public class RecorderFragment extends Fragment {
     static String fileAudioName;
     private MediaRecorder mediaRecorder;
     private Long startTime;
+    private DialogFragment messageDialog;
+    private String message;
+    private Bundle bundle;
 
 
     public RecorderFragment() {
@@ -61,6 +65,7 @@ public class RecorderFragment extends Fragment {
         btnRecord = (ImageButton) rootView.findViewById(R.id.btnRecord);
         btnStop = (ImageButton) rootView.findViewById(R.id.btnStop);
         btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
+        messageDialog = new MessageDialog();
         //todo hide record settings
         chkQuality = (CheckBox) rootView.findViewById(R.id.chkQuality);
         chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
@@ -68,6 +73,7 @@ public class RecorderFragment extends Fragment {
         btnStop.setOnClickListener(new btnStopRecordClick());
         btnBook.setOnClickListener(new btnBookClick());
         filePath = Environment.getExternalStorageDirectory() + "/";
+        bundle = new Bundle();
 
         mediaRecorder = new MediaRecorder();
 
@@ -111,26 +117,31 @@ public class RecorderFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
+            //TODO return case
             if (startRec.isRecording()) {
-                //try {
-                Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
-                filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
-                Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
-                count++;
+            //try {
+            messageDialog.show(getFragmentManager(), "messageDialog");
+            //bundle.getString("message");
+            //message = bundle.getString("message");
+            //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
+            filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
+            Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
+            count++;
 
-                fileBook = new File(filePathBook);
-                Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
-                xmlCreateThread.start();
-                Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-                parseBookmarkFiles.start();
-                Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
-                //}catch(NullPointerException e)
-            } else {
-                Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
+            fileBook = new File(filePathBook);
+            Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
+            xmlCreateThread.start();
+            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+            parseBookmarkFiles.start();
+            Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+            //}catch(NullPointerException e)
+            //} else {
+            //    Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
+//            }
+            }else {
+                Toast.makeText(getActivity(),"Can't add bookmark: no player",Toast.LENGTH_SHORT).show();
             }
-            //}else {
-            //    Toast.makeText(getActivity(),"Can't add bookmark: no player",Toast.LENGTH_SHORT).show();
-            //}
 
         }
     }

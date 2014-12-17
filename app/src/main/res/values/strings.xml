@@ -15,5 +15,8 @@
     <string name="start_record">Record</string>
     <string name="stop_record">Stop</string>
     <string name="make_bookmark">Make bookmark</string>
+    <string name="message_text">Enter message: </string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
 
 </resources>

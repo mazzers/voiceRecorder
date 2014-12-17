@@ -1,4 +1,4 @@
-package com.example.mazzers.voicerecorder.bookmarks.ExpandedList;
+package com.example.mazzers.voicerecorder.bookmarks.adapters;
 
 
 import android.content.Context;
