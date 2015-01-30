@@ -22,21 +22,16 @@ public class WriteToXML implements Runnable {
     private Long startTime,pressTime;
     private String message;
     private Long duration;
+    private int type;
 
-    public WriteToXML(File fileBook,long time) {
-        //this.audioName = audioName;
-        this.fileBook = fileBook;
-        this.startTime = time;
-        //this.message = null;
 
-    }
-
-    public WriteToXML(File fileBook,long duration,String message){
+    public WriteToXML(File fileBook,long duration, int type, String message){
         this.fileBook = fileBook;
         this.duration = duration;
         //this.startTime = startTime;
         //this.pressTime = pressTime;
         this.message = message;
+        this.type = type;
 
     }
 
@@ -61,6 +56,9 @@ public class WriteToXML implements Runnable {
         xmlSerializer.startTag("","fileName");
         xmlSerializer.attribute("","value", RecorderFragment.getFileAudioName());
         xmlSerializer.endTag("","fileName");
+        xmlSerializer.startTag("","type");
+        xmlSerializer.attribute("","value",String.valueOf(type));
+        xmlSerializer.endTag("","type");
         xmlSerializer.startTag("","time");
         xmlSerializer.attribute("","value",String.valueOf(duration));
         xmlSerializer.endTag("","time");

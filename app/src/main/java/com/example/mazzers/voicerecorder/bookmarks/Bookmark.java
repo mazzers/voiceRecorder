@@ -7,12 +7,23 @@ public class Bookmark {
     //todo add message possibility
     private String path,fileName,message;
     private int time;
+    private int type;
 
-    public Bookmark(String path,String fileName, int time,String message) {
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public Bookmark(String path,String fileName, int time,String message,int type) {
         this.path = path;
         this.time = time;
         this.fileName = fileName;
         this.message = message;
+        this.type = type;
+
 
     }
 

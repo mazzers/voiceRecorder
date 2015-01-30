@@ -93,12 +93,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     Runnable run = new Runnable() {
         public void run() {
             //while (shouldRun) {
-            Log.d(TAG_LOG, "PlayerFragment: in run()");
+            //Log.d(TAG_LOG, "PlayerFragment: in run()");
             long totalDuration = mediaPlayer.getDuration();
-            Log.d(TAG_LOG, "PlayerFragment: duration= " + String.valueOf(totalDuration));
+            //Log.d(TAG_LOG, "PlayerFragment: duration= " + String.valueOf(totalDuration));
 
             long currentDuration = mediaPlayer.getCurrentPosition();
-            Log.d(TAG_LOG, "PlayerFragment: current=" + String.valueOf(currentDuration));
+            //Log.d(TAG_LOG, "PlayerFragment: current=" + String.valueOf(currentDuration));
 
             // Displaying Total Duration time
             songTotalDurationLabel.setText("" + utils.milliSecondsToTimer(totalDuration));
@@ -108,7 +108,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             // Updating progress bar
             int progress = (int) (utils.getProgressPercentage(currentDuration, totalDuration));
             //Log.d("Progress", ""+progress);
-            Log.d(TAG_LOG, "PlayerFragment: progress =" + progress);
+            //Log.d(TAG_LOG, "PlayerFragment: progress =" + progress);
             seekBar.setProgress(progress);
 
             // Running this thread after 100 milliseconds

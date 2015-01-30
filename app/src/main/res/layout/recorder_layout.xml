@@ -30,33 +30,46 @@
             android:gravity="center">
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:text="@string/start_record"
                 android:id="@+id/btnRecord"
-                android:src="@drawable/start_record_holo"
                 android:layout_gravity="left"
-                android:background="@null" />
+                android:background="@drawable/start_record_holo" />
 
             <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/icon_stop"
-                android:background="@null"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/icon_stop"
                 android:id="@+id/btnStop"
-
                 android:layout_gravity="top"
-                android:textColor="@android:color/holo_blue_dark" />
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnBook"
-                android:src="@drawable/bookmark_icon"
-                android:background="@null"
                 android:textColor="@android:color/holo_blue_dark" />
 
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:id="@+id/btnBook"
+                android:background="@drawable/icon_text_book"
+                android:textColor="@android:color/holo_blue_dark" />
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:id="@+id/btnImpBook"
+                android:background="@drawable/icon_imp_book"
+                />
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:id="@+id/btnQuestBook"
+                android:background="@drawable/icon_quest_book"/>
+            </LinearLayout>
 
 
 

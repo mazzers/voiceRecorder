@@ -13,8 +13,9 @@ import java.io.StringReader;
  * Created by mazzers on 24. 11. 2014.
  */
 public class ReadFromXML {
-    private String path, fileName,message;
+    private String path, fileName, message;
     private int time;
+    private int type;
     public volatile boolean parsingComplete = true;
     private XmlPullParserFactory xmlFactoryObject;
     private StringReader stringReader;
@@ -33,7 +34,7 @@ public class ReadFromXML {
         try {
             event = myParser.getEventType();
             while (event != XmlPullParser.END_DOCUMENT) {
-                String name=myParser.getName();
+                String name = myParser.getName();
                 switch (event) {
                     case XmlPullParser.START_TAG:
                         break;
@@ -44,8 +45,10 @@ public class ReadFromXML {
                             fileName = myParser.getAttributeValue(null, "value");
                         } else if (name.equals("time")) {
                             time = Integer.parseInt(myParser.getAttributeValue(null, "value"));
-                        }else if (name.equals("message")){
-                            message = myParser.getAttributeValue(null,"value");
+                        } else if (name.equals("message")) {
+                            message = myParser.getAttributeValue(null, "value");
+                        } else if (name.equals("type")) {
+                            type = Integer.parseInt(myParser.getAttributeValue(null, "value"));
                         }
 
 
@@ -105,5 +108,11 @@ public class ReadFromXML {
         return fileName;
     }
 
-    public String getMessage(){return message;}
+    public String getMessage() {
+        return message;
+    }
+
+    public int getType() {
+        return type;
+    }
 }
