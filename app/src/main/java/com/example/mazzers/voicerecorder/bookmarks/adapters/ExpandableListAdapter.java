@@ -60,7 +60,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView txtListChildMessage = (TextView) convertView
                 .findViewById(R.id.lblListItemMessage);
 
-        txtListChild.setText("Bookmark at: "+String.valueOf(child.getTime())+" sec.");
+        TextView txtListChildTime = (TextView) convertView.findViewById(R.id.lblbItemTime);
+        txtListChildTime.setText(String.valueOf(child.getTime()));
+        //txtListChild.setText("Bookmark at: "+String.valueOf(child.getTime())+" sec.");
+        txtListChild.setText(child.getName());
         txtListChildMessage.setText(child.getMessage());
 
         //txtListChildTime.setText(child.getTime());
