@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mazzers.voicerecorder.R;
@@ -59,9 +60,23 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         TextView txtListChildMessage = (TextView) convertView
                 .findViewById(R.id.lblListItemMessage);
-
+        ImageView listChildIcon = (ImageView) convertView.findViewById(R.id.list_image);
         TextView txtListChildTime = (TextView) convertView.findViewById(R.id.lblbItemTime);
         txtListChildTime.setText(String.valueOf(child.getTime()));
+        switch (child.getType()){
+            case 1:
+                listChildIcon.setBackgroundResource(R.drawable.bookmark_icon);
+                break;
+            case 2:
+                listChildIcon.setBackgroundResource(R.drawable.icon_exclamation);
+                break;
+            case 3:
+                listChildIcon.setBackgroundResource(R.drawable.icon_question);
+                break;
+            default:
+                listChildIcon.setBackgroundResource(R.drawable.bookmark_icon);
+                break;
+        }
         //txtListChild.setText("Bookmark at: "+String.valueOf(child.getTime())+" sec.");
         txtListChild.setText(child.getName());
         txtListChildMessage.setText(child.getMessage());
