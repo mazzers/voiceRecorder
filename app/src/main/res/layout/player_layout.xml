@@ -1,21 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
+
+    <!-- Player Footer -->
     <LinearLayout
+        android:id="@+id/player_footer_bg"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/frame_background"
+        android:gravity="center">
+
+        <!-- Player Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <!-- Backward Button -->
+            <ImageButton
+                android:id="@+id/btnBackward"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/icon_backward" />
+            <!-- Play Button -->
+            <ImageButton
+                android:id="@+id/btnPlay"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/icon_play_player" />
+            <!-- Forward Button -->
+            <ImageButton
+                android:id="@+id/btnForward"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/icon_forward" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Progress Bar/Seek bar -->
+    <SeekBar
+        android:id="@+id/seekBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@id/player_footer_bg"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp" />
 
-        <SeekBar
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/seekBar" />
-
-
-    </LinearLayout>
+    <!-- Timer Display -->
     <LinearLayout
         android:id="@+id/timerDisplay"
         android:layout_above="@id/seekBar"
@@ -31,8 +74,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="left"
-            android:textColor="#04cbde"
-            android:textStyle="bold"/>
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold" />
         <!-- Total Duration Label -->
         <TextView
             android:id="@+id/songTotalDurationLabel"
@@ -40,33 +83,27 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
-            android:textColor="#04cbde"
-            android:textStyle="bold"/>
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:gravity="center">
+        android:id="@+id/bookmarkListLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/timerDisplay"
+        >
 
-        <ImageButton
-            android:layout_width="wrap_content"
+        <ListView
+            android:id="@+id/player_list"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btnPlay"
-            android:src="@drawable/icon_start_play"
-            android:background="@null" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_stop"
-            android:background="@null"
-            android:id="@+id/btnStopPlayer"
-             />
+            ></ListView>
 
 
     </LinearLayout>
 
+</RelativeLayout>
 
-</LinearLayout>
+
+

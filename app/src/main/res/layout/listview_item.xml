@@ -5,7 +5,7 @@
     android:layout_gravity="center"
     android:gravity="center_vertical"
     android:background="@color/frame_background"
-    android:padding="5dp" >
+    android:padding="1dp" >
 
     <!-- the innner view - provides the white rectangle -->
     <RelativeLayout android:layout_width="fill_parent"

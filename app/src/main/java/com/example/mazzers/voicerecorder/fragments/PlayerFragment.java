@@ -10,20 +10,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.mazzers.voicerecorder.R;
+import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
+import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
 import com.example.mazzers.voicerecorder.utils.Utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by mazzers on 26. 11. 2014.
  */
 public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
-    private ImageButton btnStop;
+   // private ImageButton btnStop;
     private ImageButton btnPlay;
     private Utils utils;
 
@@ -33,10 +38,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private static String path;
     private static int time;
     private boolean fromDrawer;
+    private ListView listView;
     private Bundle bundle;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
     Handler handler = new Handler();
+    private ArrayList<Bookmark> bookmarkArrayList;
 
     public PlayerFragment() {
     }
@@ -48,14 +55,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.player_layout, container, false);
         btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
-        btnStop = (ImageButton) rootView.findViewById(R.id.btnStopPlayer);
+        //btnStop = (ImageButton) rootView.findViewById(R.id.btnStopPlayer);
         songCurrentDurationLabel = (TextView) rootView.findViewById(R.id.songCurrentDurationLabel);
         songTotalDurationLabel = (TextView) rootView.findViewById(R.id.songTotalDurationLabel);
 
         seekBar = (SeekBar) rootView.findViewById(R.id.seekBar);
         btnPlay.setOnClickListener(new btnPlayClick());
 
-        btnStop.setOnClickListener(new btnStopClick());
+        //btnStop.setOnClickListener(new btnStopClick());
         seekBar.setOnSeekBarChangeListener(this);
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnCompletionListener(this);
@@ -65,9 +72,22 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         Log.d(TAG_LOG, "PlayerFragment: put extra in string");
         if (bundle.getBoolean("fromDrawer")) {
             btnPlay.setEnabled(false);
-            btnStop.setEnabled(false);
+            //btnStop.setEnabled(false);
         } else {
             path = bundle.getString("filePath");
+            bookmarkArrayList = bundle.getParcelableArrayList("bookmarks");
+            listView = (ListView) rootView.findViewById(R.id.player_list);
+            ListViewAdapter listViewAdapter = new ListViewAdapter(getActivity(),bookmarkArrayList);
+            listView.setAdapter(listViewAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Bookmark temp = (Bookmark) listView.getItemAtPosition(position);
+                    if (mediaPlayer!=null){
+                        mediaPlayer.seekTo(temp.getTime()*1000);
+                    }
+                }
+            });
             Log.d(TAG_LOG, "PlayerFragment: path= " + path);
             time = bundle.getInt("fileTime");
             Log.d(TAG_LOG, "PlayerFragment: time=" + time);
@@ -142,7 +162,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             mediaPlayer.start();
 
         } catch (Exception e) {
-            Log.e(TAG_LOG, e.toString());
+            //Log.e(TAG_LOG, e.toString());
         }
 
     }
@@ -196,14 +216,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 if(mediaPlayer!=null){
                     mediaPlayer.pause();
                     // Changing button image to play button
-                    btnPlay.setImageResource(R.drawable.icon_start_play);
+                    btnPlay.setBackgroundResource(R.drawable.icon_play_player);
                 }
             }else{
                 // Resume song
                 if(mediaPlayer!=null){
                     mediaPlayer.start();
                     // Changing button image to pause button
-                    btnPlay.setImageResource(R.drawable.icon_pause);
+                    btnPlay.setBackgroundResource(R.drawable.icon_pause_player);
                 }
             }
 //            seekBar.setProgress(0);
@@ -229,26 +249,26 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     //}
 
 
-    class btnStopClick implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            Log.d(TAG_LOG, "PlayerFragment: stop Called");
-            if (mediaPlayer != null) {
-                //mediaPlayer.pause();
-                seekBar.setProgress(100);
-                mediaPlayer.stop();
-                handler.removeCallbacks(run);
-
-                //stopped=true;
-                //btnStop.setEnabled(false);
-                //seekBar.setEnabled(false);
-            }
-            // if (mediaPlayer2!=null){mediaPlayer2.stop();}
-
-
-        }
-    }
+//    class btnStopClick implements View.OnClickListener {
+//
+//        @Override
+//        public void onClick(View v) {
+//            Log.d(TAG_LOG, "PlayerFragment: stop Called");
+//            if (mediaPlayer != null) {
+//                //mediaPlayer.pause();
+//                seekBar.setProgress(100);
+//                mediaPlayer.stop();
+//                handler.removeCallbacks(run);
+//
+//                //stopped=true;
+//                //btnStop.setEnabled(false);
+//                //seekBar.setEnabled(false);
+//            }
+//            // if (mediaPlayer2!=null){mediaPlayer2.stop();}
+//
+//
+//        }
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

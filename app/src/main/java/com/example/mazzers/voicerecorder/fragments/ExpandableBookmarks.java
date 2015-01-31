@@ -109,6 +109,9 @@ public class ExpandableBookmarks extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putString("filePath", item.getPath());
                 bundle.putInt("fileTime", item.getTime());
+                ArrayList<Bookmark> tempBookmarks;
+                tempBookmarks= new ArrayList<Bookmark>(mItems.get(listDataHeader.get(groupPosition)));
+                bundle.putParcelableArrayList("bookmarks",tempBookmarks);
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
                 return false;
