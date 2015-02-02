@@ -114,7 +114,6 @@ public class ExpandableBookmarks extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                //Bookmark child = (Bookmark) rootView.getChild(groupPosition, childPosition);
 
                 Toast.makeText(
                         rootView.getContext(),
@@ -143,30 +142,6 @@ public class ExpandableBookmarks extends Fragment {
             }
         });
 
-//        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                int itemType = expandableListView.getPackedPositionType(id);
-//                int item;
-//                if (itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-//                    item = ExpandableListView.getPackedPositionChild(id);
-//                    Toast.makeText(getActivity(), "Child long press", Toast.LENGTH_SHORT).show();
-//                    //groupPosition = ExpandableListView.getPackedPositionGroup(id);
-//                    return true; //true if we consumed the click, false if not
-//
-//                } else if (itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-//                    item = ExpandableListView.getPackedPositionGroup(id);
-//                    Toast.makeText(getActivity(), "Group long press", Toast.LENGTH_SHORT).show();
-//                    //do your per-group callback here
-//                    return true; //true if we consumed the click, false if not
-//
-//                } else {
-//                    // null item; we don't consume the click
-//                    return false;
-//                }
-//            }
-//        });
-
         expandableListView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -187,24 +162,6 @@ public class ExpandableBookmarks extends Fragment {
                         selectedList =mItems.get(listAdapter.getGroup(groupPos));
                         break;
                 }
-//                if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-//                    Toast.makeText(getActivity(), "Child long press", Toast.LENGTH_SHORT).show();
-//                } else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-//                    Toast.makeText(getActivity(), "Group long press", Toast.LENGTH_SHORT).show();
-//                }
-
-//                int menuItemIndex = item.ItemId;
-//
-//                ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.MenuInfo;
-//
-//                PackedPositionType type = ExpandableListView.GetPackedPositionType(info.PackedPosition);
-//                if ((int)type == MemoboardsListAdapter.PACKED_POSITION_TYPE_CHILD) {
-//                    //want to get selected child object or id
-//                    return true;
-//                } else if ((int)type == MemoboardsListAdapter.PACKED_POSITION_TYPE_GROUP) {
-//                    //want to get selected group object or id
-//                    return true;
-//                }
             }
         });
 
@@ -227,14 +184,11 @@ public class ExpandableBookmarks extends Fragment {
                 if (!bookmarksList[i].getName().equals(groupName)) {
                     //new group
                     //add array to previous group
-                    //listDataChild.put(listDataHeader.get(groupCount-1), tempArray);
                     mItems.put(listDataHeader.get(groupCount - 1), tempArray);
-                    //listDataChildTime.put(listDataHeader.get(groupCount-1),tempArrayTime);
                     //increase group pointer
                     groupCount++;
                     //reinitialize array
                     tempArray = new ArrayList<Bookmark>();
-                    //tempArrayTime = new ArrayList<String>();
                     //set new group name
                     groupName = bookmarksList[i].getName();
                     //add groupname to array
@@ -245,7 +199,6 @@ public class ExpandableBookmarks extends Fragment {
                 }
 
                 tempArray.add(bookmarksList[i]);
-                //tempArrayTime.add(String.valueOf(bookmarksList[i].getTime()));
 
             }
             mItems.put(listDataHeader.get(groupCount - 1), tempArray);
@@ -271,7 +224,6 @@ public class ExpandableBookmarks extends Fragment {
         }
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         parseBookmarkFiles.start();
-        //bookmarksList=ParseBookmarkFiles.getBookmarks();
         listAdapter.notifyDataSetChanged();
 
         //Toast.makeText(getActivity(), "Delete child", Toast.LENGTH_SHORT).show();
@@ -283,17 +235,13 @@ public class ExpandableBookmarks extends Fragment {
         listDataHeader.remove(selectedList.get(0).getName());
         for (int i=0;i<selectedList.size();i++){
             File bookmarkToDelete = new File(selectedList.get(i).getBookmarkPath());
-            //Log.e(TAG_LOG,selectedList.get(i).getBookmarkPath());
-            //selectedList.remove(i);
             bookmarkToDelete.delete();
         }
         selectedList.clear();
-        //mItems.clear();
 
         recordToDelete.delete();
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         parseBookmarkFiles.start();
-        //bookmarksList=ParseBookmarkFiles.getBookmarks();
         listAdapter.notifyDataSetChanged();
         //Toast.makeText(getActivity(), "Delete record", Toast.LENGTH_SHORT).show();
     }

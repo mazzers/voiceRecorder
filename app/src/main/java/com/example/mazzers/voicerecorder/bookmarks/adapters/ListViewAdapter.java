@@ -30,11 +30,9 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
         ViewHolder viewHolder;
 
         if (convertView == null) {
-            // inflate the GridView item layout
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.listview_item, parent, false);
 
-            // initialize the view holder
             viewHolder = new ViewHolder();
             viewHolder.itemIcon = (ImageView) convertView.findViewById(R.id.itemIcon);
             viewHolder.itemName = (TextView) convertView.findViewById(R.id.tvTitle);
@@ -42,12 +40,10 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
             viewHolder.itemTime = (TextView) convertView.findViewById(R.id.itemTime);
             convertView.setTag(viewHolder);
         } else {
-            // recycle the already inflated view
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Bookmark item = getItem(position);
         utils = new Utils();
-        //viewHolder.ivIcon.setImageDrawable(item.icon);
         viewHolder.itemName.setText(item.getName());
         viewHolder.itemMessage.setText(item.getMessage());
         viewHolder.itemTime.setText(utils.timeToString(item.getTime()));
@@ -74,9 +70,6 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
 
 
     private static class ViewHolder {
-        //ImageView ivIcon;
-        //TextView tvTitle;
-        //TextView tvDescription;
         TextView itemName;
         TextView itemMessage;
         ImageView itemIcon;

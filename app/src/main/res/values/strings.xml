@@ -17,5 +17,6 @@
     <string name="message_text">Enter message: </string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="enter_name">Type file name:</string>
 
 </resources>

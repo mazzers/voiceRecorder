@@ -20,7 +20,6 @@ import java.util.List;
 /**
  * Created by mazzers on 26. 11. 2014.
  */
-//public class BookmarkFragment extends ListFragment {
 public class BookmarkFragment extends ListFragment {
     private static Bookmark[] bookmarksList;
     private List<Bookmark> mItems;

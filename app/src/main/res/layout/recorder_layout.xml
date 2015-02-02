@@ -44,6 +44,8 @@
 
 
         </LinearLayout>
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,6 +74,27 @@
                 android:background="@drawable/new_question"/>
             </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fileNameLayout"
+        android:orientation="vertical"
+        android:layout_above="@id/bookBtnLayout"
+        android:gravity="center">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_name"
+            />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fileNameEt"
+            />
+
+
+    </LinearLayout>
 
 </RelativeLayout>

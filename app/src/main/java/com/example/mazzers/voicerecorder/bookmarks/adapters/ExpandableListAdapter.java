@@ -20,8 +20,7 @@ import java.util.List;
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
-    private List<String> _listDataHeader; // header titles
-    // child data in format of header title, child title
+    private List<String> _listDataHeader;
     private HashMap<String, List<Bookmark>> _listDataChild;
     private Utils utils;
 
@@ -50,7 +49,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         Bookmark child =(Bookmark) getChild(groupPosition, childPosition);
         utils = new Utils();
-        //final String childTime = (String) getChild(groupPosition,childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -80,11 +78,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 listChildIcon.setBackgroundResource(R.drawable.new_bookmark);
                 break;
         }
-        //txtListChild.setText("Bookmark at: "+String.valueOf(child.getTime())+" sec.");
         txtListChild.setText(child.getName());
         txtListChildMessage.setText(child.getMessage());
 
-        //txtListChildTime.setText(child.getTime());
         return convertView;
     }
 
@@ -135,7 +131,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        //Toast.makeText(_context, "Toast lalala long press", Toast.LENGTH_SHORT).show();
         return true;
     }
 }

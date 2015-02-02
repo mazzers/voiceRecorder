@@ -1,7 +1,6 @@
 package com.example.mazzers.voicerecorder.fragments;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -34,20 +33,20 @@ import java.util.Date;
  */
 public class RecorderFragment extends Fragment {
     private String TAG_LOG = "myLogs";
-    ImageButton btnRecord, btnBook;
-    ImageButton btnImpBook, btnQuestBook;
-    //CheckBox chkQuality;
+    private ImageButton btnRecord, btnBook;
+    private ImageButton btnImpBook, btnQuestBook;
     private Chronometer chronometer;
+    private EditText nameField;
     private int count = 0;
-    File fileAudio, fileBook;
-    String filePathAudio, filePathBook;
-    String filePath;
-    static String fileAudioName;
+    private File  fileBook;
+    private String filePathAudio, filePathBook;
+    private String filePath;
+    public static String fileAudioName;
     private MediaRecorder mediaRecorder;
     private Long startTime, pressTime;
-    private DialogFragment messageDialog;
-    private String message;
-    private Bundle bundle;
+    //private DialogFragment messageDialog;
+    //private String message;
+    //private Bundle bundle;
     private String bookMsg;
     private SharedPreferences sharedPreferences;
 
@@ -63,28 +62,25 @@ public class RecorderFragment extends Fragment {
     }
 
 
-    // @Nullable
     @Override
     //todo rework recorder view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recorder_layout, container, false);
         Log.d(TAG_LOG, "RecorderFragment: onCreateView");
         btnRecord = (ImageButton) rootView.findViewById(R.id.btnRecord);
-        //btnStop = (ImageButton) rootView.findViewById(R.id.btnStop);
         btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
         btnImpBook = (ImageButton) rootView.findViewById(R.id.btnImpBook);
         btnQuestBook = (ImageButton) rootView.findViewById(R.id.btnQuestBook);
-        //messageDialog = new MessageDialog();
+        nameField = (EditText) rootView.findViewById(R.id.fileNameEt);
         //todo hide record settings
-        //chkQuality = (CheckBox) rootView.findViewById(R.id.chkQuality);
         chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
         btnRecord.setOnClickListener(new btnStartRecordClick());
-        //btnStop.setOnClickListener(new btnStopRecordClick());
         btnBook.setOnClickListener(new btnBookClick());
         btnImpBook.setOnClickListener(new btnImpBookClick());
         btnQuestBook.setOnClickListener(new btnQuestClick());
         filePath = Environment.getExternalStorageDirectory() + "/";
-        bundle = new Bundle();
+
+        //bundle = new Bundle();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mediaRecorder = new MediaRecorder();
         btnBook.setEnabled(false);
@@ -100,12 +96,17 @@ public class RecorderFragment extends Fragment {
                 Log.d(TAG_LOG, "RecorderFragment: Start Clicked...");
                 releaseRecorder();
                 mediaRecorder = new MediaRecorder();
-                generateName();
+                if (nameField.getText().toString().equals("")){
+                    generateName();
+                }else {
+
+                    fileAudioName = nameField.getText().toString().replaceAll("[^a-zA-Z0-9.-]", "_");
+                    if(!fileAudioName.equals(nameField.getText().toString())){
+                        Toast.makeText(getActivity(),"Special characters will be replaced with _ ",Toast.LENGTH_SHORT).show();
+                    }
+                   //fileAudioName=nameField.getText().toString();
+                }
                 startTime = System.currentTimeMillis();
-                //Thread startThread = new Thread(new startRec(mediaRecorder, rgOut.getCheckedRadioButtonId(), chkQuality.isChecked(), fileAudioName, startTime));
-                //chkQuality.setEnabled(false);
-                //btnRecord.setEnabled(false);
-                //btnStop.setEnabled(true);
                 btnQuestBook.setEnabled(true);
                 btnBook.setEnabled(true);
                 btnImpBook.setEnabled(true);
@@ -121,9 +122,6 @@ public class RecorderFragment extends Fragment {
             }else {
                 Log.d(TAG_LOG, "RecorderFragment: onclick Stop Record");
                 count = 0;
-                //chkQuality.setEnabled(true);
-                //btnRecord.setEnabled(true);
-                //btnStop.setEnabled(false);
                 btnImpBook.setEnabled(false);
                 btnQuestBook.setEnabled(false);
                 btnBook.setEnabled(false);
@@ -136,25 +134,6 @@ public class RecorderFragment extends Fragment {
 
         }
     }
-
-//    class btnStopRecordClick implements View.OnClickListener {
-//
-//
-//        @Override
-//        public void onClick(View v) {
-//            Log.d(TAG_LOG, "RecorderFragment: onclick Stop Record");
-//            count = 0;
-//            //chkQuality.setEnabled(true);
-//            btnRecord.setEnabled(true);
-//            btnStop.setEnabled(false);
-//            btnImpBook.setEnabled(false);
-//            btnQuestBook.setEnabled(false);
-//            btnBook.setEnabled(false);
-//            Thread stopThread = new Thread(new stopRecording(mediaRecorder));
-//            stopThread.start();
-//            stopChrono();
-//        }
-//    }
 
 
     class btnImpBookClick implements View.OnClickListener {
@@ -191,29 +170,10 @@ public class RecorderFragment extends Fragment {
         public void onClick(View v) {
             //TODO return case
             if (startRec.isRecording()) {
-                //try {
-                //messageDialog.show(getFragmentManager(), "messageDialog");
                 pressTime = System.currentTimeMillis();
                 showInputDialog();
 
-                //bundle.getString("message");
-                //message = bundle.getString("message");
-                //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-//            Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
-//            filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
-//            Log.d(TAG_LOG, "RecorderFragment: " + filePathBook);
-//            count++;
-//
-//            fileBook = new File(filePathBook);
-//            Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, startTime));
-//            xmlCreateThread.start();
-//            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-//            parseBookmarkFiles.start();
-//            Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
-                //}catch(NullPointerException e)
-                //} else {
-                //    Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
-//            }
+
             } else {
                 Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
             }
@@ -307,6 +267,8 @@ public class RecorderFragment extends Fragment {
         parseBookmarkFiles.start();
         //Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
     }
+
+
 
 
 }

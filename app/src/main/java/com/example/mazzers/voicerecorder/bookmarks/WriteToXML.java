@@ -44,7 +44,6 @@ public class WriteToXML implements Runnable {
 
     }
     private String WriteDataToXML() throws IOException {
-        //String pathToAudio = startRec.getFilePathAudio();
         XmlSerializer xmlSerializer = Xml.newSerializer();
         StringWriter writter = new StringWriter();
         xmlSerializer.setOutput(writter);

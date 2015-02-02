@@ -243,17 +243,6 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-//        if (item.getItemId() == R.id.action_example) {
-//            Toast.makeText(getActivity(), "Force bookmarks reload", Toast.LENGTH_SHORT).show();
-//            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-//            parseBookmarkFiles.start();
-//            return true;
-//        }
-        if(item.getItemId() == R.id.action_settings){
-
-
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
