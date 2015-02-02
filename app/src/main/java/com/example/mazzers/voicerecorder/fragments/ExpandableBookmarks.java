@@ -280,6 +280,7 @@ public class ExpandableBookmarks extends Fragment {
 
     private void deleteGroup() {
         File recordToDelete = new File(selectedList.get(0).getPath());
+        listDataHeader.remove(selectedList.get(0).getName());
         for (int i=0;i<selectedList.size();i++){
             File bookmarkToDelete = new File(selectedList.get(i).getBookmarkPath());
             //Log.e(TAG_LOG,selectedList.get(i).getBookmarkPath());
@@ -287,8 +288,8 @@ public class ExpandableBookmarks extends Fragment {
             bookmarkToDelete.delete();
         }
         selectedList.clear();
-        mItems.remove(selectedList);
-        listDataHeader.remove(selectedList);
+        //mItems.clear();
+
         recordToDelete.delete();
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         parseBookmarkFiles.start();
