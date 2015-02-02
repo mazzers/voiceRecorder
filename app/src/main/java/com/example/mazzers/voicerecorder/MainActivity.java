@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.widget.DrawerLayout;
@@ -36,12 +37,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         setContentView(R.layout.activity_main);
         Log.d(TAG_LOG, "Main activity: Start");
         File recordsDirectory = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
-        if (!recordsDirectory.exists()){
-            Log.d(TAG_LOG,"Main activity: directory not exist");
+        if (!recordsDirectory.exists()) {
+            Log.d(TAG_LOG, "Main activity: directory not exist");
             recordsDirectory.mkdirs();
-            if (!recordsDirectory.mkdirs()){
+            if (!recordsDirectory.mkdirs()) {
             }
-            Log.d(TAG_LOG,"Main activity: directories created");
+            Log.d(TAG_LOG, "Main activity: directories created");
         }
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         //todo asynctasts and handlers
@@ -61,34 +62,47 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         Log.d(TAG_LOG, "Main activity: onCreate");
 
     }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Log.d(TAG_LOG,"Main activity: onNavigationDrawerItemSelected");
+        Log.d(TAG_LOG, "Main activity: onNavigationDrawerItemSelected");
         Fragment fragment;
 
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
-        switch (position){
+        String tag;
+        switch (position) {
             case 0:
                 fragment = new RecorderFragment();
 
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment).commit();
+                        .replace(R.id.container, fragment, "recorder_dw").commit();
                 mTitle = getString(R.string.title_section1);
                 break;
             case 1:
-                fragment = new PlayerFragment();
-                bundle.putBoolean("fromDrawer",true);
-                fragment.setArguments(bundle);
+                if (fragmentManager.findFragmentByTag("player_bk") != null) {
+                    fragment = fragmentManager.findFragmentByTag("player_bk");
+                    tag = "player_bk";
+                    //bundle.putBoolean("fromDrawer", false);
+                } else {
+                    fragment = new PlayerFragment();
+                    bundle.putBoolean("fromDrawer", true);
+                    fragment.setArguments(bundle);
+                    tag = "player_dw";
+
+                }
+
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment).commit();
+                        .replace(R.id.container, fragment, tag).commit();
                 mTitle = getString(R.string.title_section2);
+
                 break;
             case 2:
                 //fragment = new BookmarkFragment();
+
                 fragment = new ExpandableBookmarks();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment).commit();
+                        .replace(R.id.container, fragment, "bookmarks_dw").commit();
                 mTitle = getString(R.string.title_section3);
                 break;
 
@@ -97,7 +111,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 
     }
-
 
 
     public void restoreActionBar() {
@@ -130,13 +143,13 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
+            Intent intent = new Intent(this,SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     @Override

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
+import com.example.mazzers.voicerecorder.utils.Utils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<Bookmark>> _listDataChild;
+    private Utils utils;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<Bookmark>> listChildData) {
@@ -47,6 +49,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         Bookmark child =(Bookmark) getChild(groupPosition, childPosition);
+        utils = new Utils();
         //final String childTime = (String) getChild(groupPosition,childPosition);
 
         if (convertView == null) {
@@ -62,19 +65,19 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.lblListItemMessage);
         ImageView listChildIcon = (ImageView) convertView.findViewById(R.id.list_image);
         TextView txtListChildTime = (TextView) convertView.findViewById(R.id.lblbItemTime);
-        txtListChildTime.setText(String.valueOf(child.getTime()));
+        txtListChildTime.setText(utils.timeToString(child.getTime()));
         switch (child.getType()){
             case 1:
-                listChildIcon.setBackgroundResource(R.drawable.bookmark_icon);
+                listChildIcon.setBackgroundResource(R.drawable.new_bookmark);
                 break;
             case 2:
-                listChildIcon.setBackgroundResource(R.drawable.icon_exclamation);
+                listChildIcon.setBackgroundResource(R.drawable.new_imp);
                 break;
             case 3:
-                listChildIcon.setBackgroundResource(R.drawable.icon_question);
+                listChildIcon.setBackgroundResource(R.drawable.new_question);
                 break;
             default:
-                listChildIcon.setBackgroundResource(R.drawable.bookmark_icon);
+                listChildIcon.setBackgroundResource(R.drawable.new_bookmark);
                 break;
         }
         //txtListChild.setText("Bookmark at: "+String.valueOf(child.getTime())+" sec.");
@@ -124,6 +127,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+
     @Override
     public boolean hasStableIds() {
         return false;
@@ -131,6 +135,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
+        //Toast.makeText(_context, "Toast lalala long press", Toast.LENGTH_SHORT).show();
         return true;
     }
 }

@@ -5,33 +5,63 @@
     android:layout_gravity="center"
     android:gravity="center_vertical"
     android:background="@color/frame_background"
-    android:padding="1dp" >
+     >
 
     <!-- the innner view - provides the white rectangle -->
-    <RelativeLayout android:layout_width="fill_parent"
+    <RelativeLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/frame" >
 
 
 
         <!-- the container view for the title and description -->
-        <RelativeLayout android:layout_width="wrap_content"
+        <RelativeLayout android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true" >
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp">
 
             <!-- the title view -->
+
+
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/itemIcon"
+                android:background="@drawable/new_bookmark"
+                />
+
             <TextView android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+                android:layout_toRightOf="@id/itemIcon"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:text="Title"/>
 
             <!-- the description view -->
             <TextView android:id="@+id/tvDescription"
                 android:layout_below="@id/tvTitle"
+                android:layout_toRightOf="@id/itemIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
+                android:textSize="10dp"
+                android:text="Description"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/itemTime"
+                android:layout_toRightOf="@id/tvTitle"
+                android:layout_alignParentRight="true"
+                android:gravity="right"
+                android:layout_marginRight="15dip"
+                android:textSize="10dp"
+                android:text="5:11"/>
         </RelativeLayout>
+
+
+
 
     </RelativeLayout>
 

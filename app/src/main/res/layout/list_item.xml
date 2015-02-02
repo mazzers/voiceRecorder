@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="20dp"
-    android:paddingBottom="20dp"
-    android:paddingLeft="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="12dp"
     android:background="@color/frame_background"
     android:orientation="horizontal"
     android:id="@+id/lblItemLayout">
@@ -23,7 +23,7 @@
             android:id="@+id/list_image"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:background="@drawable/bookmark_icon"/>
+            android:background="@drawable/new_bookmark"/>
 
     </LinearLayout>
 
@@ -36,7 +36,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:textColor="#040404"
         android:typeface="sans"
-        android:textSize="15dip"
+        android:textSize="12dip"
         android:textStyle="bold"/>
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_below="@id/lblListItem"
         android:textColor="#343434"
         android:textSize="10dip"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="24dp"
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/thumbnail"
         />

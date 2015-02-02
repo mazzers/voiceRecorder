@@ -82,7 +82,12 @@ public class ParseBookmarkFiles implements Runnable {
     //    return traverseFinish;
     //}
     public static Bookmark[] getBookmarks() {
-        return bookmarks;
+        if (bookmarks.length!=0){
+            return bookmarks;
+        }else {
+            return null;
+        }
+
 
     }
 

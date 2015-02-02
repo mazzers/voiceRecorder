@@ -216,14 +216,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 if(mediaPlayer!=null){
                     mediaPlayer.pause();
                     // Changing button image to play button
-                    btnPlay.setBackgroundResource(R.drawable.icon_play_player);
+                    btnPlay.setBackgroundResource(R.drawable.new_play);
                 }
             }else{
                 // Resume song
                 if(mediaPlayer!=null){
                     mediaPlayer.start();
                     // Changing button image to pause button
-                    btnPlay.setBackgroundResource(R.drawable.icon_pause_player);
+                    btnPlay.setBackgroundResource(R.drawable.new_pause);
                 }
             }
 //            seekBar.setProgress(0);

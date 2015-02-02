@@ -19,9 +19,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
 
 /**
  * Created by mazzers on 26. 11. 2014.
@@ -246,11 +243,15 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Force bookmarks reload", Toast.LENGTH_SHORT).show();
-            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-            parseBookmarkFiles.start();
-            return true;
+//        if (item.getItemId() == R.id.action_example) {
+//            Toast.makeText(getActivity(), "Force bookmarks reload", Toast.LENGTH_SHORT).show();
+//            Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+//            parseBookmarkFiles.start();
+//            return true;
+//        }
+        if(item.getItemId() == R.id.action_settings){
+
+
         }
 
         return super.onOptionsItemSelected(item);

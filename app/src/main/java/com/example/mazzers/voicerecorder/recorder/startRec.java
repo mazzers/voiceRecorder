@@ -21,16 +21,16 @@ public class startRec implements Runnable {
     public static boolean isRecording = false;
 
 
-    public startRec(MediaRecorder r, int rgOut, boolean quality, String fileAudioName, Long startTime) {
-        Log.d(TAG_LOG, "startRec: start cons");
-        this.recorder = r;
-        this.rgOut = rgOut;
-        this.quality = quality;
-        this.fileAudioName = fileAudioName;
-        this.startTime = startTime;
-
-
-    }
+//    public startRec(MediaRecorder r, int rgOut, boolean quality, String fileAudioName, Long startTime) {
+//        Log.d(TAG_LOG, "startRec: start cons");
+//        this.recorder = r;
+//        this.rgOut = rgOut;
+//        this.quality = quality;
+//        this.fileAudioName = fileAudioName;
+//        this.startTime = startTime;
+//
+//
+//    }
 
     public startRec(MediaRecorder r, boolean quality, String fileAudioName, Long startTime) {
         Log.d(TAG_LOG, "startRec: start cons");

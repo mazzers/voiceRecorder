@@ -30,19 +30,19 @@
                 android:id="@+id/btnBackward"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/icon_backward" />
+                android:background="@drawable/new_backward" />
             <!-- Play Button -->
             <ImageButton
                 android:id="@+id/btnPlay"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:background="@drawable/icon_play_player" />
+                android:background="@drawable/new_play" />
             <!-- Forward Button -->
             <ImageButton
                 android:id="@+id/btnForward"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/icon_forward" />
+                android:background="@drawable/new_forward" />
         </LinearLayout>
     </LinearLayout>
 
@@ -56,7 +56,8 @@
         android:layout_marginBottom="20dp"
         android:layout_above="@id/player_footer_bg"
         android:paddingLeft="6dp"
-        android:paddingRight="6dp" />
+        android:paddingRight="6dp"
+        />
 
     <!-- Timer Display -->
     <LinearLayout
@@ -98,6 +99,7 @@
             android:id="@+id/player_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:stackFromBottom="false"
             ></ListView>
 
 

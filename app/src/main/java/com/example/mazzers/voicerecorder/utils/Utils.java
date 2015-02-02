@@ -71,4 +71,15 @@ public class Utils {
         // return current duration in milliseconds
         return currentDuration * 1000;
     }
+
+    public String timeToString (int i){
+        String time;
+        int hours = i / 3600;
+        int remainder = i - hours * 3600;
+        int mins = remainder / 60;
+        remainder = remainder - mins * 60;
+        int secs = remainder;
+        time = hours+":"+mins+":"+secs+"";
+        return time;
+    }
 }
