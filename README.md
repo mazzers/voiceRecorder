@@ -1,3 +1,3 @@
 # voiceRecorder
 
-# latest apk is in build folder
+# latest apk is in app folder
