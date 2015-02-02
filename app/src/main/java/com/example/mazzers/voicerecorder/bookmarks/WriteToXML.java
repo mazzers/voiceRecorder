@@ -53,6 +53,9 @@ public class WriteToXML implements Runnable {
         xmlSerializer.startTag("","path");
         xmlSerializer.attribute("","value",startRec.getFilePathAudio());
         xmlSerializer.endTag("","path");
+        xmlSerializer.startTag("","bookmark_path");
+        xmlSerializer.attribute("","value",fileBook.getPath());
+        xmlSerializer.endTag("","bookmark_path");
         xmlSerializer.startTag("","fileName");
         xmlSerializer.attribute("","value", RecorderFragment.getFileAudioName());
         xmlSerializer.endTag("","fileName");

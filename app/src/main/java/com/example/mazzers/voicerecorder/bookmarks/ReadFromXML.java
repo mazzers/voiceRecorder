@@ -13,7 +13,7 @@ import java.io.StringReader;
  * Created by mazzers on 24. 11. 2014.
  */
 public class ReadFromXML {
-    private String path, fileName, message;
+    private String path, fileName, message,bookmarkPath;
     private int time;
     private int type;
     public volatile boolean parsingComplete = true;
@@ -27,6 +27,10 @@ public class ReadFromXML {
         this.inputFile = inputFile;
     }
 
+
+    public String getBookmarkPath() {
+        return bookmarkPath;
+    }
 
     public void parseXMLAndStoreIt(XmlPullParser myParser) {
         Log.d(TAG_LOG, "ReadFromXML: call parseXMLandStoreIT ");
@@ -49,6 +53,8 @@ public class ReadFromXML {
                             message = myParser.getAttributeValue(null, "value");
                         } else if (name.equals("type")) {
                             type = Integer.parseInt(myParser.getAttributeValue(null, "value"));
+                        }else if (name.equals("bookmark_path")){
+                            bookmarkPath = myParser.getAttributeValue(null, "value");
                         }
 
 

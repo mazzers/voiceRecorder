@@ -74,7 +74,7 @@ public class RecorderFragment extends Fragment {
         btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
         btnImpBook = (ImageButton) rootView.findViewById(R.id.btnImpBook);
         btnQuestBook = (ImageButton) rootView.findViewById(R.id.btnQuestBook);
-        messageDialog = new MessageDialog();
+        //messageDialog = new MessageDialog();
         //todo hide record settings
         //chkQuality = (CheckBox) rootView.findViewById(R.id.chkQuality);
         chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
@@ -110,11 +110,6 @@ public class RecorderFragment extends Fragment {
                 btnBook.setEnabled(true);
                 btnImpBook.setEnabled(true);
                 boolean quality = sharedPreferences.getBoolean("quality_checkbox", false);
-                if (quality) {
-                    Toast.makeText(getActivity(), "Checked", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), "Not Checked", Toast.LENGTH_SHORT).show();
-                }
                 Thread startThread = new Thread(new startRec(mediaRecorder, quality, fileAudioName, startTime));
                 Log.d(TAG_LOG, "RecorderFragment: start Thread Created");
 
@@ -304,13 +299,13 @@ public class RecorderFragment extends Fragment {
 
         fileBook = new File(filePathBook);
         long duration = (int) ((pressTime - startTime) / 1000);
-        Toast.makeText(getActivity(), "Bookmark added " + duration, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Bookmark added " + duration, Toast.LENGTH_SHORT).show();
 
         Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, duration, type, bookMsg));
         xmlCreateThread.start();
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         parseBookmarkFiles.start();
-        Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
     }
 
 

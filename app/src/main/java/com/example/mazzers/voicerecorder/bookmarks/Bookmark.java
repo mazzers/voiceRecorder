@@ -8,7 +8,7 @@ import android.os.Parcelable;
  */
 public class Bookmark implements Parcelable {
     //todo add message possibility
-    private String path,fileName,message;
+    private String path,fileName,message,bookmarkPath;
     private int time;
     private int type;
 
@@ -20,8 +20,9 @@ public class Bookmark implements Parcelable {
         this.type = type;
     }
 
-    public Bookmark(String path,String fileName, int time,String message,int type) {
+    public Bookmark(String path,String bookmarkPath, String fileName, int time,String message,int type) {
         this.path = path;
+        this.bookmarkPath = bookmarkPath;
         this.time = time;
         this.fileName = fileName;
         this.message = message;
@@ -35,10 +36,11 @@ public class Bookmark implements Parcelable {
 
         in.readStringArray(data);
         this.path = data[0];
-        this.fileName = data[1];
-        this.time = Integer.valueOf(data[2]);
-        this.message = data[3];
-        this.type = Integer.valueOf(data[4]);
+        this.bookmarkPath = data[1];
+        this.fileName = data[2];
+        this.time = Integer.valueOf(data[3]);
+        this.message = data[4];
+        this.type = Integer.valueOf(data[5]);
 
     }
 
@@ -88,9 +90,14 @@ public class Bookmark implements Parcelable {
 
             };
 
+    public String getBookmarkPath() {
+        return bookmarkPath;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(path);
+        dest.writeString(bookmarkPath);
         dest.writeString(fileName);
         dest.writeString(message);
         dest.writeInt(time);
