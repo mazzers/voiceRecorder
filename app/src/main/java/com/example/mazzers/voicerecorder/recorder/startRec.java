@@ -7,6 +7,11 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * Recording thread.
+ */
 public class startRec implements Runnable {
     private MediaRecorder recorder;
     Boolean quality;
@@ -19,7 +24,14 @@ public class startRec implements Runnable {
     public static boolean isRecording = false;
 
 
-
+    /**
+     * Constructor wor recorded file
+     *
+     * @param r
+     * @param quality
+     * @param fileAudioName
+     * @param startTime
+     */
     public startRec(MediaRecorder r, boolean quality, String fileAudioName, Long startTime) {
         Log.d(TAG_LOG, "startRec: start cons");
         this.recorder = r;
@@ -35,7 +47,9 @@ public class startRec implements Runnable {
         startRecording();
     }
 
-
+    /**
+     * start recording
+     */
     public void startRecording() {
         //todo settings debug
         Log.d(TAG_LOG, "startRec: IN Method start Recording");
@@ -74,7 +88,7 @@ public class startRec implements Runnable {
         Log.d(TAG_LOG, "startRec: Prepare OK");
         try {
             recorder.start();
-            isRecording=true;
+            isRecording = true;
         } catch (Exception e) {
             Log.e(TAG_LOG, e.toString());
         }
@@ -82,16 +96,28 @@ public class startRec implements Runnable {
 
     }
 
-    public static boolean isRecording(){
+    /**
+     * Check recording state
+     *
+     * @return
+     */
+    public static boolean isRecording() {
         return isRecording;
     }
 
-    public static void stpRecording(){
-        isRecording=false;
+    /**
+     * Stop recording
+     */
+    public static void stpRecording() {
+        isRecording = false;
 
     }
 
-
+    /**
+     * get audioFile path
+     *
+     * @return
+     */
     public static String getFilePathAudio() {
         return filePathAudio;
 

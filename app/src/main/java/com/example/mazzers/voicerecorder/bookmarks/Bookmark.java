@@ -4,23 +4,44 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by mazzers on 24. 11. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ *
+ * Bookmark implementation. Created from parsed files.
+ *
  */
 public class Bookmark implements Parcelable {
     //todo add message possibility
-    private String path,fileName,message,bookmarkPath;
+    private String path, fileName, message, bookmarkPath;
     private int time;
     private int type;
 
+    /**
+     * Get bookmark type
+     * @return type
+     */
     public int getType() {
         return type;
     }
 
+    /**
+     * Set bookmark type
+     * @param type
+     */
     public void setType(int type) {
         this.type = type;
     }
 
-    public Bookmark(String path,String bookmarkPath, String fileName, int time,String message,int type) {
+    /**
+     * Bookmark constructor
+     * @param path - path to audio file
+     * @param bookmarkPath - path to bookmark file
+     * @param fileName - audiofile name
+     * @param time - bookmark time
+     * @param message - bookmark message
+     * @param type - bookmark type
+     */
+    public Bookmark(String path, String bookmarkPath, String fileName, int time, String message, int type) {
         this.path = path;
         this.bookmarkPath = bookmarkPath;
         this.time = time;
@@ -31,7 +52,11 @@ public class Bookmark implements Parcelable {
 
     }
 
-    public Bookmark(Parcel in){
+    /**
+     * Parcelable method for sending bookmark object between fragments
+     * @param in
+     */
+    public Bookmark(Parcel in) {
         String[] data = new String[5];
 
         in.readStringArray(data);
@@ -44,29 +69,35 @@ public class Bookmark implements Parcelable {
 
     }
 
-
-
-
-
+    /**
+     * Get audiofile path
+     * @return audiofile path
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Get bookmark time
+     * @return time
+     */
     public int getTime() {
         return time;
     }
 
-    public String getName(){ return fileName;}
-
-    public void setPath(String path) {
-        this.path = path;
+    /**
+     * Get audiofile name
+     * @return name
+     */
+    public String getName() {
+        return fileName;
     }
 
-    public void setTime(int time) {
-        this.time = time;
-    }
-
-    public String getMessage(){
+    /**
+     * Get bookmark message
+     * @return message
+     */
+    public String getMessage() {
         return message;
     }
 
@@ -90,6 +121,10 @@ public class Bookmark implements Parcelable {
 
             };
 
+    /**
+     * Get bookmark file path
+     * @return
+     */
     public String getBookmarkPath() {
         return bookmarkPath;
     }

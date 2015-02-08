@@ -29,7 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by mazzers on 26. 11. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * <p/>
+ * Recorder fragment. Handles recording actions
  */
 public class RecorderFragment extends Fragment {
     private String TAG_LOG = "myLogs";
@@ -38,30 +41,41 @@ public class RecorderFragment extends Fragment {
     private Chronometer chronometer;
     private EditText nameField;
     private int count = 0;
-    private File  fileBook;
+    private File fileBook;
     private String filePathAudio, filePathBook;
     private String filePath;
     public static String fileAudioName;
     private MediaRecorder mediaRecorder;
     private Long startTime, pressTime;
-    //private DialogFragment messageDialog;
-    //private String message;
-    //private Bundle bundle;
     private String bookMsg;
     private SharedPreferences sharedPreferences;
 
-
+    /**
+     * Empty constructor
+     */
     public RecorderFragment() {
 
     }
 
+    /**
+     * OnCreate method
+     *
+     * @param savedInstanceState
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
     }
 
-
+    /**
+     * OnCreateView method
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     //todo rework recorder view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,6 +103,9 @@ public class RecorderFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Record button listener
+     */
     class btnStartRecordClick implements View.OnClickListener {
         public void onClick(View arg0) {
             if (!startRec.isRecording()) {
@@ -96,19 +113,20 @@ public class RecorderFragment extends Fragment {
                 Log.d(TAG_LOG, "RecorderFragment: Start Clicked...");
                 releaseRecorder();
                 mediaRecorder = new MediaRecorder();
-                if (nameField.getText().toString().equals("")){
+                if (nameField.getText().toString().equals("")) {
                     generateName();
-                }else {
+                } else {
 
                     fileAudioName = nameField.getText().toString().replaceAll("[^a-zA-Z0-9.-]", "_");
-                    if(!fileAudioName.equals(nameField.getText().toString())){
-                        Toast.makeText(getActivity(),"Special characters will be replaced with _ ",Toast.LENGTH_SHORT).show();
+                    if (!fileAudioName.equals(nameField.getText().toString())) {
+                        Toast.makeText(getActivity(), "Special characters will be replaced with _ ", Toast.LENGTH_SHORT).show();
                     }
-                   //fileAudioName=nameField.getText().toString();
+                    //fileAudioName=nameField.getText().toString();
                 }
                 startTime = System.currentTimeMillis();
                 btnQuestBook.setEnabled(true);
                 btnBook.setEnabled(true);
+                nameField.setEnabled(false);
                 btnImpBook.setEnabled(true);
                 boolean quality = sharedPreferences.getBoolean("quality_checkbox", false);
                 Thread startThread = new Thread(new startRec(mediaRecorder, quality, fileAudioName, startTime));
@@ -119,12 +137,13 @@ public class RecorderFragment extends Fragment {
                 startChrono();
                 btnRecord.setBackgroundResource(R.drawable.new_stop_2);
 
-            }else {
+            } else {
                 Log.d(TAG_LOG, "RecorderFragment: onclick Stop Record");
                 count = 0;
                 btnImpBook.setEnabled(false);
                 btnQuestBook.setEnabled(false);
                 btnBook.setEnabled(false);
+                nameField.setEnabled(true);
                 Thread stopThread = new Thread(new stopRecording(mediaRecorder));
                 stopThread.start();
                 stopChrono();
@@ -135,14 +154,16 @@ public class RecorderFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Bookmark button listener
+     */
     class btnImpBookClick implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
             if (startRec.isRecording()) {
                 pressTime = System.currentTimeMillis();
-                bookMsg="";
+                bookMsg = "";
                 postDialog(2);
             } else {
                 Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
@@ -150,12 +171,15 @@ public class RecorderFragment extends Fragment {
         }
     }
 
-    class btnQuestClick implements View.OnClickListener{
+    /**
+     * Bookmark button listener
+     */
+    class btnQuestClick implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             if (startRec.isRecording()) {
                 pressTime = System.currentTimeMillis();
-                bookMsg="";
+                bookMsg = "";
                 postDialog(3);
             } else {
                 Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
@@ -163,6 +187,9 @@ public class RecorderFragment extends Fragment {
         }
     }
 
+    /**
+     * Bookmark button listener
+     */
     class btnBookClick implements View.OnClickListener {
 
 
@@ -181,6 +208,9 @@ public class RecorderFragment extends Fragment {
         }
     }
 
+    /**
+     * Generate audiofile name if empty.
+     */
     private void generateName() {
 
         try {
@@ -193,20 +223,34 @@ public class RecorderFragment extends Fragment {
 
     }
 
+    /**
+     * Get audioFile name
+     *
+     * @return
+     */
     public static String getFileAudioName() {
         return fileAudioName;
     }
 
+    /**
+     * Start time widget
+     */
     public void startChrono() {
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
     }
 
+    /**
+     * Stop time widget
+     */
     public void stopChrono() {
         //Log.d(TAG_LOG, String.valueOf(chronometer.getBase()));
         chronometer.stop();
     }
 
+    /**
+     * Release recorder
+     */
     private void releaseRecorder() {
         Log.d(TAG_LOG, "RecorderFragment: Release method");
         if (mediaRecorder != null) {
@@ -215,6 +259,9 @@ public class RecorderFragment extends Fragment {
         }
     }
 
+    /**
+     * Show input dialog for message
+     */
     protected void showInputDialog() {
 
         // get prompts.xml view
@@ -251,6 +298,11 @@ public class RecorderFragment extends Fragment {
 
     }
 
+    /**
+     * Call XML writer after bookmark button press
+     *
+     * @param type
+     */
     public void postDialog(int type) {
         Log.d(TAG_LOG, "RecorderFragment: OnClick bookmark");
         filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
@@ -265,10 +317,8 @@ public class RecorderFragment extends Fragment {
         xmlCreateThread.start();
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         parseBookmarkFiles.start();
-        //Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
     }
-
-
 
 
 }

@@ -15,7 +15,10 @@ import com.example.mazzers.voicerecorder.utils.Utils;
 import java.util.List;
 
 /**
- * Created by mazzers on 26. 11. 2014.
+ * * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ *
+ * SimpleListView adapter for groupless view
  */
 public class ListViewAdapter extends ArrayAdapter<Bookmark> {
     Utils utils;
@@ -25,6 +28,13 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
         super(context, R.layout.listview_item, items);
     }
 
+    /**
+     * Get view by position
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return view
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -47,6 +57,7 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
         viewHolder.itemName.setText(item.getName());
         viewHolder.itemMessage.setText(item.getMessage());
         viewHolder.itemTime.setText(utils.timeToString(item.getTime()));
+        //switch icon by bookmark type
         switch (item.getType()){
             case 1:
                 viewHolder.itemIcon.setBackgroundResource(R.drawable.new_bookmark);
@@ -66,9 +77,9 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
     }
 
 
-
-
-
+    /**
+     * ViewHolder class. Contains item view elements
+     */
     private static class ViewHolder {
         TextView itemName;
         TextView itemMessage;

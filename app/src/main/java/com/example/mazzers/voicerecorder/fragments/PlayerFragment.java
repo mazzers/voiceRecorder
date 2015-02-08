@@ -25,8 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by mazzers on 26. 11. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * <p/>
+ * Player fragment. Handles user action and media file control
  */
+//todo add forward+ backward
 public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
     private ImageButton btnPlay;
     private Utils utils;
@@ -43,10 +47,20 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private Handler handler = new Handler();
     private ArrayList<Bookmark> bookmarkArrayList;
 
+    /**
+     * Empty constructor
+     */
     public PlayerFragment() {
     }
 
-
+    /**
+     * Create player view
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     //todo player view
@@ -72,14 +86,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             path = bundle.getString("filePath");
             bookmarkArrayList = bundle.getParcelableArrayList("bookmarks");
             listView = (ListView) rootView.findViewById(R.id.player_list);
-            ListViewAdapter listViewAdapter = new ListViewAdapter(getActivity(),bookmarkArrayList);
+            ListViewAdapter listViewAdapter = new ListViewAdapter(getActivity(), bookmarkArrayList);
             listView.setAdapter(listViewAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Bookmark temp = (Bookmark) listView.getItemAtPosition(position);
-                    if (mediaPlayer!=null){
-                        mediaPlayer.seekTo(temp.getTime()*1000);
+                    if (mediaPlayer != null) {
+                        mediaPlayer.seekTo(temp.getTime() * 1000);
                     }
                 }
             });
@@ -101,7 +115,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         public void run() {
             //while (shouldRun) {
             //Log.d(TAG_LOG, "PlayerFragment: in run()");
-            if (mediaPlayer!=null) {
+            if (mediaPlayer != null) {
                 long totalDuration = mediaPlayer.getDuration();
                 //Log.d(TAG_LOG, "PlayerFragment: duration= " + String.valueOf(totalDuration));
 
@@ -126,18 +140,34 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     };
 
-
+    /**
+     * Seekbar progres changed
+     *
+     * @param seekBar
+     * @param progress
+     * @param fromUser
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
     }
 
+    /**
+     * Touch tracking
+     *
+     * @param seekBar
+     */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         handler.removeCallbacks(run);
 
     }
 
+    /**
+     * Handle action when touch stops
+     *
+     * @param seekBar
+     */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         try {
@@ -156,6 +186,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     }
 
+    /**
+     * On playback complete
+     *
+     * @param mp
+     */
     @Override
     //todo seekbar thread control
     public void onCompletion(MediaPlayer mp) {
@@ -165,7 +200,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     }
 
-
+    /**
+     * Button play listener. Start/pause playing
+     */
     class btnPlayClick implements View.OnClickListener {
 
 
@@ -177,15 +214,15 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             if (path != null) {
                 btnPlay.setEnabled(true);
             }
-            if(mediaPlayer.isPlaying()){
-                if(mediaPlayer!=null){
+            if (mediaPlayer.isPlaying()) {
+                if (mediaPlayer != null) {
                     mediaPlayer.pause();
                     // Changing button image to play button
                     btnPlay.setBackgroundResource(R.drawable.new_play);
                 }
-            }else{
+            } else {
                 // Resume song
-                if(mediaPlayer!=null){
+                if (mediaPlayer != null) {
                     mediaPlayer.start();
                     // Changing button image to pause button
                     btnPlay.setBackgroundResource(R.drawable.new_pause);
@@ -197,9 +234,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
 
-
-
-
+    /**
+     * On fragment create
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
@@ -207,12 +246,18 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     }
 
-
+    /**
+     * Update seekbar
+     */
     public void updateProgressBar() {
         Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
         handler.postDelayed(run, 100);
     }
-    public void prepareMediaPlayer(){
+
+    /**
+     * Prepare music player
+     */
+    public void prepareMediaPlayer() {
         try {
             mediaPlayer.setDataSource(path);
         } catch (IOException e) {

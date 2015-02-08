@@ -21,7 +21,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
- * Created by mazzers on 26. 11. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * Navigation drawer fragment. Handles actions with drawer
  */
 public class NavigationDrawerFragment extends Fragment {
 

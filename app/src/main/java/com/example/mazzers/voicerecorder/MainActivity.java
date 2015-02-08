@@ -19,7 +19,12 @@ import com.example.mazzers.voicerecorder.fragments.RecorderFragment;
 
 import java.io.File;
 
-
+/**
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ *
+ * Main activity with drawer and fragments
+ */
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;

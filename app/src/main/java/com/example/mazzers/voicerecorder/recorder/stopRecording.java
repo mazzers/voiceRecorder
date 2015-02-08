@@ -3,7 +3,11 @@ package com.example.mazzers.voicerecorder.recorder;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-
+/**
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * Thread which handles recording stop
+ */
 public class stopRecording implements Runnable {
     private String TAG_LOG = "myLogs";
 
@@ -21,6 +25,9 @@ public class stopRecording implements Runnable {
 
     }
 
+    /**
+     * Stop recording thread
+     */
     private void stopRec() {
         Log.d(TAG_LOG, "stopRecording: stop method");
         //stopChrono();

@@ -1,7 +1,9 @@
 package com.example.mazzers.voicerecorder.utils;
 
 /**
- * Created by mazzers on 12. 12. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * Utils class
  */
 public class Utils {
     private static String TAG_LOG = "myLogs";

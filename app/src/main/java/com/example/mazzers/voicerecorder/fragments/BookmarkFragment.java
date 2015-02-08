@@ -18,7 +18,9 @@ import java.util.List;
 
 
 /**
- * Created by mazzers on 26. 11. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * Simple bookmark list fragment (currently not used in project)
  */
 public class BookmarkFragment extends ListFragment {
     private static Bookmark[] bookmarksList;
@@ -43,7 +45,7 @@ public class BookmarkFragment extends ListFragment {
     public void fillStrings() {
 
         if (bookmarksList == null) {
-            Log.d(TAG_LOG,"BookmarkFragment: bookmarkList is empty");
+            Log.d(TAG_LOG, "BookmarkFragment: bookmarkList is empty");
             bookmarksList = ParseBookmarkFiles.getBookmarks();
         }
         for (int i = 0; i < bookmarksList.length; i++) {
@@ -77,7 +79,7 @@ public class BookmarkFragment extends ListFragment {
         Bundle bundle = new Bundle();
         bundle.putString("filePath", item.getPath());
         bundle.putInt("fileTime", item.getTime());
-        bundle.putBoolean("fromDrawer",false);
+        bundle.putBoolean("fromDrawer", false);
         fragment.setArguments(bundle);
         fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
 

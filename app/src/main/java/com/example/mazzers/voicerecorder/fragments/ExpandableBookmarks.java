@@ -23,7 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by mazzers on 12. 12. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * <p/>
+ * Bookmark list fragment. Display expandListView and handles user actions
  */
 public class ExpandableBookmarks extends Fragment {
     ExpandableListAdapter listAdapter;
@@ -44,7 +47,12 @@ public class ExpandableBookmarks extends Fragment {
         //todo dynamic listChange
     }
 
-
+    /**
+     * Context menu selected action
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         //Bookmark book = mItems.get(item.getGroupId());
@@ -60,6 +68,14 @@ public class ExpandableBookmarks extends Fragment {
         return super.onContextItemSelected(item);
     }
 
+    /**
+     * Fragment view create
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.expandable_fragment_layout, container, false);
@@ -153,13 +169,13 @@ public class ExpandableBookmarks extends Fragment {
                     case ExpandableListView.PACKED_POSITION_TYPE_CHILD:
                         menu.add(0, MENU_CHILD_DELETE, 0, "Delete bookmark");
                         menu.add(0, MENU_CHILD_INFO, 0, "Bookmark info");
-                        selectedBookmark = (Bookmark) listAdapter.getChild(groupPos,childPos);
-                        selectedList =mItems.get(listAdapter.getGroup(groupPos));
+                        selectedBookmark = (Bookmark) listAdapter.getChild(groupPos, childPos);
+                        selectedList = mItems.get(listAdapter.getGroup(groupPos));
                         break;
                     case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
                         menu.add(0, MENU_GROUP_DELETE, 0, "Delete record");
-                        menu.add(0, MENU_GROUP_INFO,0, "Record info");
-                        selectedList =mItems.get(listAdapter.getGroup(groupPos));
+                        menu.add(0, MENU_GROUP_INFO, 0, "Record info");
+                        selectedList = mItems.get(listAdapter.getGroup(groupPos));
                         break;
                 }
             }
@@ -169,6 +185,9 @@ public class ExpandableBookmarks extends Fragment {
         return rootView;
     }
 
+    /**
+     * Prepare data for view
+     */
     private void prepareListData() {
         listDataHeader = new ArrayList<String>();
         mItems = new HashMap<String, List<Bookmark>>();
@@ -209,14 +228,17 @@ public class ExpandableBookmarks extends Fragment {
         }
     }
 
+    /**
+     * Delete selected child
+     */
     private void deleteChild() {
         File bookmarkToDelete = new File(selectedBookmark.getBookmarkPath());
-        if (selectedList.isEmpty()){
+        if (selectedList.isEmpty()) {
             Log.d(TAG_LOG, "no list");
         }
-        if (!selectedList.contains(selectedBookmark)){
+        if (!selectedList.contains(selectedBookmark)) {
             Log.d(TAG_LOG, "no selected bookmark in list");
-        }else {
+        } else {
             Log.d(TAG_LOG, "selected bookmark in list");
             selectedList.remove(selectedBookmark);
 
@@ -230,10 +252,13 @@ public class ExpandableBookmarks extends Fragment {
 
     }
 
+    /**
+     * delete selected record
+     */
     private void deleteGroup() {
         File recordToDelete = new File(selectedList.get(0).getPath());
         listDataHeader.remove(selectedList.get(0).getName());
-        for (int i=0;i<selectedList.size();i++){
+        for (int i = 0; i < selectedList.size(); i++) {
             File bookmarkToDelete = new File(selectedList.get(i).getBookmarkPath());
             bookmarkToDelete.delete();
         }
@@ -245,7 +270,6 @@ public class ExpandableBookmarks extends Fragment {
         listAdapter.notifyDataSetChanged();
         //Toast.makeText(getActivity(), "Delete record", Toast.LENGTH_SHORT).show();
     }
-
 
 
 }

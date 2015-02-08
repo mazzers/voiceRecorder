@@ -8,7 +8,10 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 /**
- * Created by mazzers on 24. 11. 2014.
+ * Vashchenko Vitaliy A11B0529P
+ * PRJ5 - Voice bookmarks
+ * <p/>
+ * Bookmarks parser
  */
 public class ParseBookmarkFiles implements Runnable {
     private File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
@@ -24,6 +27,11 @@ public class ParseBookmarkFiles implements Runnable {
 
     }
 
+    /**
+     * Bookmark parsing
+     *
+     * @param dir - directory with bookmarks
+     */
     public void traverse(File dir) {
         if (dir.exists()) {
             Log.d(TAG_LOG, "ParseBookmarkFiles: folder exist");
@@ -43,13 +51,7 @@ public class ParseBookmarkFiles implements Runnable {
                         obj = new ReadFromXML(file);
                         obj.fetchXML();
                         while (obj.parsingComplete) ;
-                        Log.d(TAG_LOG, "ParseBookmarkFiles: fill path from XML");
-
-                        Log.d(TAG_LOG, "ParseBookmarkFiles: fill time from XML");
-
-                        Log.d(TAG_LOG, "ParseBookmarkFiles: Fill bookmark i-iteration");
-
-                        bookmarkArrayList.add(new Bookmark(obj.getPath(), obj.getBookmarkPath(),obj.getName(), obj.getTime(),obj.getMessage(),obj.getType()));
+                        bookmarkArrayList.add(new Bookmark(obj.getPath(), obj.getBookmarkPath(), obj.getName(), obj.getTime(), obj.getMessage(), obj.getType()));
 
                     }
                 }
@@ -60,20 +62,24 @@ public class ParseBookmarkFiles implements Runnable {
         bookmarks = bookmarkArrayList.toArray(new Bookmark[bookmarkArrayList.size()]);
     }
 
+    /**
+     * Get parsed bookmarks
+     *
+     * @return bookmarks list
+     */
     public static Bookmark[] getBookmarks() {
-        if (bookmarks.length!=0){
+        if (bookmarks.length != 0) {
             return bookmarks;
-        }else {
+        } else {
             return null;
         }
 
 
     }
 
-    public static ArrayList<Bookmark> getBookmarkArrayList() {
-        return bookmarkArrayList;
-    }
-
+    /**
+     * Parsing filter. Parse only .xml files
+     */
     class FileExtensionFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
             return (name.endsWith(".xml"));
