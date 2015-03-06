@@ -8,10 +8,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
-import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
+import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,8 +79,8 @@ public class BookmarkFragment extends ListFragment {
         bundle.putString("filePath", item.getPath());
         bundle.putInt("fileTime", item.getTime());
         bundle.putBoolean("fromDrawer", false);
-        fragment.setArguments(bundle);
-        fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+        //fragment.setArguments(bundle);
+        //fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
 
 
     }

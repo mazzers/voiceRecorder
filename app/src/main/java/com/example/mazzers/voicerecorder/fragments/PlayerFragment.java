@@ -47,11 +47,6 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private Handler handler = new Handler();
     private ArrayList<Bookmark> bookmarkArrayList;
 
-    /**
-     * Empty constructor
-     */
-    public PlayerFragment() {
-    }
 
     /**
      * Create player view
@@ -77,11 +72,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnCompletionListener(this);
         utils = new Utils();
-        Log.d(TAG_LOG, "PlayerFragment: try to get arguments ");
         bundle = getArguments();
-        Log.d(TAG_LOG, "PlayerFragment: put extra in string");
-        if (bundle.getBoolean("fromDrawer")) {
+        if (bundle == null) {
+            Log.d(TAG_LOG, "bundle is null");
             btnPlay.setEnabled(false);
+            Log.d(TAG_LOG, "From drawer");
+            seekBar.setEnabled(false);
         } else {
             path = bundle.getString("filePath");
             bookmarkArrayList = bundle.getParcelableArrayList("bookmarks");
@@ -101,10 +97,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             time = bundle.getInt("fileTime");
             Log.d(TAG_LOG, "PlayerFragment: time=" + time);
             btnPlay.setEnabled(true);
+            seekBar.setEnabled(true);
             prepareMediaPlayer();
 
         }
-
+        //setRetainInstance(true);
         return rootView;
 
 
@@ -129,8 +126,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
                 // Updating progress bar
                 int progress = (int) (utils.getProgressPercentage(currentDuration, totalDuration));
-                //Log.d("Progress", ""+progress);
-                //Log.d(TAG_LOG, "PlayerFragment: progress =" + progress);
+
                 seekBar.setProgress(progress);
             }
 
@@ -170,19 +166,22 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        try {
+        if (mediaPlayer != null) {
+            try {
 
 
-            handler.removeCallbacks(run);
-            int totalDuration = mediaPlayer.getDuration();
-            int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
-            mediaPlayer.seekTo(currentPosition);
-            updateProgressBar();
-            mediaPlayer.start();
+                handler.removeCallbacks(run);
+                int totalDuration = mediaPlayer.getDuration();
+                int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
+                mediaPlayer.seekTo(currentPosition);
+                updateProgressBar();
+                mediaPlayer.start();
 
-        } catch (Exception e) {
-            //Log.e(TAG_LOG, e.toString());
+            } catch (Exception e) {
+                //Log.e(TAG_LOG, e.toString());
+            }
         }
+
 
     }
 
@@ -241,8 +240,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
+        //Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
     }
 
@@ -250,7 +250,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      * Update seekbar
      */
     public void updateProgressBar() {
-        Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
+        //Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
         handler.postDelayed(run, 100);
     }
 
@@ -260,13 +260,16 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     public void prepareMediaPlayer() {
         try {
             mediaPlayer.setDataSource(path);
+            Log.d(TAG_LOG, "Set data source=" + path);
         } catch (IOException e) {
             Log.d(TAG_LOG, e.toString());
             e.printStackTrace();
         }
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        Log.d(TAG_LOG, "Set data type");
         try {
             mediaPlayer.prepare();
+            Log.d(TAG_LOG, "Call prepare");
         } catch (Exception e) {
             Log.d(TAG_LOG, "PlayerFragment: player prepare fail");
             Log.d(TAG_LOG, e.toString());
@@ -283,6 +286,24 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
         Log.d(TAG_LOG, "PlayerFragment: DURATION: " + mediaPlayer.getDuration());
 
+    }
+
+
+    public static PlayerFragment createNewInstance() {
+        PlayerFragment playerFragment = new PlayerFragment();
+//        Bundle args = new Bundle();
+//        args.putString("fragment_tag",tag);
+//        playerFragment.setArguments(args);
+        return playerFragment;
+
+    }
+
+    public static PlayerFragment createNewInstance(String tag, Bundle args) {
+        PlayerFragment playerFragment = new PlayerFragment();
+
+        //args.putParcelableArrayList("bookmarks",bookmarks);
+        playerFragment.setArguments(args);
+        return playerFragment;
     }
 
 }

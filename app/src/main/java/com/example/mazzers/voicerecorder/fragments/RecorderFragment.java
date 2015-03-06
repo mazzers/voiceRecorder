@@ -1,5 +1,6 @@
 package com.example.mazzers.voicerecorder.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -36,6 +37,7 @@ import java.util.Date;
  */
 public class RecorderFragment extends Fragment {
     private String TAG_LOG = "myLogs";
+    private String TAG_RECORDER = "RECORDER_TAG";
     private ImageButton btnRecord, btnBook;
     private ImageButton btnImpBook, btnQuestBook;
     private Chronometer chronometer;
@@ -49,13 +51,9 @@ public class RecorderFragment extends Fragment {
     private Long startTime, pressTime;
     private String bookMsg;
     private SharedPreferences sharedPreferences;
+//    private AudioReceiver audioReceiver;
+//    private AudioFormatInfo audioFormatInfo;
 
-    /**
-     * Empty constructor
-     */
-    public RecorderFragment() {
-
-    }
 
     /**
      * OnCreate method
@@ -64,6 +62,7 @@ public class RecorderFragment extends Fragment {
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
 
     }
@@ -80,12 +79,14 @@ public class RecorderFragment extends Fragment {
     //todo rework recorder view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recorder_layout, container, false);
+        //setRetainInstance(true);
         Log.d(TAG_LOG, "RecorderFragment: onCreateView");
         btnRecord = (ImageButton) rootView.findViewById(R.id.btnRecord);
         btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
         btnImpBook = (ImageButton) rootView.findViewById(R.id.btnImpBook);
         btnQuestBook = (ImageButton) rootView.findViewById(R.id.btnQuestBook);
         nameField = (EditText) rootView.findViewById(R.id.fileNameEt);
+        nameField.clearFocus();
         //todo hide record settings
         chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
         btnRecord.setOnClickListener(new btnStartRecordClick());
@@ -100,6 +101,8 @@ public class RecorderFragment extends Fragment {
         btnBook.setEnabled(false);
         btnImpBook.setEnabled(false);
         btnQuestBook.setEnabled(false);
+//        audioFormatInfo = new AudioFormatInfo();
+//        audioReceiver= new AudioReceiver(audioFormatInfo);
         return rootView;
     }
 
@@ -108,6 +111,7 @@ public class RecorderFragment extends Fragment {
      */
     class btnStartRecordClick implements View.OnClickListener {
         public void onClick(View arg0) {
+//            if (!audioReceiver.mIsRecording){
             if (!startRec.isRecording()) {
                 count = 1;
                 Log.d(TAG_LOG, "RecorderFragment: Start Clicked...");
@@ -128,12 +132,15 @@ public class RecorderFragment extends Fragment {
                 btnBook.setEnabled(true);
                 nameField.setEnabled(false);
                 btnImpBook.setEnabled(true);
-                boolean quality = sharedPreferences.getBoolean("quality_checkbox", false);
-                Thread startThread = new Thread(new startRec(mediaRecorder, quality, fileAudioName, startTime));
+                //boolean quality = sharedPreferences.getBoolean("quality_checkbox", false);
+                int quality_type = Integer.parseInt(sharedPreferences.getString("quality", "2"));
+                Thread startThread = new Thread(new startRec(mediaRecorder, quality_type, fileAudioName, startTime));
                 Log.d(TAG_LOG, "RecorderFragment: start Thread Created");
 
                 startThread.start();
                 Log.d(TAG_LOG, "RecorderFragment: start Recording");
+
+//                audioReceiver.startRecording();
                 startChrono();
                 btnRecord.setBackgroundResource(R.drawable.new_stop_2);
 
@@ -146,6 +153,7 @@ public class RecorderFragment extends Fragment {
                 nameField.setEnabled(true);
                 Thread stopThread = new Thread(new stopRecording(mediaRecorder));
                 stopThread.start();
+//                audioReceiver.stopRecording();
                 stopChrono();
                 btnRecord.setBackgroundResource(R.drawable.new_micro);
             }
@@ -164,6 +172,7 @@ public class RecorderFragment extends Fragment {
             if (startRec.isRecording()) {
                 pressTime = System.currentTimeMillis();
                 bookMsg = "";
+                Log.d(TAG_LOG,"MediaRecorder Amplitude"+ String.valueOf(mediaRecorder.getMaxAmplitude()));
                 postDialog(2);
             } else {
                 Toast.makeText(getActivity(), "Can't add bookmark: no player", Toast.LENGTH_SHORT).show();
@@ -320,5 +329,29 @@ public class RecorderFragment extends Fragment {
         Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Log.d(TAG_RECORDER,"RECORDER on attach");
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG_RECORDER,"RECORDER onDetach");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG_RECORDER,"RECORDER onDestroy");
+    }
+
+    public static RecorderFragment createNewInstance(){
+        RecorderFragment recorderFragment = new RecorderFragment();
+//        Bundle args = new Bundle();
+//        args.putString("fragment_tag",tag);
+//        recorderFragment.setArguments(args);
+        return  recorderFragment;
+    }
 }

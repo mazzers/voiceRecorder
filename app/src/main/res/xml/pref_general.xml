@@ -8,8 +8,19 @@
         android:title="@string/pref_title_quality"
         android:summary="@string/pref_description_quality"
         android:defaultValue="false" />
+    <ListPreference
+        android:key="quality"
+        android:title="Record quality"
+        android:summary="Choose record quality"
+        android:entries="@array/entries"
+        android:entryValues="@array/entries_values"
+        android:defaultValue="2"
+
+
+        />
 
 
     </PreferenceCategory>
+
 
 </PreferenceScreen>

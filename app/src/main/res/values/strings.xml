@@ -18,5 +18,15 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="enter_name">Type file name:</string>
+    <string-array name="entries">
+        <item>Poor</item>
+        <item>Good</item>
+
+    </string-array>
+    <string-array name="entries_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 
 </resources>

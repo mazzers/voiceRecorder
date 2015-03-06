@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
@@ -43,9 +44,6 @@ public class ExpandableBookmarks extends Fragment {
     private Bookmark selectedBookmark;
     private List<Bookmark> selectedList;
 
-    public ExpandableBookmarks() {
-        //todo dynamic listChange
-    }
 
     /**
      * Context menu selected action
@@ -68,6 +66,12 @@ public class ExpandableBookmarks extends Fragment {
         return super.onContextItemSelected(item);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     /**
      * Fragment view create
      *
@@ -80,7 +84,7 @@ public class ExpandableBookmarks extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.expandable_fragment_layout, container, false);
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.lvExp);
-
+        //setRetainInstance(true);
         // preparing list data
         prepareListData();
 
@@ -147,13 +151,14 @@ public class ExpandableBookmarks extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putString("filePath", item.getPath());
                 bundle.putInt("fileTime", item.getTime());
+                bundle.putBoolean("fromDrawer",false);
                 ArrayList<Bookmark> tempBookmarks;
                 tempBookmarks = new ArrayList<Bookmark>(mItems.get(listDataHeader.get(groupPosition)));
                 bundle.putParcelableArrayList("bookmarks", tempBookmarks);
-                fragment.setArguments(bundle);
-                //getFragmentManager().beginTransaction().addToBackStack(null);
-                //getFragmentManager().beginTransaction().hide(getTargetFragment());
-                fragmentManager.beginTransaction().replace(R.id.container, fragment, "player_bk").commit();
+                //fragment.setArguments(bundle);
+                //todo optimize code
+                //fragmentManager.beginTransaction().replace(R.id.container, fragment, "player_bk").commit();
+                ((MainActivity)getActivity()).displayPlayer(bundle);
                 return false;
             }
         });
@@ -246,7 +251,7 @@ public class ExpandableBookmarks extends Fragment {
         }
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
         parseBookmarkFiles.start();
-        listAdapter.notifyDataSetChanged();
+        //listAdapter.notifyDataSetChanged();
 
         //Toast.makeText(getActivity(), "Delete child", Toast.LENGTH_SHORT).show();
 
@@ -271,5 +276,13 @@ public class ExpandableBookmarks extends Fragment {
         //Toast.makeText(getActivity(), "Delete record", Toast.LENGTH_SHORT).show();
     }
 
+   public static ExpandableBookmarks createNewInstance(){
+       ExpandableBookmarks expandableBookmarks = new ExpandableBookmarks();
 
+//       Bundle args = new Bundle();
+//       args.putString("fragment_tag",tag);
+//       expandableBookmarks.setArguments(args);
+       return expandableBookmarks;
+
+   }
 }

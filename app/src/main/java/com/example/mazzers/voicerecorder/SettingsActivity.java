@@ -2,6 +2,7 @@ package com.example.mazzers.voicerecorder;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 
@@ -21,6 +22,7 @@ public class SettingsActivity extends PreferenceActivity {
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
     private CheckBoxPreference checkBoxPreferenceQuality;
     private PreferenceCategory generalCategory;
+    private ListPreference listPreference;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class SettingsActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.pref_general);
         checkBoxPreferenceQuality = (CheckBoxPreference) findPreference("quality_checkbox");
         generalCategory = (PreferenceCategory) findPreference("category_1");
+        listPreference = (ListPreference) findPreference("quality");
 
     }
 
