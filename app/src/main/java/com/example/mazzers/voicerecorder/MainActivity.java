@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        playerFragment = (PlayerFragment)getFragmentManager().findFragmentByTag(PLAYER_TAG);
+        playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PLAYER_TAG);
         recorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RECORDER_TAG);
         expandableBookmarks = (ExpandableBookmarks) getFragmentManager().findFragmentByTag(BOOKMARKS_TAG);
     }
@@ -88,13 +88,13 @@ public class MainActivity extends ActionBarActivity {
             recorderFragment = RecorderFragment.createNewInstance();
             getFragmentManager().beginTransaction()
                     .add(R.id.container, recorderFragment, RECORDER_TAG).commit();
-        }else {
-            Log.d(TAG_LOG,"saved is not null");
+        } else {
+            Log.d(TAG_LOG, "saved is not null");
             playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PLAYER_TAG);
             expandableBookmarks = (ExpandableBookmarks) getFragmentManager().findFragmentByTag(BOOKMARKS_TAG);
             recorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RECORDER_TAG);
-            if(recorderFragment==null){
-                Log.d(TAG_LOG,"old not found");
+            if (recorderFragment == null) {
+                Log.d(TAG_LOG, "old not found");
             }
 
         }
@@ -176,48 +176,50 @@ public class MainActivity extends ActionBarActivity {
                 .build();
 
 
-
         Log.d(TAG_LOG, "Main activity: onCreate");
 
     }
 
-    public void displayPlayer(){
+    public void displayPlayer() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if(playerFragment.isAdded()){
-           ft.show(playerFragment);
-        }else{
-          ft.add(R.id.container, playerFragment, PLAYER_TAG);
+        if (playerFragment.isAdded()) {
+
+            ft.show(playerFragment);
+        } else {
+            ft.add(R.id.container, playerFragment, PLAYER_TAG);
+            ft.show(playerFragment);
         }
 
-        if(recorderFragment.isAdded()){
+        if (recorderFragment.isAdded()) {
             ft.hide(recorderFragment);
         }
-        if(expandableBookmarks.isAdded()){
+        if (expandableBookmarks.isAdded()) {
             ft.hide(expandableBookmarks);
         }
 
-       ft.commit();
+        ft.commit();
 
         //todo add all fragments
 
 
     }
 
-    public void displayPlayer(Bundle args){
+    public void displayPlayer(Bundle args) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if(playerFragment.isAdded()){
-            playerFragment = PlayerFragment.createNewInstance(PLAYER_TAG,args);
+        if (playerFragment.isAdded()) {
+            playerFragment = PlayerFragment.createNewInstance(PLAYER_TAG, args);
             ft.replace(R.id.container, playerFragment, PLAYER_TAG);
-        }else {
-            playerFragment = PlayerFragment.createNewInstance(PLAYER_TAG,args);
-            ft.add(R.id.container,playerFragment,PLAYER_TAG);
+        } else {
+            playerFragment = PlayerFragment.createNewInstance(PLAYER_TAG, args);
+            ft.add(R.id.container, playerFragment, PLAYER_TAG);
+            ft.show(playerFragment);
         }
 
 
-        if(recorderFragment.isAdded()){
+        if (recorderFragment.isAdded()) {
             ft.hide(recorderFragment);
         }
-        if(expandableBookmarks.isAdded()){
+        if (expandableBookmarks.isAdded()) {
             ft.hide(expandableBookmarks);
         }
 
@@ -228,18 +230,20 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    protected void displayRecorder(){
+    protected void displayRecorder() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if(recorderFragment.isAdded()){
-
+        if (recorderFragment.isAdded()) {
+            Log.d(TAG_LOG, "is added");
             ft.show(recorderFragment);
-        }else {
-            ft.add(R.id.container,recorderFragment,"recorder_fragment");
+        } else {
+            Log.d(TAG_LOG, "not added");
+            ft.add(R.id.container, recorderFragment, "recorder_fragment");
+            ft.show(recorderFragment);
         }
-        if(playerFragment.isAdded()){
+        if (playerFragment.isAdded()) {
             ft.hide(playerFragment);
         }
-        if (expandableBookmarks.isAdded()){
+        if (expandableBookmarks.isAdded()) {
             ft.hide(expandableBookmarks);
         }
         ft.commit();
@@ -248,18 +252,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    protected void displayBookmarks(){
+    protected void displayBookmarks() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if(expandableBookmarks.isAdded()){
+        if (expandableBookmarks.isAdded()) {
             ft.show(expandableBookmarks);
-        }else {
-            ft.add(R.id.container,expandableBookmarks,"bookmark_fragment");
+        } else {
+            ft.add(R.id.container, expandableBookmarks, "bookmark_fragment");
+            ft.show(expandableBookmarks);
         }
 
-        if (playerFragment.isAdded()){
+        if (playerFragment.isAdded()) {
             ft.hide(playerFragment);
         }
-        if(recorderFragment.isAdded()){
+        if (recorderFragment.isAdded()) {
             ft.hide(recorderFragment);
         }
         ft.commit();
