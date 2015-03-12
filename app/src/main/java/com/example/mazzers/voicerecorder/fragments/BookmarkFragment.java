@@ -8,8 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
-import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
 import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class BookmarkFragment extends ListFragment {
 
         if (bookmarksList == null) {
             Log.d(TAG_LOG, "BookmarkFragment: bookmarkList is empty");
-            bookmarksList = ParseBookmarkFiles.getBookmarks();
+            bookmarksList = MainActivity.getBookmarks();
         }
         for (int i = 0; i < bookmarksList.length; i++) {
 

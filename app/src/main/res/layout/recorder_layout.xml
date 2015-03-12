@@ -2,100 +2,106 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="128dp"
+
+        android:id="@+id/chronoLayout">
+
+
+        <Chronometer
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingTop="128dp"
-            android:id="@+id/chronoLayout">
+            android:layout_gravity="center"
+            android:id="@+id/chrono"
+            android:textSize="64dp"
+            android:textColor="@android:color/primary_text_light" />
 
-            <Chronometer
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/chrono"
-                android:textSize="64dp"
-                android:textColor="@android:color/primary_text_light" />
-
-            </LinearLayout>
+    </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/controlBtnLayout"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:background="@color/material_drawer_primary">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
-            android:id="@+id/controlBtnLayout"
-            android:layout_alignParentBottom="true"
-            android:paddingBottom="32dp"
-            >
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <ImageButton
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:text="@string/start_record"
                 android:id="@+id/btnRecord"
-                android:layout_gravity="left"
+
+
                 android:background="@drawable/new_micro" />
 
 
-
         </LinearLayout>
+    </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:id="@+id/bookBtnLayout"
-            android:layout_above="@id/controlBtnLayout"
-            android:paddingBottom="48dp"
-            >
-            <ImageButton
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/btnBook"
-                android:background="@drawable/new_pencil"
-                android:textColor="@android:color/holo_blue_dark" />
-            <ImageButton
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/btnImpBook"
-                android:background="@drawable/new_imp"
-                />
-            <ImageButton
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/btnQuestBook"
-                android:background="@drawable/new_question"/>
-            </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/fileNameLayout"
         android:orientation="vertical"
-        android:layout_above="@id/bookBtnLayout"
+        android:layout_above="@id/controlBtnLayout"
         android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/enter_name"
-            />
+            android:text="@string/enter_name" />
 
         <EditText
             android:layout_width="128dp"
             android:layout_height="wrap_content"
-            android:id="@+id/fileNameEt"
-            />
+            android:id="@+id/fileNameEt" />
 
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/bookBtnLayout"
+        android:layout_above="@id/fileNameLayout"
+        android:paddingBottom="20dp">
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/btnBook"
+            android:background="@drawable/new_pencil"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/btnImpBook"
+            android:background="@drawable/new_imp" />
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/btnQuestBook"
+            android:background="@drawable/new_question" />
     </LinearLayout>
 
 </RelativeLayout>

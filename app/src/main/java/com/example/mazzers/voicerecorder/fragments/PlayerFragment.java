@@ -1,5 +1,6 @@
 package com.example.mazzers.voicerecorder.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -15,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
@@ -30,9 +32,10 @@ import java.util.ArrayList;
  * <p/>
  * Player fragment. Handles user action and media file control
  */
-//todo add forward+ backward
+
 public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
-    private ImageButton btnPlay;
+    private ImageButton btnPlay, btnFwd, btnBwd;
+
     private Utils utils;
 
     private static SeekBar seekBar;
@@ -46,6 +49,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private TextView songTotalDurationLabel;
     private Handler handler = new Handler();
     private ArrayList<Bookmark> bookmarkArrayList;
+    private int seekValue = 5000;
+    private Activity mainActivity;
 
 
     /**
@@ -62,11 +67,39 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.player_layout, container, false);
         btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
+        btnFwd = (ImageButton) rootView.findViewById(R.id.btnForward);
+        btnBwd = (ImageButton) rootView.findViewById(R.id.btnBackward);
         songCurrentDurationLabel = (TextView) rootView.findViewById(R.id.songCurrentDurationLabel);
         songTotalDurationLabel = (TextView) rootView.findViewById(R.id.songTotalDurationLabel);
 
         seekBar = (SeekBar) rootView.findViewById(R.id.seekBar);
         btnPlay.setOnClickListener(new btnPlayClick());
+        btnFwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer != null) {
+                    int curr = mediaPlayer.getCurrentPosition();
+                    if (curr + seekValue <= mediaPlayer.getDuration()) {
+                        mediaPlayer.seekTo(curr + seekValue);
+                    } else {
+                        mediaPlayer.seekTo(mediaPlayer.getDuration());
+                    }
+                }
+            }
+        });
+        btnBwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer != null) {
+                    int curr = mediaPlayer.getCurrentPosition();
+                    if (curr - seekValue >= 0) {
+                        mediaPlayer.seekTo(curr - seekValue);
+                    } else {
+                        mediaPlayer.seekTo(0);
+                    }
+                }
+            }
+        });
 
         seekBar.setOnSeekBarChangeListener(this);
         mediaPlayer = new MediaPlayer();
@@ -78,6 +111,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             btnPlay.setEnabled(false);
             Log.d(TAG_LOG, "From drawer");
             seekBar.setEnabled(false);
+            btnBwd.setEnabled(false);
+            btnFwd.setEnabled(false);
         } else {
             path = bundle.getString("filePath");
             bookmarkArrayList = bundle.getParcelableArrayList("bookmarks");
@@ -98,16 +133,20 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             Log.d(TAG_LOG, "PlayerFragment: time=" + time);
             btnPlay.setEnabled(true);
             seekBar.setEnabled(true);
+            btnBwd.setEnabled(true);
+            btnFwd.setEnabled(true);
             prepareMediaPlayer();
 
         }
+
+
         //setRetainInstance(true);
         return rootView;
 
 
     }
 
-    //todo seekbar optimisation
+
     Runnable run = new Runnable() {
         public void run() {
             //while (shouldRun) {
@@ -191,11 +230,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      * @param mp
      */
     @Override
-    //todo seekbar thread control
-    public void onCompletion(MediaPlayer mp) {
-        //TODO add coplete seek bar thread stop
-        handler.removeCallbacks(run);
 
+    public void onCompletion(MediaPlayer mp) {
+
+        Toast.makeText(mainActivity, "End of file", Toast.LENGTH_SHORT).show();
+
+        //handler.removeCallbacks(run);
+        mediaPlayer.seekTo(0);
+        btnPlay.setBackgroundResource(R.drawable.new_play);
 
     }
 
@@ -243,7 +285,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         //Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
+        mainActivity = getActivity();
     }
 
     /**

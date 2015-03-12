@@ -22,7 +22,7 @@ public class ReadFromXML {
     //private StringReader stringReader;
     private FileInputStream fileInputStream;
     private File inputFile;
-    private String TAG_LOG = "Write&Parse";
+    private String TAG_LOG = "Read";
 
     /**
      * Reader constructor

@@ -1,5 +1,6 @@
 package com.example.mazzers.voicerecorder.bookmarks;
 
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -10,30 +11,22 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 /**
- * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * <p/>
- * Bookmarks parser
+ * Created by mazzers on 11. 3. 2015.
  */
-public class ParseBookmarkFiles implements Runnable {
+public class ParseTask extends AsyncTask<Void, Void, Void> {
     private File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
     private static Bookmark[] bookmarks;
     private static ArrayList<Bookmark> bookmarkArrayList;
     private ReadFromXML obj;
-    private String TAG_LOG = "Write&Parse";
+    private String TAG_LOG = "parseTask";
 
     @Override
-    public void run() {
-        Log.d(TAG_LOG, "ParseBookmarkFiles: in run");
+    protected Void doInBackground(Void... params) {
+        Log.d(TAG_LOG, "do in background");
         traverse(dir);
-
+        return null;
     }
 
-    /**
-     * Bookmark parsing
-     *
-     * @param dir - directory with bookmarks
-     */
     public void traverse(File dir) {
         if (dir.exists()) {
             ///Log.d(TAG_LOG, "ParseBookmarkFiles: folder exist");
@@ -65,24 +58,7 @@ public class ParseBookmarkFiles implements Runnable {
         MainActivity.setBookmarks(bookmarks);
     }
 
-    /**
-     * Get parsed bookmarks
-     *
-     * @return bookmarks list
-     */
-    public static Bookmark[] getBookmarks() {
-        if (bookmarks.length != 0) {
-            return bookmarks;
-        } else {
-            return null;
-        }
 
-
-    }
-
-    /**
-     * Parsing filter. Parse only .xml files
-     */
     class FileExtensionFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
             return (name.endsWith(".xml"));

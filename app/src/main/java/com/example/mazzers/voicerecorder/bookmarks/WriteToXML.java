@@ -3,9 +3,6 @@ package com.example.mazzers.voicerecorder.bookmarks;
 import android.util.Log;
 import android.util.Xml;
 
-import com.example.mazzers.voicerecorder.fragments.RecorderFragment;
-import com.example.mazzers.voicerecorder.recorder.startRec;
-
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
@@ -25,9 +22,10 @@ public class WriteToXML implements Runnable {
     private FileOutputStream outputStream;
     private String TAG_LOG = "Write&Parse";
     private Long startTime, pressTime;
-    private String message;
+    private String message, fileAudioName, filePathAudio;
     private Long duration;
     private int type;
+
 
     /**
      * Bookmark constructor
@@ -37,20 +35,22 @@ public class WriteToXML implements Runnable {
      * @param type
      * @param message
      */
-    public WriteToXML(File fileBook, long duration, int type, String message) {
+    public WriteToXML(File fileBook, long duration, int type, String message, String fileAudioName, String filePathAudio) {
         this.fileBook = fileBook;
         this.duration = duration;
         //this.startTime = startTime;
         //this.pressTime = pressTime;
         this.message = message;
         this.type = type;
+        this.fileAudioName = fileAudioName;
+        this.filePathAudio = filePathAudio;
 
     }
 
 
     @Override
     public void run() {
-        Log.d(TAG_LOG, "WriteToXML: writexml run");
+        Log.d(TAG_LOG, "writexml run");
         createXML();
 
 
@@ -69,13 +69,13 @@ public class WriteToXML implements Runnable {
         xmlSerializer.startDocument("UTF-8", true);
         xmlSerializer.startTag("", "root");
         xmlSerializer.startTag("", "path");
-        xmlSerializer.attribute("", "value", startRec.getFilePathAudio());
+        xmlSerializer.attribute("", "value", filePathAudio);
         xmlSerializer.endTag("", "path");
         xmlSerializer.startTag("", "bookmark_path");
         xmlSerializer.attribute("", "value", fileBook.getPath());
         xmlSerializer.endTag("", "bookmark_path");
         xmlSerializer.startTag("", "fileName");
-        xmlSerializer.attribute("", "value", RecorderFragment.getFileAudioName());
+        xmlSerializer.attribute("", "value", fileAudioName);
         xmlSerializer.endTag("", "fileName");
         xmlSerializer.startTag("", "type");
         xmlSerializer.attribute("", "value", String.valueOf(type));
@@ -99,15 +99,15 @@ public class WriteToXML implements Runnable {
 
         try {
             outputStream = new FileOutputStream(fileBook);
+
             outputStream.write(WriteDataToXML().getBytes());
-            Log.d(TAG_LOG, "WriteToXML: In try createBookmarkFile: write");
+            Log.d(TAG_LOG, "In try createBookmarkFile: write");
             outputStream.close();
-            Log.d(TAG_LOG, "WriteToXML: Closed");
+            Log.d(TAG_LOG, "Closed");
 
         } catch (Exception e) {
 
-            Log.d(TAG_LOG, "WriteToXML: create xml error");
-            Log.d(TAG_LOG, e.toString());
+            e.getCause().toString();
 
         }
 
