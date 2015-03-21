@@ -17,11 +17,9 @@ import java.io.StringWriter;
  */
 
 public class WriteToXML implements Runnable {
-    //private String audioName, message, filePathBook;
     private File fileBook;
     private FileOutputStream outputStream;
-    private String TAG_LOG = "Write&Parse";
-    private Long startTime, pressTime;
+    private final String TAG_LOG = "Write&Parse";
     private String message, fileAudioName, filePathAudio;
     private Long duration;
     private int type;
@@ -38,8 +36,7 @@ public class WriteToXML implements Runnable {
     public WriteToXML(File fileBook, long duration, int type, String message, String fileAudioName, String filePathAudio) {
         this.fileBook = fileBook;
         this.duration = duration;
-        //this.startTime = startTime;
-        //this.pressTime = pressTime;
+
         this.message = message;
         this.type = type;
         this.fileAudioName = fileAudioName;
@@ -50,7 +47,7 @@ public class WriteToXML implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG_LOG, "writexml run");
+        //Log.d(TAG_LOG, "writexml run");
         createXML();
 
 
@@ -101,14 +98,12 @@ public class WriteToXML implements Runnable {
             outputStream = new FileOutputStream(fileBook);
 
             outputStream.write(WriteDataToXML().getBytes());
-            Log.d(TAG_LOG, "In try createBookmarkFile: write");
+            //Log.d(TAG_LOG, "In try createBookmarkFile: write");
             outputStream.close();
-            Log.d(TAG_LOG, "Closed");
+            //Log.d(TAG_LOG, "Closed");
 
         } catch (Exception e) {
-
-            e.getCause().toString();
-
+            Log.e(TAG_LOG, e.toString());
         }
 
 

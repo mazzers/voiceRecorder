@@ -25,19 +25,19 @@
                 android:id="@+id/btnBackward"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/new_backward" />
+                android:background="@drawable/backward_icon" />
             <!-- Play Button -->
             <ImageButton
                 android:id="@+id/btnPlay"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:background="@drawable/new_play" />
+                android:background="@drawable/play_icon" />
             <!-- Forward Button -->
             <ImageButton
                 android:id="@+id/btnForward"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/new_forward" />
+                android:background="@drawable/forward_icon" />
         </LinearLayout>
     </LinearLayout>
 

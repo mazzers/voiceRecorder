@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Vashchenko Vitaliy A11B0529P
  * PRJ5 - Voice bookmarks
- *
+ * <p/>
  * Adapter for expandable list layout
  * Contain bookmarks
  */
@@ -29,7 +29,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context _context;
     private List<String> _listDataHeader;
     private HashMap<String, List<Bookmark>> _listDataChild;
-    private Utils utils;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<Bookmark>> listChildData) {
@@ -65,6 +64,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Get child view by position
+     *
      * @param groupPosition
      * @param childPosition
      * @param isLastChild
@@ -77,7 +77,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         Bookmark child = (Bookmark) getChild(groupPosition, childPosition);
-        utils = new Utils();
+        Utils utils = new Utils();
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -95,16 +95,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         txtListChildTime.setText(utils.timeToString(child.getTime()));
         switch (child.getType()) {
             case 1:
-                listChildIcon.setBackgroundResource(R.drawable.new_bookmark);
+                listChildIcon.setBackgroundResource(R.mipmap.text_bookmark_focused);
                 break;
             case 2:
-                listChildIcon.setBackgroundResource(R.drawable.new_imp);
+                listChildIcon.setBackgroundResource(R.mipmap.imp_focused);
                 break;
             case 3:
-                listChildIcon.setBackgroundResource(R.drawable.new_question);
+                listChildIcon.setBackgroundResource(R.mipmap.quest_focused);
                 break;
             default:
-                listChildIcon.setBackgroundResource(R.drawable.new_bookmark);
+                listChildIcon.setBackgroundResource(R.mipmap.imp_focused);
                 break;
         }
         txtListChild.setText(child.getName());
@@ -115,6 +115,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Get children count
+     *
      * @param groupPosition
      * @return children count
      */
@@ -126,6 +127,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Get group by position
+     *
      * @param groupPosition
      * @return group
      */
@@ -136,6 +138,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Get group count
+     *
      * @return group count
      */
     @Override
@@ -145,6 +148,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Get group id by position
+     *
      * @param groupPosition
      * @return group ID
      */
@@ -155,6 +159,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Get group view by position
+     *
      * @param groupPosition
      * @param isExpanded
      * @param convertView
@@ -181,6 +186,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Check if has stable iD
+     *
      * @return
      */
     @Override
@@ -190,6 +196,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Check if child selectable
+     *
      * @param groupPosition
      * @param childPosition
      * @return true

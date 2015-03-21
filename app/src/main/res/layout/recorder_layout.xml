@@ -44,13 +44,13 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:id="@+id/btnRecord"
-                android:background="@drawable/new_micro" />
+                android:background="@drawable/micro_icon" />
 
             <ImageButton
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:id="@+id/btnStopRecord"
-                android:background="@drawable/new_stop_2" />
+                android:background="@drawable/stop_icon" />
 
 
         </LinearLayout>
@@ -91,20 +91,19 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:id="@+id/btnBook"
-            android:background="@drawable/new_pencil"
-            android:textColor="@android:color/holo_blue_dark" />
+            android:background="@drawable/bookmark_icon" />
 
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:id="@+id/btnImpBook"
-            android:background="@drawable/new_imp" />
+            android:background="@drawable/imp_bookmark_icon" />
 
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:id="@+id/btnQuestBook"
-            android:background="@drawable/new_question" />
+            android:background="@drawable/quest_bookmark_icon" />
     </LinearLayout>
 
 </RelativeLayout>

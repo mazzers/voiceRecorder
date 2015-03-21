@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -42,11 +41,10 @@ public class RecorderFragment extends Fragment {
     private Chronometer chronometer;
     private EditText nameField;
     private int count = 0;
-    private File fileBook, fileAudio;
+    private File fileBook;
     private String filePathAudio, filePathBook;
     private String filePath;
     public static String fileAudioName;
-    private MediaRecorder mediaRecorder, prevRecorder;
     private Long startTime, pressTime;
     private String bookMsg;
     private SharedPreferences sharedPreferences;
@@ -57,13 +55,7 @@ public class RecorderFragment extends Fragment {
     private int state;
     private long chronoPauseBase;
     private String mActiveRecordFileName;
-    //private int cnt;
-    //private TextView tvTimer;
-    //private CountDownTimer timer;
     private long chronoBase;
-    //private ParseTask parseTask;
-    //private Thread startThread;
-    //private Thread stopThread;
     private boolean isRecording = false;
 
     private View.OnClickListener recorderOnClickListener = new View.OnClickListener() {
@@ -120,9 +112,7 @@ public class RecorderFragment extends Fragment {
      * @param savedInstanceState
      */
     public void onCreate(Bundle savedInstanceState) {
-        //todo audiorecord instead mediarecorder
         //todo different qualities
-        //todo pause
         Log.d(TAG_LOG, "onCreate");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
@@ -142,62 +132,8 @@ public class RecorderFragment extends Fragment {
      * @return
      */
     @Override
-    //todo rework recorder view
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recorder_layout, container, false);
-
-        //parseTask = new ParseTask();
-//        Log.d(TAG_LOG, "onCreateView");
-//        btnRecord = (ImageButton) rootView.findViewById(R.id.btnRecord);
-//        btnBook = (ImageButton) rootView.findViewById(R.id.btnBook);
-//        btnImpBook = (ImageButton) rootView.findViewById(R.id.btnImpBook);
-//        btnQuestBook = (ImageButton) rootView.findViewById(R.id.btnQuestBook);
-//        nameField = (EditText) rootView.findViewById(R.id.fileNameEt);
-        //tvTimer = (TextView) rootView.findViewById(R.id.tvTimer);
-
-
-//        chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
-//        btnRecord.setOnClickListener(new btnStartRecordClick());
-//        btnBook.setOnClickListener(new btnBookClick());
-//        btnImpBook.setOnClickListener(new btnImpBookClick());
-//        btnQuestBook.setOnClickListener(new btnQuestClick());
-
-//        if (isRecording) {
-//            restoreRecordingState();
-//
-//
-//        } else {
-//            btnBook.setEnabled(false);
-//            btnImpBook.setEnabled(false);
-//            btnQuestBook.setEnabled(false);
-//        }
-
-        //bundle = new Bundle();
-
-
-//        cnt =0;
-//        timer = new CountDownTimer(Long.MAX_VALUE,1000) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//                cnt++;
-//                String time = new Integer(cnt).toString();
-//
-//                long millis = cnt;
-//                int seconds = (int) (millis / 60);
-//                int minutes = seconds / 60;
-//                seconds     = seconds % 60;
-//
-//                tvTimer.setText(String.format("%d:%02d:%02d", minutes, seconds,millis));
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//
-//            }
-//        };
-
-//        audioFormatInfo = new AudioFormatInfo();
-//        audioReceiver= new AudioReceiver(audioFormatInfo);
         return rootView;
     }
 
@@ -219,9 +155,9 @@ public class RecorderFragment extends Fragment {
         btnImpBook.setOnClickListener(recorderOnClickListener);
         btnQuestBook.setOnClickListener(recorderOnClickListener);
         btnStop.setOnClickListener(recorderOnClickListener);
+        //btnRecord.setImageResource(R.mipmap.micro_disabled);
 
         if (state == STATE_RECORDING || state == STATE_PAUSE) {
-            //todo new restore rec_state
             restoreRecordingState();
         } else {
             state = STATE_NOT_RECORDING;
@@ -239,21 +175,26 @@ public class RecorderFragment extends Fragment {
             }
             switch (mAudioRecorder.getStatus()) {
                 case STATUS_READY_TO_RECORD:
+                    Log.d(TAG_LOG, "STATUS_READY_TO_RECORD");
                     startTime = System.currentTimeMillis();
                     startRecord();
-                    Log.d(TAG_LOG, "start Recording");
                     startChrono();
-                    btnRecord.setBackgroundResource(R.drawable.new_pause);
+                    //btnRecord.setBackgroundResource(R.drawable.new_pause);
+                    btnRecord.setBackgroundResource(R.drawable.pause_icon);
                     break;
                 case STATUS_RECORDING:
+                    Log.d(TAG_LOG, "STATUS_RECORDING");
+                    //todo bookmarks on pause?
                     pauseRecord();
                     pauseChrono();
                     break;
                 case STATUS_RECORD_PAUSED:
+                    Log.d(TAG_LOG, "STATUS_RECORD_PAUSED");
                     startRecord();
                     resumeChrono(SystemClock.elapsedRealtime() + chronoPauseBase);
                     break;
                 case STATUS_UNKNOWN:
+                    Log.d(TAG_LOG, "STATUS_UNKNOWN");
                     changeButtonsState();
                     break;
                 default:
@@ -284,11 +225,13 @@ public class RecorderFragment extends Fragment {
 
     private void changeButtonsState() {
         if (mAudioRecorder == null) {
+            Log.d(TAG_LOG, "mAudioRecorder == null");
             btnRecord.setEnabled(true);
             btnStop.setEnabled(false);
             btnQuestBook.setEnabled(false);
             btnImpBook.setEnabled(false);
             btnBook.setEnabled(false);
+            nameField.setEnabled(true);
         } else {
             switch (mAudioRecorder.getStatus()) {
                 case STATUS_UNKNOWN:
@@ -309,7 +252,8 @@ public class RecorderFragment extends Fragment {
                     break;
                 case STATUS_RECORDING:
                     btnRecord.setEnabled(true);
-                    btnRecord.setBackgroundResource(R.drawable.new_pause);
+                    //btnRecord.setBackgroundResource(R.drawable.new_pause);
+                    btnRecord.setBackgroundResource(R.drawable.pause_icon);
                     btnStop.setEnabled(true);
                     btnQuestBook.setEnabled(true);
                     btnImpBook.setEnabled(true);
@@ -318,7 +262,8 @@ public class RecorderFragment extends Fragment {
                     break;
                 case STATUS_RECORD_PAUSED:
                     btnRecord.setEnabled(true);
-                    btnRecord.setBackgroundResource(R.drawable.new_micro);
+                    //btnRecord.setBackgroundResource(R.drawable.new_micro);
+                    btnRecord.setBackgroundResource(R.drawable.micro_icon);
                     btnStop.setEnabled(true);
                     btnQuestBook.setEnabled(false);
                     btnImpBook.setEnabled(false);
@@ -373,7 +318,8 @@ public class RecorderFragment extends Fragment {
         mAudioRecorder = null;
         count = 0;
         state = STATE_NOT_RECORDING;
-        btnRecord.setBackgroundResource(R.drawable.new_micro);
+        //btnRecord.setBackgroundResource(R.drawable.new_micro);
+        btnRecord.setBackgroundResource(R.drawable.micro_icon);
         chronometer.stop();
         chronometer.setBase(SystemClock.elapsedRealtime());
     }
@@ -516,8 +462,7 @@ public class RecorderFragment extends Fragment {
     }
 
     public static RecorderFragment createNewInstance() {
-        RecorderFragment recorderFragment = new RecorderFragment();
-        return recorderFragment;
+        return new RecorderFragment();
     }
 
     @Override

@@ -48,7 +48,7 @@ public class ReadFromXML {
      * @param myParser
      */
     public void parseXMLAndStoreIt(XmlPullParser myParser) {
-        Log.d(TAG_LOG, "ReadFromXML: call parseXMLandStoreIT ");
+        //Log.d(TAG_LOG, "ReadFromXML: call parseXMLandStoreIT ");
         int event;
         try {
             event = myParser.getEventType();
@@ -58,20 +58,43 @@ public class ReadFromXML {
                     case XmlPullParser.START_TAG:
                         break;
                     case XmlPullParser.END_TAG:
-                        if (name.equals("path")) {
-                            path = myParser.getAttributeValue(null, "value");
-                        } else if (name.equals("fileName")) {
-                            fileName = myParser.getAttributeValue(null, "value");
-                        } else if (name.equals("time")) {
-                            time = Integer.parseInt(myParser.getAttributeValue(null, "value"));
-                        } else if (name.equals("message")) {
-                            message = myParser.getAttributeValue(null, "value");
-                        } else if (name.equals("type")) {
-                            type = Integer.parseInt(myParser.getAttributeValue(null, "value"));
-                        } else if (name.equals("bookmark_path")) {
-                            bookmarkPath = myParser.getAttributeValue(null, "value");
-                        }
+//                        if (name.equals("path")) {
+//                            path = myParser.getAttributeValue(null, "value");
+//                        } else if (name.equals("fileName")) {
+//                            fileName = myParser.getAttributeValue(null, "value");
+//                        } else if (name.equals("time")) {
+//                            time = Integer.parseInt(myParser.getAttributeValue(null, "value"));
+//                        } else if (name.equals("message")) {
+//                            message = myParser.getAttributeValue(null, "value");
+//                        } else if (name.equals("type")) {
+//                            type = Integer.parseInt(myParser.getAttributeValue(null, "value"));
+//                        } else if (name.equals("bookmark_path")) {
+//                            bookmarkPath = myParser.getAttributeValue(null, "value");
+//                        }
+                        switch (name) {
+                            case "path":
+                                path = myParser.getAttributeValue(null, "value");
+                                break;
+                            case "fileName":
+                                fileName = myParser.getAttributeValue(null, "value");
+                                break;
+                            case "time":
+                                time = Integer.parseInt(myParser.getAttributeValue(null, "value"));
+                                break;
+                            case "message":
+                                message = myParser.getAttributeValue(null, "value");
+                                break;
+                            case "type":
+                                type = Integer.parseInt(myParser.getAttributeValue(null, "value"));
+                                break;
+                            case "bookmark_path":
+                                bookmarkPath = myParser.getAttributeValue(null, "value");
+                                break;
+                            default:
+                                break;
 
+
+                        }
 
                         break;
                 }
@@ -91,7 +114,7 @@ public class ReadFromXML {
      * Create XML reader
      */
     public void fetchXML() {
-        Log.d(TAG_LOG, "ReadFromXML: start of fetch XML");
+        //Log.d(TAG_LOG, "ReadFromXML: start of fetch XML");
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

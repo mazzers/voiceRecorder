@@ -16,15 +16,13 @@ import java.util.ArrayList;
  * Bookmarks parser
  */
 public class ParseBookmarkFiles implements Runnable {
-    private File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
+    private final File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
     private static Bookmark[] bookmarks;
     private static ArrayList<Bookmark> bookmarkArrayList;
-    private ReadFromXML obj;
-    private String TAG_LOG = "Write&Parse";
+    private final String TAG_LOG = "Write&Parse";
 
     @Override
     public void run() {
-        Log.d(TAG_LOG, "ParseBookmarkFiles: in run");
         traverse(dir);
 
     }
@@ -39,7 +37,7 @@ public class ParseBookmarkFiles implements Runnable {
             ///Log.d(TAG_LOG, "ParseBookmarkFiles: folder exist");
             File[] files = dir.listFiles();
             bookmarks = new Bookmark[files.length];
-            bookmarkArrayList = new ArrayList<Bookmark>();
+            bookmarkArrayList = new ArrayList<>();
 
             //Log.d(TAG_LOG, "ParseBookmarkFiles: create array od bookmarks");
             if (dir.listFiles(new FileExtensionFilter()).length > 0) {
@@ -50,7 +48,7 @@ public class ParseBookmarkFiles implements Runnable {
                     } else {
                         //Log.d(TAG_LOG, file.getPath());
 
-                        obj = new ReadFromXML(file);
+                        ReadFromXML obj = new ReadFromXML(file);
                         obj.fetchXML();
                         while (obj.parsingComplete) ;
                         bookmarkArrayList.add(new Bookmark(obj.getPath(), obj.getBookmarkPath(), obj.getName(), obj.getTime(), obj.getMessage(), obj.getType()));

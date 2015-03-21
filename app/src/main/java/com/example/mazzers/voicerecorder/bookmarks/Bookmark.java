@@ -59,7 +59,7 @@ public class Bookmark implements Parcelable {
      *
      * @param in
      */
-    public Bookmark(Parcel in) {
+    private Bookmark(Parcel in) {
         String[] data = new String[5];
 
         in.readStringArray(data);

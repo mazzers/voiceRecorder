@@ -29,11 +29,10 @@ import java.util.List;
  * Bookmark list fragment. Display expandListView and handles user actions
  */
 public class ExpandableBookmarks extends Fragment {
-    ExpandableListAdapter listAdapter;
-    ExpandableListView expandableListView;
-    List<String> listDataHeader;
-    View rootView;
-    private static Bookmark[] bookmarksList;
+    private ExpandableListAdapter listAdapter;
+    private ExpandableListView expandableListView;
+    private List<String> listDataHeader;
+    private View rootView;
     private HashMap<String, List<Bookmark>> mItems;
     private String TAG_LOG = "myLogs";
     private final int MENU_CHILD_DELETE = 1;
@@ -155,7 +154,7 @@ public class ExpandableBookmarks extends Fragment {
                 bundle.putInt("fileTime", item.getTime());
                 bundle.putBoolean("fromDrawer",false);
                 ArrayList<Bookmark> tempBookmarks;
-                tempBookmarks = new ArrayList<Bookmark>(mItems.get(listDataHeader.get(groupPosition)));
+                tempBookmarks = new ArrayList<>(mItems.get(listDataHeader.get(groupPosition)));
                 bundle.putParcelableArrayList("bookmarks", tempBookmarks);
                 //fragment.setArguments(bundle);
 
@@ -196,11 +195,11 @@ public class ExpandableBookmarks extends Fragment {
      * Prepare data for view
      */
     private void prepareListData() {
-        listDataHeader = new ArrayList<String>();
-        mItems = new HashMap<String, List<Bookmark>>();
+        listDataHeader = new ArrayList<>();
+        mItems = new HashMap<>();
 
-        List<Bookmark> tempArray = new ArrayList<Bookmark>();
-        bookmarksList = MainActivity.getBookmarks();
+        List<Bookmark> tempArray = new ArrayList<>();
+        Bookmark[] bookmarksList = MainActivity.getBookmarks();
         if (bookmarksList != null && bookmarksList.length > 0) {
             String groupName = bookmarksList[0].getName();
             int groupCount = 1;
@@ -214,7 +213,7 @@ public class ExpandableBookmarks extends Fragment {
                     //increase group pointer
                     groupCount++;
                     //reinitialize array
-                    tempArray = new ArrayList<Bookmark>();
+                    tempArray = new ArrayList<>();
                     //set new group name
                     groupName = bookmarksList[i].getName();
                     //add groupname to array
@@ -281,12 +280,11 @@ public class ExpandableBookmarks extends Fragment {
     }
 
    public static ExpandableBookmarks createNewInstance(){
-       ExpandableBookmarks expandableBookmarks = new ExpandableBookmarks();
 
 //       Bundle args = new Bundle();
 //       args.putString("fragment_tag",tag);
 //       expandableBookmarks.setArguments(args);
-       return expandableBookmarks;
+       return new ExpandableBookmarks();
 
    }
 }

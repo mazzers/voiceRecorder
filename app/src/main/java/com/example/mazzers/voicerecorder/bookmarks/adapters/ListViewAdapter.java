@@ -17,11 +17,10 @@ import java.util.List;
 /**
  * * Vashchenko Vitaliy A11B0529P
  * PRJ5 - Voice bookmarks
- *
+ * <p/>
  * SimpleListView adapter for groupless view
  */
 public class ListViewAdapter extends ArrayAdapter<Bookmark> {
-    Utils utils;
 
     public ListViewAdapter(Context context, List<Bookmark> items) {
 
@@ -30,6 +29,7 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
 
     /**
      * Get view by position
+     *
      * @param position
      * @param convertView
      * @param parent
@@ -53,23 +53,23 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Bookmark item = getItem(position);
-        utils = new Utils();
+        Utils utils = new Utils();
         viewHolder.itemName.setText(item.getName());
         viewHolder.itemMessage.setText(item.getMessage());
         viewHolder.itemTime.setText(utils.timeToString(item.getTime()));
         //switch icon by bookmark type
-        switch (item.getType()){
+        switch (item.getType()) {
             case 1:
-                viewHolder.itemIcon.setBackgroundResource(R.drawable.new_bookmark);
+                viewHolder.itemIcon.setBackgroundResource(R.mipmap.text_bookmark_focused);
                 break;
             case 2:
-                viewHolder.itemIcon.setBackgroundResource(R.drawable.new_imp);
+                viewHolder.itemIcon.setBackgroundResource(R.mipmap.imp_focused);
                 break;
             case 3:
-                viewHolder.itemIcon.setBackgroundResource(R.drawable.new_question);
+                viewHolder.itemIcon.setBackgroundResource(R.mipmap.quest_focused);
                 break;
             default:
-                viewHolder.itemIcon.setBackgroundResource(R.drawable.new_bookmark);
+                viewHolder.itemIcon.setBackgroundResource(R.mipmap.imp_focused);
                 break;
         }
 

@@ -28,7 +28,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/itemIcon"
-                android:background="@drawable/new_bookmark"
+                android:background="@drawable/star_icon"
                 />
 
             <TextView android:id="@+id/tvTitle"

@@ -13,6 +13,7 @@ import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class BookmarkFragment extends ListFragment {
     private static Bookmark[] bookmarksList;
     private List<Bookmark> mItems;
-    private String TAG_LOG = "myLogs";
+    private final String TAG_LOG = "myLogs";
 
     public BookmarkFragment() {
     }
@@ -35,23 +36,24 @@ public class BookmarkFragment extends ListFragment {
         Log.d(TAG_LOG, "BookmarkFragment: onCreate");
         super.onCreate(savedInstanceState);
 
-        mItems = new ArrayList<Bookmark>();
+        mItems = new ArrayList<>();
 
         fillStrings();
 
     }
 
-    public void fillStrings() {
+    void fillStrings() {
 
         if (bookmarksList == null) {
             Log.d(TAG_LOG, "BookmarkFragment: bookmarkList is empty");
             bookmarksList = MainActivity.getBookmarks();
         }
-        for (int i = 0; i < bookmarksList.length; i++) {
-
-            mItems.add(bookmarksList[i]);
-
-        }
+//        for (Bookmark aBookmarksList : bookmarksList) {
+//
+//            mItems.add(aBookmarksList);
+//
+//        }
+        Collections.addAll(mItems, bookmarksList);
 
 
         setListAdapter(new ListViewAdapter(getActivity(), mItems));
