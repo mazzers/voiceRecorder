@@ -2,6 +2,7 @@ package com.example.mazzers.voicerecorder.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -16,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
@@ -25,6 +25,7 @@ import com.example.mazzers.voicerecorder.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Vashchenko Vitaliy A11B0529P
@@ -52,6 +53,13 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private int seekValue = 5000;
     private Activity mainActivity;
     public int[] stamps;
+    public static ListViewAdapter listViewAdapter;
+
+    @Nullable
+    @Override
+    public View getView() {
+        return super.getView();
+    }
 
     /**
      * Create player view
@@ -63,8 +71,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      */
     @Nullable
     @Override
-    //todo player view
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //todo slidingup player
+        //todo broken files skip
+        //todo hightlight
         View rootView = inflater.inflate(R.layout.player_layout, container, false);
         btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
         btnFwd = (ImageButton) rootView.findViewById(R.id.btnForward);
@@ -119,7 +130,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             stamps = new int[bookmarkArrayList.size()];
             makeStamps();
             listView = (ListView) rootView.findViewById(R.id.player_list);
-            ListViewAdapter listViewAdapter = new ListViewAdapter(getActivity(), bookmarkArrayList);
+            listViewAdapter = new ListViewAdapter(getActivity(), bookmarkArrayList);
             listView.setAdapter(listViewAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -130,8 +141,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                     }
                 }
             });
+
             Log.d(TAG_LOG, "PlayerFragment: path= " + path);
             time = bundle.getInt("fileTime");
+
             Log.d(TAG_LOG, "PlayerFragment: time=" + time);
             btnPlay.setEnabled(true);
             seekBar.setEnabled(true);
@@ -177,33 +190,44 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     };
 
-//    Runnable highlight = new Runnable() {
-//
-//        public void run() {
-//            int curr;
-//            int pos;
-//            //Log.d(TAG_LOG,"highrlight thread");
-//                curr = mediaPlayer.getCurrentPosition();
-//                pos = Arrays.asList(stamps).indexOf(curr);
-//                if (pos!=-1){
-//                    //selectPos(pos);
-//                    Log.d(TAG_LOG,"time reached");
-//                }
-//
-//            handler.postDelayed(this,500);
-//        }
-//    };
+    Runnable highlight = new Runnable() {
 
-//    Runnable setStamps = new Runnable() {
+        public void run() {
+            int curr;
+            long curr_long;
+            int pos;
+            //Log.d(TAG_LOG,"highrlight thread");
+            curr_long = mediaPlayer.getCurrentPosition();
+            curr = (int) (curr_long / 1000);
+            pos = Arrays.binarySearch(stamps, curr);
+            if (pos >= 0) {
+
+                Log.d(TAG_LOG, "time reached " + String.valueOf(stamps[pos]));
+                selectPos(pos);
+            }
+            //Log.d(TAG_LOG, String.valueOf(curr));
+            //pos = Arrays.asList(stamps).contains(curr);
+            //Log.d(TAG_LOG,String.valueOf(pos));
 //
-//        public void run() {
-//            Log.d(TAG_LOG,"setStamps");
-//            for(int i=0;i<bookmarkArrayList.size();i++){
-//                stamps[i] = bookmarkArrayList.get(i).getTime();
-//                Log.d(TAG_LOG,String.valueOf(stamps[i]));
+// if (pos >= 0) {
+//                selectPos(pos);
+//
 //            }
-//        }
-//    };
+
+            handler.postDelayed(this, 500);
+        }
+    };
+
+    Runnable setStamps = new Runnable() {
+
+        public void run() {
+            Log.d(TAG_LOG, "setStamps");
+            for (int i = 0; i < bookmarkArrayList.size(); i++) {
+                stamps[i] = bookmarkArrayList.get(i).getTime();
+                Log.d(TAG_LOG, String.valueOf(stamps[i]));
+            }
+        }
+    };
 
     /**
      * Seekbar progres changed
@@ -240,10 +264,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
 
                 handler.removeCallbacks(run);
+                handler.removeCallbacks(highlight);
                 int totalDuration = mediaPlayer.getDuration();
                 int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
                 mediaPlayer.seekTo(currentPosition);
                 updateProgressBar();
+                updateListViewSelection();
                 mediaPlayer.start();
 
             } catch (Exception e) {
@@ -263,9 +289,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     public void onCompletion(MediaPlayer mp) {
 
-        Toast.makeText(mainActivity, "End of file", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mainActivity, "End of file", Toast.LENGTH_SHORT).show();
 
-        //handler.removeCallbacks(run);
+        handler.removeCallbacks(run);
+        handler.removeCallbacks(highlight);
         mediaPlayer.seekTo(0);
         btnPlay.setBackgroundResource(R.drawable.new_play);
 
@@ -326,15 +353,15 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         handler.postDelayed(run, 100);
     }
 
-//    public void updateListViewSelection(){
-//        handler.postDelayed(highlight,500);
-//    }
+    public void updateListViewSelection() {
+        handler.postDelayed(highlight, 500);
+    }
 
     /**
      * Prepare music player
      */
     public void prepareMediaPlayer() {
-        //handler.post(setStamps);
+        handler.post(setStamps);
         try {
             mediaPlayer.setDataSource(path);
             Log.d(TAG_LOG, "Set data source=" + path);
@@ -358,7 +385,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
         //stopped=false;
         updateProgressBar();
-        //updateListViewSelection();
+        updateListViewSelection();
 
         //btnStop.setEnabled(true);
 
@@ -367,7 +394,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
     public static void selectPos(int i) {
-        listView.setSelection(i);
+        View v = listView.getChildAt(i);
+
+        v.setBackgroundColor(Color.BLACK);
+
     }
 
     public void makeStamps() {

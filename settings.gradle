@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':recorder'
+project(':recorder').projectDir = new File('app/lib/recorder')

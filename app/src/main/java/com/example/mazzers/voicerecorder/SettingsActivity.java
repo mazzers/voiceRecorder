@@ -13,6 +13,7 @@ import android.preference.PreferenceCategory;
  */
 
 public class SettingsActivity extends PreferenceActivity {
+    //todo preference fragment
     /**
      * Determines whether to always show the simplified settings UI, where
      * settings are presented in a single list. When false, settings are shown

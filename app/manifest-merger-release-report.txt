@@ -33,11 +33,12 @@ ADDED from AndroidManifest.xml:10:5
 		ADDED from AndroidManifest.xml:10:22
 application
 ADDED from AndroidManifest.xml:12:5
-MERGED from com.android.support:appcompat-v7:21.0.3:16:5
-MERGED from com.android.support:support-v4:21.0.3:16:5
-MERGED from com.android.support:support-v4:21.0.3:16:5
-MERGED from com.android.support:appcompat-v7:21.0.3:16:5
-MERGED from com.android.support:support-v4:21.0.3:16:5
+MERGED from com.android.support:appcompat-v7:22.0.0:22:5
+MERGED from com.android.support:support-v4:22.0.0:22:5
+MERGED from com.android.support:appcompat-v7:22.0.0:22:5
+MERGED from com.android.support:support-v4:22.0.0:22:5
+MERGED from com.android.support:support-v4:22.0.0:22:5
+MERGED from voiceRecorder:recorder:unspecified:11:5
 	android:label
 		ADDED from AndroidManifest.xml:15:9
 	android:allowBackup
@@ -70,13 +71,14 @@ ADDED from AndroidManifest.xml:28:9
 		ADDED from AndroidManifest.xml:29:13
 uses-sdk
 INJECTED from AndroidManifest.xml:0:0 reason: use-sdk injection requested
-MERGED from com.android.support:appcompat-v7:21.0.3:15:5
-MERGED from com.android.support:support-v4:21.0.3:15:5
-MERGED from com.mikepenz.materialdrawer:library:2.0.1:8:5
-MERGED from com.mikepenz.iconics:library:0.7.6:8:5
-MERGED from com.android.support:support-v4:21.0.3:15:5
-MERGED from com.android.support:appcompat-v7:21.0.3:15:5
-MERGED from com.android.support:support-v4:21.0.3:15:5
+MERGED from com.android.support:appcompat-v7:22.0.0:20:5
+MERGED from com.android.support:support-v4:22.0.0:20:5
+MERGED from com.mikepenz.materialdrawer:library:2.5.2:8:5
+MERGED from com.android.support:appcompat-v7:22.0.0:20:5
+MERGED from com.android.support:support-v4:22.0.0:20:5
+MERGED from com.mikepenz.iconics:library:0.7.9:8:5
+MERGED from com.android.support:support-v4:22.0.0:20:5
+MERGED from voiceRecorder:recorder:unspecified:7:5
 	android:targetSdkVersion
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0

@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
@@ -59,8 +58,11 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //todo debug orientation change
+
         //TODO add widget/notification
+        //increase icons
+        //button push xml
+
         super.onCreate(savedInstanceState);
         Log.d(TAG_LOG, "onCreate");
         setContentView(R.layout.activity_main);
@@ -118,12 +120,13 @@ public class MainActivity extends ActionBarActivity {
 
         }
 
-        //todo asynctasts and handlers
+
         parseBookmarkFiles.start();
         result = new Drawer()
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggle(false)
+
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.title_section1).withIcon(R.drawable.new_micro).withIdentifier(1),
                         new PrimaryDrawerItem().withName(R.string.title_section2).withIcon(R.drawable.new_play).withIdentifier(2),
@@ -136,7 +139,7 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                         if (iDrawerItem instanceof Nameable) {
-                            Toast.makeText(MainActivity.this, MainActivity.this.getString(((Nameable) iDrawerItem).getNameRes()), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, MainActivity.this.getString(((Nameable) iDrawerItem).getNameRes()), Toast.LENGTH_SHORT).show();
                             switch (iDrawerItem.getIdentifier()) {
                                 case 1:
                                     displayRecorder();
@@ -175,8 +178,8 @@ public class MainActivity extends ActionBarActivity {
 
         super.onRestoreInstanceState(savedInstanceState);
 
-        int currr = savedInstanceState.getInt("selected", 1);
-        result.setSelection(currr, false);
+        int curr = savedInstanceState.getInt("selected", 1);
+        result.setSelection(curr, false);
     }
 
     public void displayPlayer() {
@@ -198,8 +201,6 @@ public class MainActivity extends ActionBarActivity {
         ft.replace(R.id.container, playerFragment, PLAYER_TAG);
 
         ft.commit();
-
-        //todo add all fragments
 
 
     }
@@ -227,8 +228,6 @@ public class MainActivity extends ActionBarActivity {
 
         ft.replace(R.id.container, playerFragment, PLAYER_TAG);
         ft.commit();
-
-        //todo add all fragments
 
 
     }
