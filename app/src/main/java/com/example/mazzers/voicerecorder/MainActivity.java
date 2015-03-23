@@ -32,11 +32,12 @@ import java.io.File;
  */
 public class MainActivity extends ActionBarActivity {
     private Drawer.Result result = null;
-    private PlayerFragment playerFragment;
+    private static PlayerFragment playerFragment;
     private ExpandableBookmarks expandableBookmarks;
     private RecorderFragment recorderFragment;
     private final String TAG_LOG = "MainActivity";
     private static Bookmark[] bookmarks;
+
     public static Bookmark[] getBookmarks() {
         return bookmarks;
     }
@@ -74,14 +75,14 @@ public class MainActivity extends ActionBarActivity {
         result = new Drawer()
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
-                .withActionBarDrawerToggle(false)
+                .withActionBarDrawerToggle(true)
 
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.title_section1).withIcon(FontAwesome.Icon.faw_microphone).withIdentifier(1),
                         new PrimaryDrawerItem().withName(R.string.title_section2).withIcon(FontAwesome.Icon.faw_play).withIdentifier(2),
-                        new PrimaryDrawerItem().withName(R.string.title_section3).withIcon(FontAwesome.Icon.faw_star).withIdentifier(3),
+                        //new PrimaryDrawerItem().withName(R.string.title_section3).withIcon(FontAwesome.Icon.faw_star).withIdentifier(3),
                         new SectionDrawerItem().withName(R.string.action_settings),
-                        new SecondaryDrawerItem().withName(R.string.action_settings).withIcon(FontAwesome.Icon.faw_gear).withIdentifier(4)
+                        new SecondaryDrawerItem().withName(R.string.action_settings).withIcon(FontAwesome.Icon.faw_gear).withIdentifier(3)
 
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -97,12 +98,11 @@ public class MainActivity extends ActionBarActivity {
                                     displayPlayer();
                                     break;
                                 case 3:
-                                    displayBookmarks();
-                                    break;
-                                case 4:
                                     Intent intent = new Intent(getApplication(), SettingsActivity.class);
                                     startActivity(intent);
                                     break;
+//                                    displayBookmarks();
+//                                    break;
                                 default:
                                     break;
                             }
@@ -131,6 +131,7 @@ public class MainActivity extends ActionBarActivity {
         result.setSelection(curr, false);
     }
 
+
     void displayPlayer() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
@@ -147,8 +148,12 @@ public class MainActivity extends ActionBarActivity {
 //        if (expandableBookmarks.isAdded()) {
 //            ft.hide(expandableBookmarks);
 //        }
-        ft.replace(R.id.container, playerFragment);
-
+        playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
+        if (playerFragment == null) {
+            playerFragment = PlayerFragment.createNewInstance();
+        }
+        ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
+//        ft.addToBackStack(null);
         ft.commit();
 
 
@@ -175,7 +180,8 @@ public class MainActivity extends ActionBarActivity {
 //            ft.hide(expandableBookmarks);
 //        }
 
-        ft.replace(R.id.container, playerFragment);
+        ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
+//        ft.addToBackStack(null);
         ft.commit();
 
 
@@ -231,5 +237,11 @@ public class MainActivity extends ActionBarActivity {
         ft.commit();
     }
 
+    public static void setPlayerFragment(PlayerFragment Playerfragment) {
+        playerFragment = Playerfragment;
+    }
 
+    public static PlayerFragment getPlayerFragment() {
+        return playerFragment;
+    }
 }

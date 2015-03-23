@@ -1,10 +1,13 @@
 package com.example.mazzers.voicerecorder.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +44,7 @@ public class ExpandableBookmarks extends Fragment {
     private final int MENU_GROUP_INFO = 4;
     private Bookmark selectedBookmark;
     private List<Bookmark> selectedList;
+
     //private ParseTask parseTask;
 
 
@@ -69,7 +73,9 @@ public class ExpandableBookmarks extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
         prepareListData();
+
     }
 
     /**
@@ -84,6 +90,7 @@ public class ExpandableBookmarks extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.expandable_fragment_layout, container, false);
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.lvExp);
+        //todo change list to record list with search
         //bookmarksList = MainActivity.getBookmarks();
         //setRetainInstance(true);
         // preparing list data
@@ -157,9 +164,10 @@ public class ExpandableBookmarks extends Fragment {
                 tempBookmarks = new ArrayList<>(mItems.get(listDataHeader.get(groupPosition)));
                 bundle.putParcelableArrayList("bookmarks", tempBookmarks);
                 //fragment.setArguments(bundle);
-
+                toggleListWithNewFile(bundle);
                 //fragmentManager.beginTransaction().replace(R.id.container, fragment, "player_bk").commit();
-                ((MainActivity)getActivity()).displayPlayer(bundle);
+                //((MainActivity)getActivity()).displayPlayer(bundle);
+
                 return false;
             }
         });
@@ -189,6 +197,44 @@ public class ExpandableBookmarks extends Fragment {
 
 
         return rootView;
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.player_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.player_menu_toggle_list:
+                toggleList();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    void toggleListWithNewFile(Bundle bundle) {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
+        PlayerFragment playerFragment = PlayerFragment.createNewInstance(bundle);
+        MainActivity.setPlayerFragment(playerFragment);
+        ft.hide(this);
+        ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
+        //todo add back button
+        ft.commit();
+    }
+
+    void toggleList() {
+        //todo fade list
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
+        ft.hide(this);
+        ft.show(MainActivity.getPlayerFragment());
+        //ft.replace(R.id.container,MainActivity.getPlayerFragment());
+        ft.commit();
     }
 
     /**

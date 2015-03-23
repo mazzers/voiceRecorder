@@ -18,6 +18,7 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="enter_name">Type file name:</string>
+    <string name="player_list">Show records</string>
     <string-array name="entries">
         <item>Poor</item>
         <item>Good</item>
