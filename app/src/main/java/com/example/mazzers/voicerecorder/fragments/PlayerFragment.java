@@ -92,6 +92,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         //todo slidingup player
         //todo broken files skip
         //todo hightlight
+        //todo add new while listening
+        //todo context menu remove
         View rootView = inflater.inflate(R.layout.player_layout, container, false);
         btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
         ImageButton btnFwd = (ImageButton) rootView.findViewById(R.id.btnForward);
