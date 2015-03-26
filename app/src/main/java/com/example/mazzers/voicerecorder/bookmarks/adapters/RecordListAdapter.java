@@ -1,17 +1,56 @@
 package com.example.mazzers.voicerecorder.bookmarks.adapters;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
-import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
+import com.example.mazzers.voicerecorder.R;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * Created by mazzers on 23. 3. 2015.
  */
-public class RecordListAdapter extends ListViewAdapter {
-    public RecordListAdapter(Context context, List<Bookmark> items) {
-        super(context, items);
+public class RecordListAdapter extends ArrayAdapter<File> {
+    private static String TAG_LOG = "RecordListAdapter";
+
+    public RecordListAdapter(Context context, List<File> items) {
+        super(context, R.layout.file_listview_item, items);
     }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.file_listview_item, parent, false);
+
+            viewHolder = new ViewHolder();
+            viewHolder.itemName = (TextView) convertView.findViewById(R.id.recordTitle);
+            viewHolder.itemTime = (TextView) convertView.findViewById(R.id.recordTime);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+        File item = getItem(position);
+        if (item == null) {
+            Log.d(TAG_LOG, "file by pos is null");
+        }
+        viewHolder.itemName.setText(item.getName());
+        //switch icon by bookmark type
+
+        return convertView;
+    }
+
     //todo context menu delete record
+    private static class ViewHolder {
+        TextView itemName;
+        TextView itemTime;
+    }
 }
+

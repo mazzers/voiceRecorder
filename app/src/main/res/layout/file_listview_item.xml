@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center_vertical"
+    android:background="@color/frame_background">
+
+    <!-- the innner view - provides the white rectangle -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/frame">
+
+
+        <!-- the container view for the title and description -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp">
+
+            <!-- the title view -->
+
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/recordIcon"
+                android:background="@drawable/star_icon" />
+
+            <TextView
+                android:id="@+id/recordTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/recordIcon"
+                android:layout_marginLeft="5dp"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:text="Title" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/recordTime"
+                android:layout_toRightOf="@id/recordTitle"
+                android:layout_alignParentRight="true"
+                android:gravity="right"
+                android:layout_marginRight="15dip"
+                android:textSize="10dp"
+                android:text="5:11" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

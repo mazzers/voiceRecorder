@@ -138,6 +138,8 @@ public class ExpandableBookmarks extends Fragment {
 //        });
 
         // Listview on child click listener
+
+
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
             @Override
@@ -228,7 +230,6 @@ public class ExpandableBookmarks extends Fragment {
     }
 
     void toggleList() {
-        //todo fade list
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
         ft.hide(this);
@@ -236,6 +237,7 @@ public class ExpandableBookmarks extends Fragment {
         //ft.replace(R.id.container,MainActivity.getPlayerFragment());
         ft.commit();
     }
+
 
     /**
      * Prepare data for view
