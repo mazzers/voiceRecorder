@@ -1,5 +1,8 @@
 package com.example.mazzers.voicerecorder.utils;
 
+import java.text.DecimalFormat;
+import java.util.Date;
+
 /**
  * Vashchenko Vitaliy A11B0529P
  * PRJ5 - Voice bookmarks
@@ -76,7 +79,7 @@ public class Utils {
         return currentDuration * 1000;
     }
 
-    public String timeToString(int i) {
+    public static String timeToString(int i) {
         String time;
         int hours = i / 3600;
         int remainder = i - hours * 3600;
@@ -86,4 +89,22 @@ public class Utils {
         time = hours + ":" + mins + ":" + secs + "";
         return time;
     }
+
+    public static String readableFileSize(long size) {
+        if (size <= 0) return "0";
+        final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    public static String durationToString(long i) {
+        int duration = (int) (i / 1000);
+        return timeToString(duration);
+    }
+
+    public static String dateToString(Long date) {
+        Date d = new Date(date);
+        return d.toString();
+    }
+
 }

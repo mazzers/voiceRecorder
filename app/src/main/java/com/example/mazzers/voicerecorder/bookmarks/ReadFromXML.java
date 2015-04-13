@@ -58,19 +58,6 @@ public class ReadFromXML {
                     case XmlPullParser.START_TAG:
                         break;
                     case XmlPullParser.END_TAG:
-//                        if (name.equals("path")) {
-//                            path = myParser.getAttributeValue(null, "value");
-//                        } else if (name.equals("fileName")) {
-//                            fileName = myParser.getAttributeValue(null, "value");
-//                        } else if (name.equals("time")) {
-//                            time = Integer.parseInt(myParser.getAttributeValue(null, "value"));
-//                        } else if (name.equals("message")) {
-//                            message = myParser.getAttributeValue(null, "value");
-//                        } else if (name.equals("type")) {
-//                            type = Integer.parseInt(myParser.getAttributeValue(null, "value"));
-//                        } else if (name.equals("bookmark_path")) {
-//                            bookmarkPath = myParser.getAttributeValue(null, "value");
-//                        }
                         switch (name) {
                             case "path":
                                 path = myParser.getAttributeValue(null, "value");

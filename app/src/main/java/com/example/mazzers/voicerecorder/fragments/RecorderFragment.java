@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
+import com.example.mazzers.voicerecorder.bookmarks.ScanFiles;
 import com.example.mazzers.voicerecorder.bookmarks.WriteToXML;
 import com.github.lassana.recorder.AudioRecorder;
 
@@ -35,7 +36,7 @@ import java.util.Date;
  */
 public class RecorderFragment extends Fragment {
     private String TAG_LOG = "recorderFragment";
-    private String TAG_RECORDER = "RECORDER_TAG";
+    public static final String RECORDER_TAG = "RECORDER_TAG";
     private ImageButton btnRecord, btnBook, btnStop;
     private ImageButton btnImpBook, btnQuestBook;
     private Chronometer chronometer;
@@ -57,6 +58,7 @@ public class RecorderFragment extends Fragment {
     private String mActiveRecordFileName;
     private long chronoBase;
     private boolean isRecording = false;
+    private File dir;
 
     private View.OnClickListener recorderOnClickListener = new View.OnClickListener() {
         @Override
@@ -140,8 +142,6 @@ public class RecorderFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
         Log.d(TAG_LOG, "onViewCreated");
         btnRecord = (ImageButton) view.findViewById(R.id.btnRecord);
         btnBook = (ImageButton) view.findViewById(R.id.btnBook);
@@ -189,6 +189,7 @@ public class RecorderFragment extends Fragment {
                     pauseChrono();
                     break;
                 case STATUS_RECORD_PAUSED:
+                    Toast.makeText(getActivity(), "RESTORE RECORDING", Toast.LENGTH_SHORT).show();
                     Log.d(TAG_LOG, "STATUS_RECORD_PAUSED");
                     startRecord();
                     resumeChrono(SystemClock.elapsedRealtime() + chronoPauseBase);
@@ -294,6 +295,7 @@ public class RecorderFragment extends Fragment {
     }
 
     private void pauseRecord() {
+        //todo pause not working(stop is canceling pause)
         mAudioRecorder.pause(new AudioRecorder.OnPauseListener() {
             @Override
             public void onPaused(String activeRecordFileName) {
@@ -315,10 +317,11 @@ public class RecorderFragment extends Fragment {
     }
 
     private void stopRecord() {
+        Thread scanFiles = new Thread(new ScanFiles(Environment.getExternalStorageDirectory() + "/voicerecorder/"));
+        scanFiles.start();
+        pauseRecord();
         mAudioRecorder = null;
         count = 0;
-        state = STATE_NOT_RECORDING;
-        //btnRecord.setBackgroundResource(R.drawable.new_micro);
         btnRecord.setBackgroundResource(R.drawable.micro_icon);
         chronometer.stop();
         chronometer.setBase(SystemClock.elapsedRealtime());
@@ -442,7 +445,7 @@ public class RecorderFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.d(TAG_RECORDER, "RECORDER on attach");
+        Log.d(TAG_LOG, "RECORDER on attach");
     }
 
     @Override
@@ -452,13 +455,13 @@ public class RecorderFragment extends Fragment {
             chronoBase = chronometer.getBase();
             prevAudioRecorder = mAudioRecorder;
         }
-        Log.d(TAG_RECORDER, "RECORDER onDetach");
+        Log.d(TAG_LOG, "RECORDER onDetach");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG_RECORDER, "RECORDER onDestroy");
+        Log.d(TAG_LOG, "RECORDER onDestroy");
     }
 
     public static RecorderFragment createNewInstance() {

@@ -61,8 +61,8 @@ public class WriteToXML implements Runnable {
      */
     private String WriteDataToXML() throws IOException {
         XmlSerializer xmlSerializer = Xml.newSerializer();
-        StringWriter writter = new StringWriter();
-        xmlSerializer.setOutput(writter);
+        StringWriter writer = new StringWriter();
+        xmlSerializer.setOutput(writer);
         xmlSerializer.startDocument("UTF-8", true);
         xmlSerializer.startTag("", "root");
         xmlSerializer.startTag("", "path");
@@ -86,7 +86,7 @@ public class WriteToXML implements Runnable {
         xmlSerializer.endTag("", "root");
         xmlSerializer.endDocument();
 
-        return writter.toString();
+        return writer.toString();
     }
 
     /**

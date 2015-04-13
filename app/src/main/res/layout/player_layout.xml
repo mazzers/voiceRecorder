@@ -94,8 +94,10 @@
         <ListView
             android:id="@+id/player_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stackFromBottom="false"></ListView>
+            android:layout_height="fill_parent"
+            android:stackFromBottom="false">
+
+        </ListView>
 
 
     </LinearLayout>

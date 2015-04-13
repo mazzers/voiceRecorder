@@ -8,9 +8,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
+import com.example.mazzers.voicerecorder.bookmarks.ScanFiles;
 import com.example.mazzers.voicerecorder.fragments.ExpandableBookmarks;
 import com.example.mazzers.voicerecorder.fragments.PlayerFragment;
 import com.example.mazzers.voicerecorder.fragments.RecorderFragment;
@@ -37,6 +39,21 @@ public class MainActivity extends ActionBarActivity {
     private RecorderFragment recorderFragment;
     private final String TAG_LOG = "MainActivity";
     private static Bookmark[] bookmarks;
+    private static File[] files;
+    private File recordsDirectory;
+
+    public File getRecordsDirectory() {
+        return recordsDirectory;
+    }
+
+
+    public static File[] getFiles() {
+        return files;
+    }
+
+    public static void setFiles(File[] files) {
+        MainActivity.files = files;
+    }
 
     public static Bookmark[] getBookmarks() {
         return bookmarks;
@@ -58,7 +75,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG_LOG, "onCreate");
         setContentView(R.layout.activity_main);
-        File recordsDirectory = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
+        recordsDirectory = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
         if (!recordsDirectory.exists()) {
             Log.d(TAG_LOG, "Main activity: directory not exist");
             recordsDirectory.mkdirs();
@@ -66,12 +83,14 @@ public class MainActivity extends ActionBarActivity {
         }
 
         Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+        Thread scanFiles = new Thread(new ScanFiles(recordsDirectory));
         playerFragment = PlayerFragment.createNewInstance();
         recorderFragment = RecorderFragment.createNewInstance();
         expandableBookmarks = ExpandableBookmarks.createNewInstance();
 
 
         parseBookmarkFiles.start();
+        scanFiles.start();
         result = new Drawer()
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
@@ -133,7 +152,9 @@ public class MainActivity extends ActionBarActivity {
 
 
     void displayPlayer() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Toast.makeText(this, "Player", Toast.LENGTH_SHORT).show();
+        if (!playerFragment.isVisible()) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
 
 //        if (playerFragment.isAdded()) {
 //            ft.show(playerFragment);
@@ -148,14 +169,20 @@ public class MainActivity extends ActionBarActivity {
 //        if (expandableBookmarks.isAdded()) {
 //            ft.hide(expandableBookmarks);
 //        }
-        playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
-        if (playerFragment == null) {
-            playerFragment = PlayerFragment.createNewInstance();
-        }
-        ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
+            playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
+            if (playerFragment == null) {
+                playerFragment = PlayerFragment.createNewInstance();
+            }
+            if (recorderFragment.isVisible()) {
+                ft.hide(recorderFragment);
+            }
+            if (!playerFragment.isVisible()) {
+                ft.show(playerFragment);
+            }
+            ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
 //        ft.addToBackStack(null);
-        ft.commit();
-
+            ft.commit();
+        }
 
     }
 
@@ -189,7 +216,9 @@ public class MainActivity extends ActionBarActivity {
 
 
     void displayRecorder() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (!recorderFragment.isVisible()) {
+            Toast.makeText(this, "Recorder", Toast.LENGTH_SHORT).show();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
 //        if(recorderFragment==null){
 //            recorderFragment = RecorderFragment.createNewInstance();
 //        }
@@ -207,9 +236,15 @@ public class MainActivity extends ActionBarActivity {
 //        if (expandableBookmarks.isAdded()) {
 //            ft.hide(expandableBookmarks);
 //        }
-        ft.replace(R.id.container, recorderFragment);
-        ft.commit();
-
+            if (playerFragment.isVisible()) {
+                ft.hide(playerFragment);
+            }
+            if (!recorderFragment.isVisible()) {
+                ft.show(recorderFragment);
+            }
+            ft.replace(R.id.container, recorderFragment, RecorderFragment.RECORDER_TAG);
+            ft.commit();
+        }
 
     }
 
@@ -238,10 +273,13 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public static void setPlayerFragment(PlayerFragment Playerfragment) {
+
         playerFragment = Playerfragment;
     }
 
     public static PlayerFragment getPlayerFragment() {
         return playerFragment;
     }
+
 }
+
