@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -19,9 +20,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.R;
-import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
-import com.example.mazzers.voicerecorder.bookmarks.ScanFiles;
 import com.example.mazzers.voicerecorder.bookmarks.WriteToXML;
+import com.example.mazzers.voicerecorder.utils.Utils;
 import com.github.lassana.recorder.AudioRecorder;
 
 import java.io.File;
@@ -35,32 +35,30 @@ import java.util.Date;
  * Recorder fragment. Handles recording actions
  */
 public class RecorderFragment extends Fragment {
-    private String TAG_LOG = "recorderFragment";
+    private final String TAG_LOG = "recorderFragment";
     public static final String RECORDER_TAG = "RECORDER_TAG";
     private ImageButton btnRecord, btnBook, btnStop;
     private ImageButton btnImpBook, btnQuestBook;
     private Chronometer chronometer;
     private EditText nameField;
     private int count = 0;
-    private File fileBook;
-    private String filePathAudio, filePathBook;
+    private String filePathAudio;
     private String filePath;
-    public static String fileAudioName;
-    private Long startTime, pressTime;
+    private static String fileAudioName;
+    private Long pressTime;
     private String bookMsg;
     private SharedPreferences sharedPreferences;
     private AudioRecorder mAudioRecorder, prevAudioRecorder;
     private final int STATE_NOT_RECORDING = 0;
     private final int STATE_RECORDING = 1;
-    private final int STATE_PAUSE = 3;
+    private final int STATE_PAUSE = 2;
     private int state;
     private long chronoPauseBase;
     private String mActiveRecordFileName;
     private long chronoBase;
-    private boolean isRecording = false;
-    private File dir;
+    private AudioRecorder.MediaRecorderConfig mediaRecorderConfig;
 
-    private View.OnClickListener recorderOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener recorderOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
@@ -104,9 +102,6 @@ public class RecorderFragment extends Fragment {
             }
         }
     };
-//    private AudioReceiver audioReceiver;
-//    private AudioFormatInfo audioFormatInfo;
-
 
     /**
      * OnCreate method
@@ -114,11 +109,11 @@ public class RecorderFragment extends Fragment {
      * @param savedInstanceState
      */
     public void onCreate(Bundle savedInstanceState) {
-        //todo different qualities
         Log.d(TAG_LOG, "onCreate");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        filePath = Environment.getExternalStorageDirectory() + "/";
+        //filePath = Environment.getExternalStorageDirectory() + "/";
+        File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 
@@ -158,8 +153,10 @@ public class RecorderFragment extends Fragment {
         //btnRecord.setImageResource(R.mipmap.micro_disabled);
 
         if (state == STATE_RECORDING || state == STATE_PAUSE) {
+            Log.d(TAG_LOG, "RESTORING PREV STATE");
             restoreRecordingState();
         } else {
+            Log.d(TAG_LOG, "STATE_NOT_RECORDING");
             state = STATE_NOT_RECORDING;
         }
         changeButtonsState();
@@ -168,7 +165,7 @@ public class RecorderFragment extends Fragment {
     /**
      * Record button listener
      */
-    class btnStartRecordClick implements View.OnClickListener {
+    private class btnStartRecordClick implements View.OnClickListener {
         public void onClick(View arg0) {
             if (mAudioRecorder == null) {
                 generateNewAudioRecorder();
@@ -176,7 +173,7 @@ public class RecorderFragment extends Fragment {
             switch (mAudioRecorder.getStatus()) {
                 case STATUS_READY_TO_RECORD:
                     Log.d(TAG_LOG, "STATUS_READY_TO_RECORD");
-                    startTime = System.currentTimeMillis();
+                    Long startTime = System.currentTimeMillis();
                     startRecord();
                     startChrono();
                     //btnRecord.setBackgroundResource(R.drawable.new_pause);
@@ -184,8 +181,7 @@ public class RecorderFragment extends Fragment {
                     break;
                 case STATUS_RECORDING:
                     Log.d(TAG_LOG, "STATUS_RECORDING");
-                    //todo bookmarks on pause?
-                    pauseRecord();
+                    pauseRecord(1);
                     pauseChrono();
                     break;
                 case STATUS_RECORD_PAUSED:
@@ -220,8 +216,10 @@ public class RecorderFragment extends Fragment {
             }
             //fileAudioName=nameField.getText().toString();
         }
+        setRecordSettings();
         filePathAudio = Environment.getExternalStorageDirectory() + "/voicerecorder/" + fileAudioName + ".mp4";
-        mAudioRecorder = AudioRecorder.build(getActivity(), filePathAudio);
+        mAudioRecorder = AudioRecorder.build(getActivity(), filePathAudio, mediaRecorderConfig);
+
     }
 
     private void changeButtonsState() {
@@ -294,14 +292,21 @@ public class RecorderFragment extends Fragment {
         });
     }
 
-    private void pauseRecord() {
-        //todo pause not working(stop is canceling pause)
+    private void pauseRecord(int i) {
+        switch (i) {
+            case 0:
+                state = STATE_NOT_RECORDING;
+                break;
+            case 1:
+                state = STATE_PAUSE;
+
+        }
         mAudioRecorder.pause(new AudioRecorder.OnPauseListener() {
             @Override
             public void onPaused(String activeRecordFileName) {
                 mActiveRecordFileName = activeRecordFileName;
 
-                state = STATE_PAUSE;
+                //state = STATE_PAUSE;
                 chronoBase = chronometer.getBase();
                 changeButtonsState();
             }
@@ -317,14 +322,16 @@ public class RecorderFragment extends Fragment {
     }
 
     private void stopRecord() {
-        Thread scanFiles = new Thread(new ScanFiles(Environment.getExternalStorageDirectory() + "/voicerecorder/"));
-        scanFiles.start();
-        pauseRecord();
+        state = STATE_NOT_RECORDING;
+        //Thread scanFiles = new Thread(new ScanFiles(dir));
+        //scanFiles.start();
+        pauseRecord(0);
         mAudioRecorder = null;
         count = 0;
         btnRecord.setBackgroundResource(R.drawable.micro_icon);
         chronometer.stop();
         chronometer.setBase(SystemClock.elapsedRealtime());
+
     }
 
     /**
@@ -355,7 +362,7 @@ public class RecorderFragment extends Fragment {
     /**
      * Start time widget
      */
-    public void startChrono() {
+    void startChrono() {
         chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
     }
@@ -368,12 +375,12 @@ public class RecorderFragment extends Fragment {
         chronometer.stop();
     }
 
-    public void resumeChrono(long base) {
+    void resumeChrono(long base) {
         chronometer.setBase(base);
         chronometer.start();
     }
 
-    public void pauseChrono() {
+    void pauseChrono() {
         chronoPauseBase = chronometer.getBase() - SystemClock.elapsedRealtime();
         chronometer.stop();
     }
@@ -381,7 +388,7 @@ public class RecorderFragment extends Fragment {
     /**
      * Show input dialog for message
      */
-    protected void showInputDialog() {
+    void showInputDialog() {
 
         // get prompts.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -417,17 +424,34 @@ public class RecorderFragment extends Fragment {
 
     }
 
+    void setRecordSettings() {
+        String quality = sharedPreferences.getString("quality", "0");
+        //Toast.makeText(getActivity(), quality, Toast.LENGTH_SHORT).show();
+        boolean stereo = sharedPreferences.getBoolean("stereo", true);
+        switch (quality) {
+            case "1":
+                mediaRecorderConfig = stereo ? new AudioRecorder.MediaRecorderConfig(64 * 1024, 2, MediaRecorder.AudioSource.DEFAULT, MediaRecorder.AudioEncoder.DEFAULT) : new AudioRecorder.MediaRecorderConfig(64 * 1024, 1, MediaRecorder.AudioSource.DEFAULT, MediaRecorder.AudioEncoder.DEFAULT);
+                break;
+            case "2":
+                mediaRecorderConfig = stereo ? new AudioRecorder.MediaRecorderConfig(128 * 1024, 2, MediaRecorder.AudioSource.DEFAULT, MediaRecorder.AudioEncoder.DEFAULT) : new AudioRecorder.MediaRecorderConfig(128 * 1024, 1, MediaRecorder.AudioSource.DEFAULT, MediaRecorder.AudioEncoder.DEFAULT);
+                break;
+            default:
+                mediaRecorderConfig = stereo ? new AudioRecorder.MediaRecorderConfig(64 * 1024, 2, MediaRecorder.AudioSource.DEFAULT, MediaRecorder.AudioEncoder.DEFAULT) : new AudioRecorder.MediaRecorderConfig(64 * 1024, 1, MediaRecorder.AudioSource.DEFAULT, MediaRecorder.AudioEncoder.DEFAULT);
+
+        }
+    }
+
     /**
      * Call XML writer after bookmark button press
      *
      * @param type
      */
-    public void postDialog(int type) {
+    void postDialog(int type) {
         //Log.d(TAG_LOG, "OnClick bookmark");
-        filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
+        String filePathBook = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/" + fileAudioName + "_" + count + ".xml";
         //Log.d(TAG_LOG, filePathBook);
         count++;
-        fileBook = new File(filePathBook);
+        File fileBook = new File(filePathBook);
         long chronoTime;
         if (type == 1) {
             chronoTime = pressTime;
@@ -437,9 +461,11 @@ public class RecorderFragment extends Fragment {
         long duration = (int) (chronoTime / 1000);
         Thread xmlCreateThread = new Thread(new WriteToXML(fileBook, duration, type, bookMsg, fileAudioName, filePathAudio));
         xmlCreateThread.start();
-        Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-        parseBookmarkFiles.start();
-        Toast.makeText(getActivity(), "Bookmark added at time: " + duration, Toast.LENGTH_SHORT).show();
+        //Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
+        //parseBookmarkFiles.start();
+        Utils utils = new Utils();
+        String tempTime = Utils.timeToString((int) duration);
+        Toast.makeText(getActivity(), "Bookmark added at time: " + tempTime, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -468,31 +494,15 @@ public class RecorderFragment extends Fragment {
         return new RecorderFragment();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-        if (isRecording) {
-            Log.d(TAG_LOG, "is recording");
-            if (startTime != null) {
-                Log.d(TAG_LOG, "startTime not null");
-                outState.putLong("startTime", startTime);
-                outState.putLong("chronoBase", chronometer.getBase());
-            }
-        }
-
-        Log.d(TAG_LOG, "save view data");
-
-
-        super.onSaveInstanceState(outState);
-    }
-
-
-    public void restoreRecordingState() {
+    void restoreRecordingState() {
+        mAudioRecorder = prevAudioRecorder;
         Log.d(TAG_LOG, "Restore previous recording state");
         chronometer.setBase(chronoBase);
-        chronometer.start();
+        if (mAudioRecorder.isRecording()) {
+            chronometer.start();
+        }
         changeButtonsState();
-        mAudioRecorder = prevAudioRecorder;
+
     }
 
 }

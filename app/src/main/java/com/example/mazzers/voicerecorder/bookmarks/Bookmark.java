@@ -11,8 +11,11 @@ import android.os.Parcelable;
  */
 public class Bookmark implements Parcelable {
 
-    private String path, fileName, message, bookmarkPath;
-    private int time;
+    private final String path;
+    private final String fileName;
+    private final String message;
+    private final String bookmarkPath;
+    private final int time;
     private int type;
 
     /**
@@ -38,7 +41,7 @@ public class Bookmark implements Parcelable {
      *
      * @param path         - path to audio file
      * @param bookmarkPath - path to bookmark file
-     * @param fileName     - audiofile name
+     * @param fileName     - audioFile name
      * @param time         - bookmark time
      * @param message      - bookmark message
      * @param type         - bookmark type
@@ -73,9 +76,9 @@ public class Bookmark implements Parcelable {
     }
 
     /**
-     * Get audiofile path
+     * Get audioFile path
      *
-     * @return audiofile path
+     * @return audioFile path
      */
     public String getPath() {
         return path;
@@ -91,7 +94,7 @@ public class Bookmark implements Parcelable {
     }
 
     /**
-     * Get audiofile name
+     * Get audioFile name
      *
      * @return name
      */

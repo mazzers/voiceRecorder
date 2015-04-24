@@ -16,31 +16,39 @@ public class Utils {
      * Timer Format
      * Hours:Minutes:Seconds
      */
-    public String milliSecondsToTimer(long milliseconds) {
+    public static String milliSecondsToTimer(long milliseconds) {
         //Log.d(TAG_LOG,"Utils: milliSecondsToTimer ");
-        String finalTimerString = "";
-        String secondsString = "";
+        //String finalTimerString = "";
+        //String secondsString = "";
+        StringBuffer buffer = new StringBuffer();
 
         // Convert total duration into time
         int hours = (int) (milliseconds / (1000 * 60 * 60));
         int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
         int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
         // Add hours if there
-        if (hours > 0) {
-            finalTimerString = hours + ":";
-        }
-
-        // Prepending 0 to seconds if it is one digit
-        if (seconds < 10) {
-            secondsString = "0" + seconds;
-        } else {
-            secondsString = "" + seconds;
-        }
-
-        finalTimerString = finalTimerString + minutes + ":" + secondsString;
-
-        // return timer string
-        return finalTimerString;
+//        if (hours > 0) {
+//            finalTimerString = hours + ":";
+//        }
+//
+//        // Prepending 0 to seconds if it is one digit
+//        if (seconds < 10) {
+//            secondsString = "0" + seconds;
+//        } else {
+//            secondsString = "" + seconds;
+//        }
+//
+//        finalTimerString = finalTimerString + minutes + ":" + secondsString;
+//
+//        // return timer string
+//        return finalTimerString;
+        buffer
+                .append(String.format("%02d", hours))
+                .append(":")
+                .append(String.format("%02d", minutes))
+                .append(":")
+                .append(String.format("%02d", seconds));
+        return buffer.toString();
     }
 
     /**
@@ -49,7 +57,7 @@ public class Utils {
      * @param currentDuration
      * @param totalDuration
      */
-    public int getProgressPercentage(long currentDuration, long totalDuration) {
+    public static int getProgressPercentage(long currentDuration, long totalDuration) {
         //Log.d(TAG_LOG,"Utils: get progressPercentage");
         Double percentage = (double) 0;
 
@@ -69,7 +77,7 @@ public class Utils {
      * @param progress      -
      * @param totalDuration returns current duration in milliseconds
      */
-    public int progressToTimer(int progress, int totalDuration) {
+    public static int progressToTimer(int progress, int totalDuration) {
         //Log.d(TAG_LOG,"Utils: progressToTimer");
         int currentDuration = 0;
         totalDuration = (totalDuration / 1000);
@@ -83,6 +91,17 @@ public class Utils {
         String time;
         int hours = i / 3600;
         int remainder = i - hours * 3600;
+        int mins = remainder / 60;
+        remainder = remainder - mins * 60;
+        int secs = remainder;
+        time = hours + ":" + mins + ":" + secs + "";
+        return time;
+    }
+
+    public static String timeToString(long i) {
+        String time;
+        int hours = (int) i / 3600;
+        int remainder = (int) i - hours * 3600;
         int mins = remainder / 60;
         remainder = remainder - mins * 60;
         int secs = remainder;

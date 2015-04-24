@@ -1,14 +1,16 @@
 package com.example.mazzers.voicerecorder.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +23,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 import com.example.mazzers.voicerecorder.bookmarks.adapters.ListViewAdapter;
+import com.example.mazzers.voicerecorder.utils.BookmarksLoader;
 import com.example.mazzers.voicerecorder.utils.Utils;
 
 import java.io.File;
@@ -43,27 +45,26 @@ import java.util.List;
  * Player fragment. Handles user action and media file control
  */
 
-public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
+public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener, LoaderManager.LoaderCallbacks<HashMap<String, List<Bookmark>>> {
     public static final String PLAYER_TAG = "PLAYER_TAG";
-    private ImageButton btnPlay;
-    private List<String> listDataHeader;
+    private ImageButton btnPlay, btnFwd, btnBwd;
     private HashMap<String, List<Bookmark>> mItems;
-    private Utils utils;
+    private final int LOAD_BOOKMARKS_ID = 5;
     private ListViewAdapter listViewAdapter;
+    private final int FILE_DELETE = 1;
     private static SeekBar seekBar;
     private static MediaPlayer mediaPlayer;
-    private static String TAG_LOG = "playerFragment";
-    private static String path;
-    private static int time;
+    private static final String TAG_LOG = "playerFragment";
+    private static String path, prevPath;
     private static ListView listView;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private ArrayList<Bookmark> bookmarkArrayList;
-    private int seekValue = 5000;
+    private final int seekValue = 5000;
     private int[] stamps;
-    private long prevDuration;
     private MediaPlayer prevPlayer;
+    // private boolean running;
 
     /**
      * On fragment create
@@ -72,14 +73,15 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //Log.d(TAG_LOG, "PlayerFragment: onCrete PlayerFragment");
+
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        Activity mainActivity = getActivity();
+        mItems = new HashMap<>();
+        Bundle loaderBundle = new Bundle();
+        loaderBundle.putString("dir_bookmarks", Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
 
-        utils = new Utils();
-
+        getLoaderManager().initLoader(LOAD_BOOKMARKS_ID, loaderBundle, this).forceLoad();
     }
 
     /**
@@ -94,14 +96,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //todo broken files skip
-        //todo hightlight
-        //todo add new while listening
-        //todo context menu remove
         View rootView = inflater.inflate(R.layout.player_layout, container, false);
         btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
-        ImageButton btnFwd = (ImageButton) rootView.findViewById(R.id.btnForward);
-        ImageButton btnBwd = (ImageButton) rootView.findViewById(R.id.btnBackward);
+        btnFwd = (ImageButton) rootView.findViewById(R.id.btnForward);
+        btnBwd = (ImageButton) rootView.findViewById(R.id.btnBackward);
         songCurrentDurationLabel = (TextView) rootView.findViewById(R.id.songCurrentDurationLabel);
         songTotalDurationLabel = (TextView) rootView.findViewById(R.id.songTotalDurationLabel);
         seekBar = (SeekBar) rootView.findViewById(R.id.seekBar);
@@ -133,47 +131,34 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             }
         });
 
-
         mediaPlayer = new MediaPlayer();
         seekBar.setOnSeekBarChangeListener(this);
         mediaPlayer.setOnCompletionListener(this);
-        Bundle bundle = getArguments();
-        if (bundle == null) {
-            btnPlay.setEnabled(false);
-            seekBar.setEnabled(false);
-            btnBwd.setEnabled(false);
-            btnFwd.setEnabled(false);
-        } else {
-            listView = (ListView) rootView.findViewById(R.id.player_list);
-            path = bundle.getString("filePath");
-            prepareListData();
-            prepareMediaPlayer();
-            File currFile = new File(path);
-            String name = currFile.getName().substring(0, currFile.getName().length() - 4);
-            int i = listDataHeader.indexOf(name);
-            if (i >= 0) {
-                bookmarkArrayList = new ArrayList<>(mItems.get(listDataHeader.get(i)));
-                listViewAdapter = new ListViewAdapter(getActivity(), bookmarkArrayList);
-                listView.setAdapter(listViewAdapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Bookmark temp = (Bookmark) listView.getItemAtPosition(position);
-                        if (mediaPlayer != null) {
-                            mediaPlayer.seekTo(temp.getTime() * 1000);
-                        }
-                    }
-                });
-                stamps = new int[bookmarkArrayList.size()];
-                makeStamps();
+        changeButtonsState();
+        listView = (ListView) rootView.findViewById(R.id.player_list);
+        Log.i(TAG_LOG, "else");
+        bookmarkArrayList = new ArrayList<>();
+        listViewAdapter = new ListViewAdapter(getActivity(), bookmarkArrayList);
+        listView.setAdapter(listViewAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bookmark temp = (Bookmark) listView.getItemAtPosition(position);
+                if (mediaPlayer != null) {
+                    mediaPlayer.seekTo(temp.getTime() * 1000);
+                }
             }
+        });
+        listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                menu.add(0, FILE_DELETE, 0, "Delete bookmark");
 
+            }
+        });
 
-        }
 
         return rootView;
-
-
     }
 
     @Override
@@ -187,81 +172,79 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.player_menu_toggle_list:
-                toggleList();
+                //toggleList();
+                newToggle();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    void toggleList() {
-        if (MainActivity.getPlayerFragment() != this) {
-            MainActivity.setPlayerFragment(this);
+    void changeButtonsState() {
+        if (path == null) {
+            btnPlay.setEnabled(false);
+            btnBwd.setEnabled(false);
+            btnFwd.setEnabled(false);
+            seekBar.setEnabled(false);
+        } else {
+
+            btnBwd.setEnabled(true);
+            btnFwd.setEnabled(true);
+            btnPlay.setEnabled(true);
+            seekBar.setEnabled(true);
+
         }
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
-        ft.hide(this);
-        RecordListFragment recordListFragment = (RecordListFragment) getFragmentManager().findFragmentByTag(RecordListFragment.LIST_TAG);
-        if (recordListFragment == null) {
-            //Toast.makeText(getActivity(), "recordListFragment is null", Toast.LENGTH_SHORT).show();
-            recordListFragment = RecordListFragment.createNewInstance();
-            ft.add(R.id.container, recordListFragment, RecordListFragment.LIST_TAG);
-        }
-        ft.show(recordListFragment);
-        ft.addToBackStack(null).commit();
     }
 
-    private Runnable run = new Runnable() {
+    void newToggle() {
+        MainActivity activity = (MainActivity) getActivity();
+        activity.toggleList();
+    }
+
+    private final Runnable run = new Runnable() {
         public void run() {
-            //Log.d(TAG_LOG, "PlayerFragment: in run()");
             if (mediaPlayer != null && mediaPlayer.getDuration() > 0) {
                 long totalDuration = mediaPlayer.getDuration();
 
                 long currentDuration = mediaPlayer.getCurrentPosition();
 
                 // Displaying Total Duration time
-                songTotalDurationLabel.setText("" + utils.milliSecondsToTimer(totalDuration));
+                songTotalDurationLabel.setText("" + Utils.milliSecondsToTimer(totalDuration));
                 // Displaying time completed playing
-                songCurrentDurationLabel.setText("" + utils.milliSecondsToTimer(currentDuration));
+                songCurrentDurationLabel.setText("" + Utils.milliSecondsToTimer(currentDuration));
 
                 // Updating progress bar
-                int progress = (utils.getProgressPercentage(currentDuration, totalDuration));
+                int progress = (Utils.getProgressPercentage(currentDuration, totalDuration));
 
                 seekBar.setProgress(progress);
             }
 
-            // Running this thread after 100 milliseconds
             handler.postDelayed(this, 100);
-            //}
         }
     };
 
-    private Runnable highlight = new Runnable() {
+    private final Runnable highlight = new Runnable() {
 
         public void run() {
-            int curr;
-            long curr_long;
-            int pos;
-            curr_long = mediaPlayer.getCurrentPosition();
-            curr = (int) (curr_long / 1000);
-            pos = Arrays.binarySearch(stamps, curr);
-            if (pos >= 0) {
-                Log.d(TAG_LOG, "time reached " + String.valueOf(stamps[pos]));
-                selectPos(pos);
-            }
+            // while (running) {
+            if (stamps != null && stamps.length > 0) {
+                int curr;
+                long curr_long;
+                int pos;
+                curr_long = mediaPlayer.getCurrentPosition();
+                curr = (int) (curr_long / 1000);
+                pos = Arrays.binarySearch(stamps, curr);
+                if (pos >= 0) {
+                    Log.d(TAG_LOG, "Time reached");
+                    selectPos(pos);
+                }
 
+
+            }
             handler.postDelayed(this, 500);
+            //  }
+            Log.i(TAG_LOG, "Thread:" + hashCode() + ". End of highlight");
         }
     };
 
-    private Runnable setStamps = new Runnable() {
-
-        public void run() {
-            Log.d(TAG_LOG, "setStamps");
-            for (int i = 0; i < bookmarkArrayList.size(); i++) {
-                stamps[i] = bookmarkArrayList.get(i).getTime();
-                Log.d(TAG_LOG, String.valueOf(stamps[i]));
-            }
-        }
-    };
 
     /**
      * Seekbar progres changed
@@ -295,18 +278,16 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     public void onStopTrackingTouch(SeekBar seekBar) {
         if (mediaPlayer != null) {
             try {
-
-
-                handler.removeCallbacks(run);
-                handler.removeCallbacks(highlight);
+                //handler.removeCallbacks(run);
                 int totalDuration = mediaPlayer.getDuration();
-                int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
+                int currentPosition = Utils.progressToTimer(seekBar.getProgress(), totalDuration);
                 mediaPlayer.seekTo(currentPosition);
                 updateProgressBar();
                 updateListViewSelection();
                 mediaPlayer.start();
 
             } catch (Exception e) {
+                handler.removeCallbacks(run);
                 //Log.e(TAG_LOG, e.toString());
             }
         }
@@ -322,42 +303,63 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
 
     public void onCompletion(MediaPlayer mp) {
-
-        //Toast.makeText(mainActivity, "End of file", Toast.LENGTH_SHORT).show();
-
-        //handler.removeCallbacks(run);
-        //handler.removeCallbacks(highlight);
         mediaPlayer.seekTo(0);
         btnPlay.setBackgroundResource(R.drawable.play_icon);
         deselectPos();
+        handler.removeCallbacks(highlight);
 
+    }
+
+    @Override
+    public Loader<HashMap<String, List<Bookmark>>> onCreateLoader(int id, Bundle args) {
+        return new BookmarksLoader(getActivity(), args);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<HashMap<String, List<Bookmark>>> loader, HashMap<String, List<Bookmark>> data) {
+        updateList(data);
+        Log.i(TAG_LOG, "onLoadFinished");
+    }
+
+    @Override
+    public void onLoaderReset(Loader<HashMap<String, List<Bookmark>>> loader) {
+
+    }
+
+    void updateList(HashMap<String, List<Bookmark>> data) {
+        Log.d(TAG_LOG, "updateList:" + data.size());
+        mItems.clear();
+        mItems.putAll(data);
+        if (path != null) {
+            File currFile = new File(path);
+            String name = currFile.getName().substring(0, currFile.getName().length() - 4);
+            if (mItems.containsKey(name)) {
+                bookmarkArrayList.clear();
+                bookmarkArrayList.addAll(mItems.get(name));
+                Log.d(TAG_LOG, "set adapter");
+                listViewAdapter.notifyDataSetChanged();
+                if (bookmarkArrayList.size() > 0) {
+                    stamps = new int[bookmarkArrayList.size()];
+                    for (int i = 0; i < bookmarkArrayList.size(); i++) {
+                        stamps[i] = bookmarkArrayList.get(i).getTime();
+                    }
+                }
+            }
+        }
     }
 
     /**
      * Button play listener. Start/pause playing
      */
     private class btnPlayClick implements View.OnClickListener {
-
-
         @Override
         public void onClick(View v) {
-
-            //try {
-
-            if (path != null) {
-                btnPlay.setEnabled(true);
-            }
             if (mediaPlayer.isPlaying()) {
-
                 mediaPlayer.pause();
-                // Changing button image to play button
                 btnPlay.setBackgroundResource(R.drawable.play_icon);
-
             } else {
-                // Resume song
-
                 mediaPlayer.start();
-                // Changing button image to pause button
+                updateListViewSelection();
                 btnPlay.setBackgroundResource(R.drawable.pause_icon);
 
             }
@@ -383,7 +385,6 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      * Prepare music player
      */
     void prepareMediaPlayer() {
-        handler.post(setStamps);
         try {
             mediaPlayer.setDataSource(path);
             Log.d(TAG_LOG, "Set data source=" + path);
@@ -396,13 +397,13 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             mediaPlayer.prepare();
             Log.d(TAG_LOG, "Call prepare");
         } catch (Exception e) {
-            Log.d(TAG_LOG, "PlayerFragment: player prepare fail");
+            Log.d(TAG_LOG, "player prepare fail");
             Log.d(TAG_LOG, e.toString());
         }
-        mediaPlayer.seekTo(time * 1000);
         seekBar.setProgress(0);
         seekBar.setMax(100);
         Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
+        //running = true;
         updateProgressBar();
         updateListViewSelection();
 
@@ -411,58 +412,41 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     }
 
-    private void prepareListData() {
-        //todo search in bookmarks
-        listDataHeader = new ArrayList<>();
-        mItems = new HashMap<>();
-
-        List<Bookmark> tempArray = new ArrayList<>();
-        Bookmark[] bookmarksList = MainActivity.getBookmarks();
-
-        if (bookmarksList != null && bookmarksList.length > 0) {
-
-            String groupName = bookmarksList[0].getName();
-            int groupCount = 1;
-            listDataHeader.add(groupName);
-
-            for (int i = 0; i < bookmarksList.length; i++) {
-                if (!bookmarksList[i].getName().equals(groupName)) {
-                    //new group
-                    //add array to previous group
-                    mItems.put(listDataHeader.get(groupCount - 1), tempArray);
-                    //increase group pointer
-                    groupCount++;
-                    //reinitialize array
-                    tempArray = new ArrayList<>();
-                    //set new group name
-                    groupName = bookmarksList[i].getName();
-                    //add groupname to array
-                    listDataHeader.add(groupName);
-                }
-
-                tempArray.add(bookmarksList[i]);
-
+    public void setNewFile(File newFile) {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                btnPlay.setBackgroundResource(R.drawable.play_icon);
             }
-            mItems.put(listDataHeader.get(groupCount - 1), tempArray);
-
-        } else {
-            Log.d(TAG_LOG, "no bookmarks");
-            Toast.makeText(getActivity(), "No bookmarks", Toast.LENGTH_LONG).show();
+            handler.removeCallbacks(run);
+            handler.removeCallbacks(highlight);
+            mediaPlayer.reset();
         }
+        path = newFile.getPath();
+        getLoaderManager().getLoader(LOAD_BOOKMARKS_ID).forceLoad();
+        prepareMediaPlayer();
+        changeButtonsState();
     }
 
+
     private void selectPos(int i) {
-        //todo hightlight
+        Log.d(TAG_LOG, "Pos is:" + i);
         View activePosition = listView.getChildAt(i);
-        RelativeLayout relativeLayout = (RelativeLayout) activePosition.findViewById(R.id.list_view_relative_layout);
-        relativeLayout.setBackgroundResource(R.color.frame_highlighted);
-        for (int index = 0; index < listView.getCount(); index++) {
-            View tempView;
-            if (index != i) {
-                tempView = listView.getChildAt(index);
-                RelativeLayout tempLayout = (RelativeLayout) tempView.findViewById(R.id.list_view_relative_layout);
-                tempLayout.setBackgroundResource(R.color.frame_transparent);
+        if (activePosition != null) {
+            RelativeLayout relativeLayout = (RelativeLayout) activePosition.findViewById(R.id.list_view_relative_layout);
+            relativeLayout.setBackgroundResource(R.color.frame_highlighted_pink);
+            if (listView.getCount() > 1) {
+                for (int index = 0; index < listView.getCount(); index++) {
+                    View tempView;
+                    if (index != i) {
+                        tempView = listView.getChildAt(index);
+                        RelativeLayout tempLayout = (RelativeLayout) tempView.findViewById(R.id.list_view_relative_layout);
+                        tempLayout.setBackgroundResource(R.color.frame_transparent);
+                    }
+                }
             }
+        } else {
+            Log.d(TAG_LOG, "View by pos in null");
         }
     }
 
@@ -475,34 +459,52 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     }
 
-    void makeStamps() {
-        for (int i = 0; i < bookmarkArrayList.size(); i++) {
-            stamps[i] = bookmarkArrayList.get(i).getTime();
-        }
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG_LOG, "onPause = Stop threads");
+        handler.removeCallbacks(run);
+        handler.removeCallbacks(highlight);
     }
 
     @Override
-    public void onDetach() {
-        //todo save playing position
-        super.onDetach();
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG_LOG, "onResume = Resume threads");
     }
+
 
     public static PlayerFragment createNewInstance() {
-//        Bundle args = new Bundle();
-//        args.putString("fragment_tag",tag);
-//        playerFragment.setArguments(args);
         return new PlayerFragment();
-
     }
+
 
     public static PlayerFragment createNewInstance(Bundle args) {
         PlayerFragment playerFragment = new PlayerFragment();
-
-        //args.putParcelableArrayList("bookmarks",bookmarks);
         playerFragment.setArguments(args);
         return playerFragment;
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int index = info.position;
+        switch (item.getItemId()) {
+            case FILE_DELETE:
+                deleteBookmark(index);
+                break;
+            default:
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    void deleteBookmark(int position) {
+        Bookmark temp = bookmarkArrayList.get(position);
+        File bookmarkToRemove = new File(temp.getBookmarkPath());
+        bookmarkToRemove.delete();
+        bookmarkArrayList.remove(position);
+        listViewAdapter.notifyDataSetChanged();
+    }
 
 }

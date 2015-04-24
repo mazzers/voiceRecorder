@@ -1,6 +1,7 @@
 package com.example.mazzers.voicerecorder.bookmarks.adapters;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,8 @@ import java.util.List;
  * Created by mazzers on 23. 3. 2015.
  */
 public class RecordListAdapter extends ArrayAdapter<File> {
-    private static String TAG_LOG = "RecordListAdapter";
-    private Utils utils = new Utils();
     //private MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+    private MediaPlayer mediaPlayer;
 
     public RecordListAdapter(Context context, List<File> items) {
         super(context, R.layout.file_listview_item, items);
@@ -44,22 +44,18 @@ public class RecordListAdapter extends ArrayAdapter<File> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         File item = getItem(position);
-        //mediaMetadataRetriever.setDataSource(item.getPath());
 
         if (item == null) {
+            String TAG_LOG = "RecordListAdapter";
             Log.d(TAG_LOG, "file by pos is null");
         }
         viewHolder.itemName.setText(item.getName());
-        //Date d = new Date(item.lastModified());
-        //viewHolder.itemTime.setText(utils.durationToString(Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))));
-        viewHolder.itemSize.setText(utils.readableFileSize(item.length()));
-        viewHolder.itemCreate.setText(utils.dateToString(item.lastModified()));
-        //switch icon by bookmark type
+        viewHolder.itemSize.setText(Utils.readableFileSize(item.length()));
+        viewHolder.itemCreate.setText(Utils.dateToString(item.lastModified()));
 
         return convertView;
     }
 
-    //todo context menu delete record
     private static class ViewHolder {
         TextView itemName;
         TextView itemTime;

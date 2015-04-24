@@ -56,7 +56,7 @@ public class ListViewAdapter extends ArrayAdapter<Bookmark> {
         Utils utils = new Utils();
         viewHolder.itemName.setText(item.getName());
         viewHolder.itemMessage.setText(item.getMessage());
-        viewHolder.itemTime.setText(utils.timeToString(item.getTime()));
+        viewHolder.itemTime.setText(Utils.timeToString(item.getTime()));
         //switch icon by bookmark type
         switch (item.getType()) {
             case 1:

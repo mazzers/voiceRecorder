@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/chrono"
-            android:textSize="64dp"
+            android:textSize="64sp"
             android:textColor="@android:color/primary_text_light" />
 
     </LinearLayout>
@@ -71,8 +71,9 @@
             android:text="@string/enter_name" />
 
         <EditText
-            android:layout_width="128dp"
+            android:layout_width="164dp"
             android:layout_height="wrap_content"
+            android:hint="@string/name_hint"
             android:id="@+id/fileNameEt" />
 
 

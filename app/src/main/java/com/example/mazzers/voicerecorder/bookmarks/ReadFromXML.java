@@ -22,7 +22,7 @@ public class ReadFromXML {
     //private StringReader stringReader;
     private FileInputStream fileInputStream;
     private File inputFile;
-    private String TAG_LOG = "Read";
+    private final String TAG_LOG = "Read";
 
     /**
      * Reader constructor
@@ -47,7 +47,7 @@ public class ReadFromXML {
      *
      * @param myParser
      */
-    public void parseXMLAndStoreIt(XmlPullParser myParser) {
+    void parseXMLAndStoreIt(XmlPullParser myParser) {
         //Log.d(TAG_LOG, "ReadFromXML: call parseXMLandStoreIT ");
         int event;
         try {

@@ -24,7 +24,7 @@ public class SlidingLayout extends RelativeLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setYFraction(float fraction) {
+    void setYFraction(float fraction) {
         this.yFraction = fraction;
         if (getHeight() == 0) {
             if (preDrawListener == null) {

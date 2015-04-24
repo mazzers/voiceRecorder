@@ -1,7 +1,9 @@
 package com.example.mazzers.voicerecorder;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Intent;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -11,11 +13,11 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
-import com.example.mazzers.voicerecorder.bookmarks.ParseBookmarkFiles;
-import com.example.mazzers.voicerecorder.bookmarks.ScanFiles;
-import com.example.mazzers.voicerecorder.fragments.ExpandableBookmarks;
 import com.example.mazzers.voicerecorder.fragments.PlayerFragment;
+import com.example.mazzers.voicerecorder.fragments.RecordListFragment;
 import com.example.mazzers.voicerecorder.fragments.RecorderFragment;
+import com.example.mazzers.voicerecorder.fragments.SettingsFragment;
+import com.example.mazzers.voicerecorder.utils.BookmarksLoader;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -25,6 +27,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Vashchenko Vitaliy A11B0529P
@@ -32,15 +37,35 @@ import java.io.File;
  * <p/>
  * Main activity with drawer and fragments
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<HashMap<String, List<Bookmark>>> {
     private Drawer.Result result = null;
     private static PlayerFragment playerFragment;
-    private ExpandableBookmarks expandableBookmarks;
-    private RecorderFragment recorderFragment;
+    private static RecorderFragment recorderFragment;
+    private static SettingsFragment settingsFragment;
+    private static RecordListFragment recordListFragment;
     private final String TAG_LOG = "MainActivity";
-    private static Bookmark[] bookmarks;
+    private static ArrayList<Bookmark> bookmarks;
     private static File[] files;
     private File recordsDirectory;
+    private static List<String> listDataHeader;
+    private static HashMap<String, List<Bookmark>> mItems;
+    private final int LOADER_BOOKMARKS_ID = 3;
+
+    public static HashMap<String, List<Bookmark>> getmItems() {
+        return mItems;
+    }
+
+    public static List<String> getListDataHeader() {
+        return listDataHeader;
+    }
+
+    public static void setmItems(HashMap<String, List<Bookmark>> mItems) {
+        MainActivity.mItems = mItems;
+    }
+
+    public static void setListDataHeader(List<String> listDataHeader) {
+        MainActivity.listDataHeader = listDataHeader;
+    }
 
     public File getRecordsDirectory() {
         return recordsDirectory;
@@ -55,22 +80,33 @@ public class MainActivity extends ActionBarActivity {
         MainActivity.files = files;
     }
 
-    public static Bookmark[] getBookmarks() {
-        return bookmarks;
-    }
-
-    public static void setBookmarks(Bookmark[] bookmarks) {
-
+    public static void setBookmarks(ArrayList<Bookmark> bookmarks) {
         MainActivity.bookmarks = bookmarks;
     }
 
+    public static ArrayList<Bookmark> getBookmarks() {
+
+        return bookmarks;
+    }
+
+    public RecorderFragment getRecorderFragment() {
+        return recorderFragment;
+    }
+
+    public void setRecorderFragment(RecorderFragment recorderFragment) {
+        this.recorderFragment = recorderFragment;
+    }
+
+    public static void setRecordListFragment(RecordListFragment recordListFragment) {
+        MainActivity.recordListFragment = recordListFragment;
+    }
+
+    public static RecordListFragment getRecordListFragment() {
+        return recordListFragment;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        //TODO add widget/notification
-        //increase icons
-        //button push xml
 
         super.onCreate(savedInstanceState);
         Log.d(TAG_LOG, "onCreate");
@@ -79,18 +115,25 @@ public class MainActivity extends ActionBarActivity {
         if (!recordsDirectory.exists()) {
             Log.d(TAG_LOG, "Main activity: directory not exist");
             recordsDirectory.mkdirs();
-
         }
 
-        Thread parseBookmarkFiles = new Thread(new ParseBookmarkFiles());
-        Thread scanFiles = new Thread(new ScanFiles(recordsDirectory));
-        playerFragment = PlayerFragment.createNewInstance();
-        recorderFragment = RecorderFragment.createNewInstance();
-        expandableBookmarks = ExpandableBookmarks.createNewInstance();
+        //Bundle bundle = new Bundle();
+
+        //bundle.putString("dir_bookmarks",Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
+        playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
+        if (playerFragment == null) {
+            playerFragment = PlayerFragment.createNewInstance();
+        }
+        recorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RecorderFragment.RECORDER_TAG);
+        if (recorderFragment == null) {
+            recorderFragment = RecorderFragment.createNewInstance();
+        }
+        settingsFragment = (SettingsFragment) getFragmentManager().findFragmentByTag(SettingsFragment.SETTINGS_TAG);
+        if (settingsFragment == null) {
+            settingsFragment = new SettingsFragment();
+        }
 
 
-        parseBookmarkFiles.start();
-        scanFiles.start();
         result = new Drawer()
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
@@ -99,7 +142,6 @@ public class MainActivity extends ActionBarActivity {
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.title_section1).withIcon(FontAwesome.Icon.faw_microphone).withIdentifier(1),
                         new PrimaryDrawerItem().withName(R.string.title_section2).withIcon(FontAwesome.Icon.faw_play).withIdentifier(2),
-                        //new PrimaryDrawerItem().withName(R.string.title_section3).withIcon(FontAwesome.Icon.faw_star).withIdentifier(3),
                         new SectionDrawerItem().withName(R.string.action_settings),
                         new SecondaryDrawerItem().withName(R.string.action_settings).withIcon(FontAwesome.Icon.faw_gear).withIdentifier(3)
 
@@ -109,19 +151,18 @@ public class MainActivity extends ActionBarActivity {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                         if (iDrawerItem instanceof Nameable) {
                             //Toast.makeText(MainActivity.this, MainActivity.this.getString(((Nameable) iDrawerItem).getNameRes()), Toast.LENGTH_SHORT).show();
+                            Fragment fragment;
                             switch (iDrawerItem.getIdentifier()) {
                                 case 1:
                                     displayRecorder();
+
                                     break;
                                 case 2:
                                     displayPlayer();
                                     break;
                                 case 3:
-                                    Intent intent = new Intent(getApplication(), SettingsActivity.class);
-                                    startActivity(intent);
+                                    displaySettings();
                                     break;
-//                                    displayBookmarks();
-//                                    break;
                                 default:
                                     break;
                             }
@@ -153,133 +194,179 @@ public class MainActivity extends ActionBarActivity {
 
     void displayPlayer() {
         Toast.makeText(this, "Player", Toast.LENGTH_SHORT).show();
+        PlayerFragment tempPlayerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
+        if (tempPlayerFragment == null) {
+            playerFragment = PlayerFragment.createNewInstance();
+        } else {
+            playerFragment = tempPlayerFragment;
+        }
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (!playerFragment.isVisible()) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-//        if (playerFragment.isAdded()) {
-//            ft.show(playerFragment);
-//        } else {
-//            ft.add(R.id.container, playerFragment, PLAYER_TAG);
-//            ft.show(playerFragment);
-//        }
-//
-//        if (recorderFragment.isAdded()) {
-//            ft.hide(recorderFragment);
-//        }
-//        if (expandableBookmarks.isAdded()) {
-//            ft.hide(expandableBookmarks);
-//        }
-            playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
-            if (playerFragment == null) {
-                playerFragment = PlayerFragment.createNewInstance();
-            }
-            if (recorderFragment.isVisible()) {
+            if (recorderFragment != null && recorderFragment.isVisible()) {
                 ft.hide(recorderFragment);
             }
-            if (!playerFragment.isVisible()) {
-                ft.show(playerFragment);
+            if (settingsFragment != null && settingsFragment.isVisible()) {
+                ft.hide(settingsFragment);
             }
-            ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
-//        ft.addToBackStack(null);
+            if (recordListFragment != null && recordListFragment.isVisible()) {
+                ft.hide(recordListFragment);
+            }
+            if (!playerFragment.isAdded()) {
+                ft.add(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
+            }
+            ft.show(playerFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+
+
+    }
+
+    void displaySettings() {
+        Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+        SettingsFragment tempSettingsFragment = (SettingsFragment) getFragmentManager().findFragmentByTag(SettingsFragment.SETTINGS_TAG);
+        if (tempSettingsFragment == null) {
+            settingsFragment = new SettingsFragment();
+        } else {
+            settingsFragment = tempSettingsFragment;
+        }
+        if (!settingsFragment.isVisible()) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+            if (playerFragment != null && playerFragment.isVisible()) {
+                ft.hide(playerFragment);
+            }
+            if (recorderFragment != null && recorderFragment.isVisible()) {
+                ft.hide(recorderFragment);
+            }
+            if (recordListFragment != null && recordListFragment.isVisible()) {
+                ft.hide(recordListFragment);
+            }
+            if (!settingsFragment.isAdded()) {
+                ft.add(R.id.container, settingsFragment, SettingsFragment.SETTINGS_TAG);
+            }
+            ft.show(settingsFragment);
+            ft.addToBackStack(null);
             ft.commit();
         }
 
     }
 
-    public void displayPlayer(Bundle args) {
+    public void toggleList() {
+        RecordListFragment tempListFragment = (RecordListFragment) getFragmentManager().findFragmentByTag(RecordListFragment.LIST_TAG);
+        if (tempListFragment == null) {
+            recordListFragment = RecordListFragment.createNewInstance();
+        } else {
+            recordListFragment = tempListFragment;
+        }
+        if (!recordListFragment.isVisible()) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+            if (playerFragment != null && playerFragment.isVisible()) {
+                ft.hide(playerFragment);
+            }
+            if (settingsFragment != null && settingsFragment.isVisible()) {
+                ft.hide(settingsFragment);
+            }
+            if (recorderFragment != null && recorderFragment.isVisible()) {
+                ft.hide(recorderFragment);
+            }
+            if (!recordListFragment.isAdded()) {
+                ft.add(R.id.container, recordListFragment, RecordListFragment.LIST_TAG);
+            }
+            ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
+            ft.show(recordListFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+    }
+
+    public void togglePlayer() {
+        PlayerFragment tempPlayerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
+        if (tempPlayerFragment == null) {
+            playerFragment = PlayerFragment.createNewInstance();
+        } else {
+            playerFragment = tempPlayerFragment;
+        }
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-        //if (playerFragment.isAdded()) {
-        //ft.detach(playerFragment);
-        playerFragment = PlayerFragment.createNewInstance(args);
-        //ft.add(R.id.container, playerFragment, PLAYER_TAG);
-        //} else {
-        //   playerFragment = PlayerFragment.createNewInstance(PLAYER_TAG, args);
-        //    ft.add(R.id.container, playerFragment, PLAYER_TAG);
-        //   ft.show(playerFragment);
-        // }
-
-
-//        if (recorderFragment.isAdded()) {
-//            ft.hide(recorderFragment);
-//        }
-//        if (expandableBookmarks.isAdded()) {
-//            ft.hide(expandableBookmarks);
-//        }
-
-        ft.replace(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
-//        ft.addToBackStack(null);
-        ft.commit();
-
-
+        if (!playerFragment.isVisible()) {
+            if (recorderFragment != null && recorderFragment.isVisible()) {
+                ft.hide(recorderFragment);
+            }
+            if (settingsFragment != null && settingsFragment.isVisible()) {
+                ft.hide(settingsFragment);
+            }
+            if (recordListFragment != null && recordListFragment.isVisible()) {
+                ft.hide(recordListFragment);
+            }
+            if (!playerFragment.isAdded()) {
+                ft.add(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
+            }
+            ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
+            ft.show(playerFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
     }
 
 
     void displayRecorder() {
+        Toast.makeText(this, "Recorder", Toast.LENGTH_SHORT).show();
+        RecorderFragment tempRecorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RecorderFragment.RECORDER_TAG);
+        if (tempRecorderFragment == null) {
+            recorderFragment = RecorderFragment.createNewInstance();
+        } else {
+            recorderFragment = tempRecorderFragment;
+        }
         if (!recorderFragment.isVisible()) {
-            Toast.makeText(this, "Recorder", Toast.LENGTH_SHORT).show();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
-//        if(recorderFragment==null){
-//            recorderFragment = RecorderFragment.createNewInstance();
-//        }
-//        if (recorderFragment.isAdded()) {
-//            Log.d(TAG_LOG, "is added");
-//            ft.show(recorderFragment);
-//        } else {
-//            Log.d(TAG_LOG, "not added");
-//            ft.add(R.id.container, recorderFragment, RECORDER_TAG);
-//            ft.show(recorderFragment);
-//        }
-//        if (playerFragment.isAdded()) {
-//            ft.hide(playerFragment);
-//        }
-//        if (expandableBookmarks.isAdded()) {
-//            ft.hide(expandableBookmarks);
-//        }
-            if (playerFragment.isVisible()) {
+
+            if (playerFragment != null && playerFragment.isVisible()) {
                 ft.hide(playerFragment);
             }
-            if (!recorderFragment.isVisible()) {
-                ft.show(recorderFragment);
+            if (settingsFragment != null && settingsFragment.isVisible()) {
+                ft.hide(settingsFragment);
             }
-            ft.replace(R.id.container, recorderFragment, RecorderFragment.RECORDER_TAG);
+            if (recordListFragment != null && recordListFragment.isVisible()) {
+                ft.hide(recordListFragment);
+            }
+            if (!recorderFragment.isAdded()) {
+                ft.add(R.id.container, recorderFragment, RecorderFragment.RECORDER_TAG);
+            }
+            ft.show(recorderFragment);
+            ft.addToBackStack(null);
             ft.commit();
         }
 
     }
 
 
-    void displayBookmarks() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//        if (expandableBookmarks==null){
-//            expandableBookmarks = ExpandableBookmarks.createNewInstance();
-//        }
-//        if (expandableBookmarks.isAdded()) {
-//            ft.show(expandableBookmarks);
-//            Log.d(TAG_LOG, "bookmarks are already added");
-//        } else {
-//            ft.add(R.id.container, expandableBookmarks, BOOKMARKS_TAG);
-//            ft.show(expandableBookmarks);
-//        }
-//
-//        if (playerFragment.isAdded()) {
-//            ft.hide(playerFragment);
-//        }
-//        if (recorderFragment.isAdded()) {
-//            ft.hide(recorderFragment);
-//        }
-        ft.replace(R.id.container, expandableBookmarks);
-        ft.commit();
-    }
+    public static void setPlayerFragment(PlayerFragment newPlayerFragment) {
 
-    public static void setPlayerFragment(PlayerFragment Playerfragment) {
-
-        playerFragment = Playerfragment;
+        playerFragment = newPlayerFragment;
     }
 
     public static PlayerFragment getPlayerFragment() {
         return playerFragment;
     }
 
+    @Override
+    public Loader<HashMap<String, List<Bookmark>>> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG_LOG, "onCreateLoader");
+        return new BookmarksLoader(this, args);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<HashMap<String, List<Bookmark>>> loader, HashMap<String, List<Bookmark>> data) {
+        Toast.makeText(this, "onLoadFinished", Toast.LENGTH_SHORT).show();
+        Log.d(TAG_LOG, "onLoadFinished");
+        mItems = data;
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<HashMap<String, List<Bookmark>>> loader) {
+
+    }
 }
 

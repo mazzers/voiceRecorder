@@ -3,7 +3,7 @@
     <color name="frame">#b4b4b4</color>
     <color name="frame_solid">#eee</color>
     <color name="frame_background">#bcbcbc</color>
-    <color name="frame_highlighted">#42a2df</color>
-    <color name="frame_highlighted_pink">#ff42aa</color>
+    <color name="frame_highlighted">#9042a2df</color>
+    <color name="frame_highlighted_pink">#90ff42aa</color>
     <color name="frame_transparent">#00000000</color>
 </resources>

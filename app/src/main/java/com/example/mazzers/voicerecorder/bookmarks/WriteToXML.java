@@ -17,12 +17,12 @@ import java.io.StringWriter;
  */
 
 public class WriteToXML implements Runnable {
-    private File fileBook;
-    private FileOutputStream outputStream;
-    private final String TAG_LOG = "Write&Parse";
-    private String message, fileAudioName, filePathAudio;
-    private Long duration;
-    private int type;
+    private final File fileBook;
+    private final String message;
+    private final String fileAudioName;
+    private final String filePathAudio;
+    private final Long duration;
+    private final int type;
 
 
     /**
@@ -92,10 +92,10 @@ public class WriteToXML implements Runnable {
     /**
      * Create XML writer
      */
-    public void createXML() {
+    void createXML() {
 
         try {
-            outputStream = new FileOutputStream(fileBook);
+            FileOutputStream outputStream = new FileOutputStream(fileBook);
 
             outputStream.write(WriteDataToXML().getBytes());
             //Log.d(TAG_LOG, "In try createBookmarkFile: write");
@@ -103,6 +103,7 @@ public class WriteToXML implements Runnable {
             //Log.d(TAG_LOG, "Closed");
 
         } catch (Exception e) {
+            String TAG_LOG = "Write&Parse";
             Log.e(TAG_LOG, e.toString());
         }
 
