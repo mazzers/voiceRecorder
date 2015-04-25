@@ -2,6 +2,7 @@ package com.example.mazzers.voicerecorder.fragments;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Loader;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -23,6 +24,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.R;
@@ -64,6 +66,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private final int seekValue = 5000;
     private int[] stamps;
     private MediaPlayer prevPlayer;
+    private ProgressDialog progressDialog;
     // private boolean running;
 
     /**
@@ -132,9 +135,29 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         });
 
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                //Toast.makeText(getActivity(),"Load failed",Toast.LENGTH_SHORT).show();
+                if (extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT) {
+                    Toast.makeText(getActivity(), "Load timeouted", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                Log.i(TAG_LOG, "onPrepared");
+                progressDialog.dismiss();
+                continuePrepare();
+            }
+        });
         seekBar.setOnSeekBarChangeListener(this);
         mediaPlayer.setOnCompletionListener(this);
-        changeButtonsState();
+        if (savedInstanceState == null) {
+            changeButtonsState(false);
+        }
         listView = (ListView) rootView.findViewById(R.id.player_list);
         Log.i(TAG_LOG, "else");
         bookmarkArrayList = new ArrayList<>();
@@ -178,23 +201,17 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         return super.onOptionsItemSelected(item);
     }
 
-    void changeButtonsState() {
-        if (path == null) {
-            btnPlay.setEnabled(false);
-            btnBwd.setEnabled(false);
-            btnFwd.setEnabled(false);
-            seekBar.setEnabled(false);
-        } else {
-
-            btnBwd.setEnabled(true);
-            btnFwd.setEnabled(true);
-            btnPlay.setEnabled(true);
-            seekBar.setEnabled(true);
-
-        }
+    void changeButtonsState(Boolean state) {
+        btnPlay.setEnabled(state);
+        btnBwd.setEnabled(state);
+        btnFwd.setEnabled(state);
+        seekBar.setEnabled(state);
     }
 
     void newToggle() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
         MainActivity activity = (MainActivity) getActivity();
         activity.toggleList();
     }
@@ -241,7 +258,6 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             }
             handler.postDelayed(this, 500);
             //  }
-            Log.i(TAG_LOG, "Thread:" + hashCode() + ". End of highlight");
         }
     };
 
@@ -318,6 +334,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
     public void onLoadFinished(Loader<HashMap<String, List<Bookmark>>> loader, HashMap<String, List<Bookmark>> data) {
         updateList(data);
+        MainActivity.setmItems(data);
         Log.i(TAG_LOG, "onLoadFinished");
     }
 
@@ -381,10 +398,21 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         handler.postDelayed(highlight, 500);
     }
 
+    void continuePrepare() {
+        changeButtonsState(true);
+        seekBar.setProgress(0);
+        seekBar.setMax(100);
+        Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
+        //running = true;
+        updateProgressBar();
+        updateListViewSelection();
+    }
+
     /**
      * Prepare music player
      */
     void prepareMediaPlayer() {
+        mediaPlayer.reset();
         try {
             mediaPlayer.setDataSource(path);
             Log.d(TAG_LOG, "Set data source=" + path);
@@ -394,38 +422,34 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         Log.d(TAG_LOG, "Set data type");
         try {
-            mediaPlayer.prepare();
+            //mediaPlayer.prepare();
+            mediaPlayer.prepareAsync();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
             Log.d(TAG_LOG, "Call prepare");
         } catch (Exception e) {
             Log.d(TAG_LOG, "player prepare fail");
             Log.d(TAG_LOG, e.toString());
         }
-        seekBar.setProgress(0);
-        seekBar.setMax(100);
-        Log.d(TAG_LOG, "PlayerFragment: call updateProgressBar()");
-        //running = true;
-        updateProgressBar();
-        updateListViewSelection();
-
-
-        Log.d(TAG_LOG, "PlayerFragment: DURATION: " + mediaPlayer.getDuration());
 
     }
 
     public void setNewFile(File newFile) {
-        if (mediaPlayer != null) {
+        if (newFile.getPath() != path) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
                 btnPlay.setBackgroundResource(R.drawable.play_icon);
+
+                handler.removeCallbacks(run);
+                handler.removeCallbacks(highlight);
+                mediaPlayer.reset();
             }
-            handler.removeCallbacks(run);
-            handler.removeCallbacks(highlight);
-            mediaPlayer.reset();
+            path = newFile.getPath();
+            getLoaderManager().getLoader(LOAD_BOOKMARKS_ID).forceLoad();
+            prepareMediaPlayer();
+            changeButtonsState(false);
         }
-        path = newFile.getPath();
-        getLoaderManager().getLoader(LOAD_BOOKMARKS_ID).forceLoad();
-        prepareMediaPlayer();
-        changeButtonsState();
     }
 
 

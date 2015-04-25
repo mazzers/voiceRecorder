@@ -116,10 +116,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             Log.d(TAG_LOG, "Main activity: directory not exist");
             recordsDirectory.mkdirs();
         }
+        Bundle loaderBundle = new Bundle();
+        loaderBundle.putString("dir_bookmarks", Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
+        getLoaderManager().initLoader(LOADER_BOOKMARKS_ID, loaderBundle, this).forceLoad();
 
-        //Bundle bundle = new Bundle();
-
-        //bundle.putString("dir_bookmarks",Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
         playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
         if (playerFragment == null) {
             playerFragment = PlayerFragment.createNewInstance();

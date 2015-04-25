@@ -152,20 +152,24 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
         File recordToDelete = mFileList.get(position);
         recordToDelete.delete();
         mFileList.remove(position);
-
         String name = recordToDelete.getName().substring(0, recordToDelete.getName().length() - 4);
         HashMap<String, List<Bookmark>> mItems = MainActivity.getmItems();
-        if (mItems.containsKey(name)) {
-            List<Bookmark> listToRemove = mItems.get(name);
-            for (int j = 0; j < listToRemove.size(); j++) {
-                File bookmarkToDelete = new File(listToRemove.get(j).getBookmarkPath());
-                bookmarkToDelete.delete();
+        if (mItems != null) {
+
+
+            if (mItems.containsKey(name)) {
+                List<Bookmark> listToRemove = mItems.get(name);
+                for (int j = 0; j < listToRemove.size(); j++) {
+                    File bookmarkToDelete = new File(listToRemove.get(j).getBookmarkPath());
+                    bookmarkToDelete.delete();
+                }
+                mItems.remove(name);
             }
-            mItems.remove(name);
+            getLoaderManager().getLoader(LIST_FILE_LOADER_ID).forceLoad();
+
+        } else {
+            Log.i(TAG_LOG, "mItems = null");
         }
-        getLoaderManager().getLoader(LIST_FILE_LOADER_ID).forceLoad();
-        int LOADER_BOOKMARKS_ID = 3;
-        getLoaderManager().getLoader(LOADER_BOOKMARKS_ID).forceLoad();
     }
 
     @Override
