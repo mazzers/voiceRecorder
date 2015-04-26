@@ -50,6 +50,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private static List<String> listDataHeader;
     private static HashMap<String, List<Bookmark>> mItems;
     private final int LOADER_BOOKMARKS_ID = 3;
+    private final String bookmarksFolder = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/";
 
     public static HashMap<String, List<Bookmark>> getmItems() {
         return mItems;
@@ -109,15 +110,15 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        Log.d(TAG_LOG, "onCreate");
+        //Log.d(TAG_LOG, "onCreate");
         setContentView(R.layout.activity_main);
-        recordsDirectory = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
+        recordsDirectory = new File(bookmarksFolder);
         if (!recordsDirectory.exists()) {
             Log.d(TAG_LOG, "Main activity: directory not exist");
             recordsDirectory.mkdirs();
         }
         Bundle loaderBundle = new Bundle();
-        loaderBundle.putString("dir_bookmarks", Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
+        loaderBundle.putString("dir_bookmarks", bookmarksFolder);
         getLoaderManager().initLoader(LOADER_BOOKMARKS_ID, loaderBundle, this).forceLoad();
 
         playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
@@ -223,7 +224,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     }
 
     void displaySettings() {
-        Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
         SettingsFragment tempSettingsFragment = (SettingsFragment) getFragmentManager().findFragmentByTag(SettingsFragment.SETTINGS_TAG);
         if (tempSettingsFragment == null) {
             settingsFragment = new SettingsFragment();
@@ -311,7 +312,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
 
     void displayRecorder() {
-        Toast.makeText(this, "Recorder", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Recorder", Toast.LENGTH_SHORT).show();
         RecorderFragment tempRecorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RecorderFragment.RECORDER_TAG);
         if (tempRecorderFragment == null) {
             recorderFragment = RecorderFragment.createNewInstance();
@@ -358,7 +359,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<HashMap<String, List<Bookmark>>> loader, HashMap<String, List<Bookmark>> data) {
-        Toast.makeText(this, "onLoadFinished", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "onLoadFinished", Toast.LENGTH_SHORT).show();
         Log.d(TAG_LOG, "onLoadFinished");
         mItems = data;
     }

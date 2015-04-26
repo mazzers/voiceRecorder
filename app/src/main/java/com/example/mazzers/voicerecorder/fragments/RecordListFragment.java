@@ -88,6 +88,8 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
 
 
     void toggleList() {
+        PlayerFragment playerFragment = MainActivity.getPlayerFragment();
+        playerFragment.reloadView();
         MainActivity activity = (MainActivity) getActivity();
         activity.togglePlayer();
     }

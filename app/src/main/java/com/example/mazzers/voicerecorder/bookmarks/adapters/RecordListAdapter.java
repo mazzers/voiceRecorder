@@ -49,6 +49,7 @@ public class RecordListAdapter extends ArrayAdapter<File> {
             String TAG_LOG = "RecordListAdapter";
             Log.d(TAG_LOG, "file by pos is null");
         }
+
         viewHolder.itemName.setText(item.getName());
         viewHolder.itemSize.setText(Utils.readableFileSize(item.length()));
         viewHolder.itemCreate.setText(Utils.dateToString(item.lastModified()));
