@@ -77,6 +77,7 @@ public class BookmarksLoader extends Loader<HashMap<String, List<Bookmark>>> {
 
                     }
                 }
+                Log.d(TAG_LOG, "Bookmarks size:" + bookmarkArrayList.size());
             }
         } else {
             Log.e(TAG_LOG, "ParseBookmarkFiles: dir not exist");
@@ -98,12 +99,12 @@ public class BookmarksLoader extends Loader<HashMap<String, List<Bookmark>>> {
 
         if (bookmarkArrayList != null && bookmarkArrayList.size() > 0) {
 
-            String groupName = bookmarkArrayList.get(0).getName();
+            String groupName = bookmarkArrayList.get(0).getPath();
             int groupCount = 1;
             listDataHeader.add(groupName);
 
             for (int i = 0; i < bookmarkArrayList.size(); i++) {
-                if (!bookmarkArrayList.get(i).getName().equals(groupName)) {
+                if (!bookmarkArrayList.get(i).getPath().equals(groupName)) {
                     //new group
                     //add array to previous group
                     mItems.put(listDataHeader.get(groupCount - 1), tempArray);
@@ -112,7 +113,7 @@ public class BookmarksLoader extends Loader<HashMap<String, List<Bookmark>>> {
                     //reinitialize array
                     tempArray = new ArrayList<>();
                     //set new group name
-                    groupName = bookmarkArrayList.get(i).getName();
+                    groupName = bookmarkArrayList.get(i).getPath();
                     //add groupname to array
                     listDataHeader.add(groupName);
                 }
@@ -134,7 +135,7 @@ public class BookmarksLoader extends Loader<HashMap<String, List<Bookmark>>> {
 
     private class FileExtensionFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
-            return (name.endsWith(".xml"));
+            return (name.toLowerCase().endsWith(".xml"));
         }
     }
 }

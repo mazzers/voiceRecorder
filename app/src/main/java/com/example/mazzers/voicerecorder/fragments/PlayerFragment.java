@@ -67,6 +67,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private int[] stamps;
     private MediaPlayer prevPlayer;
     private ProgressDialog progressDialog;
+    private int state;
     // private boolean running;
 
     /**
@@ -83,7 +84,6 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mItems = new HashMap<>();
         Bundle loaderBundle = new Bundle();
         loaderBundle.putString("dir_bookmarks", Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/");
-
         getLoaderManager().initLoader(LOAD_BOOKMARKS_ID, loaderBundle, this).forceLoad();
     }
 
@@ -140,6 +140,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 //Toast.makeText(getActivity(),"Load failed",Toast.LENGTH_SHORT).show();
                 if (extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT) {
+                    progressDialog.dismiss();
                     Toast.makeText(getActivity(), "Load timeouted", Toast.LENGTH_SHORT).show();
                 }
                 return false;
@@ -169,6 +170,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 Bookmark temp = (Bookmark) listView.getItemAtPosition(position);
                 if (mediaPlayer != null) {
                     mediaPlayer.seekTo(temp.getTime() * 1000);
+                    updateListViewSelection();
+                    updateProgressBar();
                 }
             }
         });
@@ -209,8 +212,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
     void newToggle() {
+        Log.d(TAG_LOG, "newToggle");
         if (mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
+            mediaPlayer.pause();
+            btnPlay.setBackgroundResource(R.drawable.play_icon);
         }
         handler.removeCallbacks(run);
         handler.removeCallbacks(highlight);
@@ -284,6 +289,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         handler.removeCallbacks(run);
+        handler.removeCallbacks(highlight);
 
     }
 
@@ -306,6 +312,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
             } catch (Exception e) {
                 handler.removeCallbacks(run);
+                handler.removeCallbacks(highlight);
                 //Log.e(TAG_LOG, e.toString());
             }
         }
@@ -314,9 +321,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
     public void reloadView() {
+        Log.d(TAG_LOG, "reloadView");
         if (path != null) {
             File tempFile = new File(path);
             if (!tempFile.exists()) {
+                Log.d(TAG_LOG, "File doesn't exist");
                 Toast.makeText(getActivity(), "Active file doesn't exist", Toast.LENGTH_SHORT).show();
                 mediaPlayer.reset();
                 bookmarkArrayList.clear();
@@ -337,10 +346,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
 
     public void onCompletion(MediaPlayer mp) {
-        mediaPlayer.seekTo(0);
+        Log.d(TAG_LOG, "onCompletion");
+        mp.seekTo(0);
+        seekBar.setProgress(0);
+        songCurrentDurationLabel.setText("00:00:00");
         btnPlay.setBackgroundResource(R.drawable.play_icon);
         deselectPos();
         handler.removeCallbacks(highlight);
+        handler.removeCallbacks(run);
 
     }
 
@@ -366,12 +379,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mItems.clear();
         mItems.putAll(data);
         if (path != null) {
-            File currFile = new File(path);
-            String name = currFile.getName().substring(0, currFile.getName().length() - 4);
-            if (mItems.containsKey(name)) {
-                bookmarkArrayList.clear();
-                bookmarkArrayList.addAll(mItems.get(name));
-                Log.d(TAG_LOG, "set adapter");
+            if (mItems.containsKey(path)) {
+                //bookmarkArrayList.clear();
+                bookmarkArrayList.addAll(mItems.get(path));
+                Log.d(TAG_LOG, "set adapter, size:" + bookmarkArrayList.size());
+
                 listViewAdapter.notifyDataSetChanged();
                 if (bookmarkArrayList.size() > 0) {
                     stamps = new int[bookmarkArrayList.size()];
@@ -391,10 +403,13 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         public void onClick(View v) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
+                handler.removeCallbacks(highlight);
+                handler.removeCallbacks(run);
                 btnPlay.setBackgroundResource(R.drawable.play_icon);
             } else {
                 mediaPlayer.start();
                 updateListViewSelection();
+                updateProgressBar();
                 btnPlay.setBackgroundResource(R.drawable.pause_icon);
 
             }
@@ -430,6 +445,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
      * Prepare music player
      */
     void prepareMediaPlayer() {
+        Log.d(TAG_LOG, "prepareMediaPlayer");
         mediaPlayer.reset();
         try {
             mediaPlayer.setDataSource(path);
@@ -439,10 +455,13 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             //mediaPlayer.prepare();
+            Log.d(TAG_LOG, "Call prepareAsync()");
             mediaPlayer.prepareAsync();
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
             progressDialog.show();
+
         } catch (Exception e) {
             Log.d(TAG_LOG, e.toString());
         }
@@ -450,15 +469,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     public void setNewFile(File newFile) {
         if (newFile.getPath() != path) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                btnPlay.setBackgroundResource(R.drawable.play_icon);
-
-                handler.removeCallbacks(run);
-                handler.removeCallbacks(highlight);
-                mediaPlayer.reset();
-            }
+            btnPlay.setBackgroundResource(R.drawable.play_icon);
+            handler.removeCallbacks(run);
+            handler.removeCallbacks(highlight);
             path = newFile.getPath();
+            bookmarkArrayList.clear();
+            listViewAdapter.notifyDataSetChanged();
             getLoaderManager().getLoader(LOAD_BOOKMARKS_ID).forceLoad();
             prepareMediaPlayer();
             changeButtonsState(false);
@@ -477,8 +493,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                     View tempView;
                     if (index != i) {
                         tempView = listView.getChildAt(index);
-                        RelativeLayout tempLayout = (RelativeLayout) tempView.findViewById(R.id.list_view_relative_layout);
-                        tempLayout.setBackgroundResource(R.color.frame_transparent);
+                        if (tempView != null) {
+                            RelativeLayout tempLayout = (RelativeLayout) tempView.findViewById(R.id.list_view_relative_layout);
+                            tempLayout.setBackgroundResource(R.color.frame_transparent);
+                        }
                     }
                 }
             }
@@ -499,17 +517,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
     public void onPause() {
         super.onPause();
-        Log.i(TAG_LOG, "onPause = Stop threads");
-        handler.removeCallbacks(run);
-        handler.removeCallbacks(highlight);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG_LOG, "onResume = Resume threads");
+    public void onDetach() {
+        super.onDetach();
+        handler.removeCallbacks(run);
+        handler.removeCallbacks(highlight);
     }
-
 
     public static PlayerFragment createNewInstance() {
         return new PlayerFragment();

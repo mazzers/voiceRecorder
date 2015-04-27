@@ -6,6 +6,8 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +39,7 @@ import java.util.List;
  * <p/>
  * Main activity with drawer and fragments
  */
-public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<HashMap<String, List<Bookmark>>> {
+public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<HashMap<String, List<Bookmark>>>, FragmentManager.OnBackStackChangedListener {
     private Drawer.Result result = null;
     private static PlayerFragment playerFragment;
     private static RecorderFragment recorderFragment;
@@ -51,6 +53,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private static HashMap<String, List<Bookmark>> mItems;
     private final int LOADER_BOOKMARKS_ID = 3;
     private final String bookmarksFolder = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/";
+    private boolean pressedOnce = false;
 
     public static HashMap<String, List<Bookmark>> getmItems() {
         return mItems;
@@ -111,6 +114,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         super.onCreate(savedInstanceState);
         //Log.d(TAG_LOG, "onCreate");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(this);
         setContentView(R.layout.activity_main);
         recordsDirectory = new File(bookmarksFolder);
         if (!recordsDirectory.exists()) {
@@ -138,7 +143,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         result = new Drawer()
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
-                .withActionBarDrawerToggle(true)
+//                .withActionBarDrawerToggle(true)
 
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.title_section1).withIcon(FontAwesome.Icon.faw_microphone).withIdentifier(1),
@@ -156,7 +161,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                             switch (iDrawerItem.getIdentifier()) {
                                 case 1:
                                     displayRecorder();
-
                                     break;
                                 case 2:
                                     displayPlayer();
@@ -216,7 +220,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 ft.add(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
             }
             ft.show(playerFragment);
-            ft.addToBackStack(null);
+            //ft.addToBackStack(PlayerFragment.PLAYER_TAG);
             ft.commit();
         }
 
@@ -247,7 +251,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 ft.add(R.id.container, settingsFragment, SettingsFragment.SETTINGS_TAG);
             }
             ft.show(settingsFragment);
-            ft.addToBackStack(null);
+            //ft.addToBackStack(SettingsFragment.SETTINGS_TAG);
             ft.commit();
         }
 
@@ -277,7 +281,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             }
             ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
             ft.show(recordListFragment);
-            ft.addToBackStack(null);
+            //ft.addToBackStack(RecordListFragment.LIST_TAG);
             ft.commit();
         }
     }
@@ -305,7 +309,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             }
             ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
             ft.show(playerFragment);
-            ft.addToBackStack(null);
+            //ft.addToBackStack(PlayerFragment.PLAYER_TAG);
             ft.commit();
         }
     }
@@ -335,12 +339,36 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 ft.add(R.id.container, recorderFragment, RecorderFragment.RECORDER_TAG);
             }
             ft.show(recorderFragment);
-            ft.addToBackStack(null);
+            //ft.addToBackStack(PlayerFragment.PLAYER_TAG);
             ft.commit();
         }
 
     }
 
+
+    @Override
+    public void onBackPressed() {
+        int i = getFragmentManager().getBackStackEntryCount();
+        if (i > 1) {
+            getFragmentManager().popBackStack();
+        } else {
+            if (pressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+
+            this.pressedOnce = true;
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    pressedOnce = false;
+                }
+            }, 2000);
+        }
+    }
 
     public static void setPlayerFragment(PlayerFragment newPlayerFragment) {
 
@@ -368,6 +396,11 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<HashMap<String, List<Bookmark>>> loader) {
 
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        Log.i(TAG_LOG, "BackStack changed");
     }
 }
 

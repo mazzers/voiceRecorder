@@ -36,7 +36,7 @@ public class FilesLoader extends Loader<File[]> {
         super.onForceLoad();
         File[] mFiles = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".mp4");
+                return name.toLowerCase().endsWith(".mp4") || name.toLowerCase().endsWith(".3gpp");
             }
         });
         deliverResult(mFiles);

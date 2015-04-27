@@ -16,11 +16,18 @@
     <string-array name="entries">
         <item>Poor</item>
         <item>Good</item>
-
     </string-array>
     <string-array name="entries_values">
         <item>1</item>
         <item>2</item>
+    </string-array>
+    <string-array name="formats">
+        <item>3gpp</item>
+        <item>mp4</item>
+    </string-array>
+    <string-array name="formats_values">
+        <item>3gpp</item>
+        <item>mp4</item>
     </string-array>
 
 

@@ -25,5 +25,5 @@ dependencies {
     compile('com.mikepenz.materialdrawer:library:2.5.2@aar') {
         transitive = true
     }
-    compile project(':recorder')
+
 }

@@ -180,6 +180,13 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
         prevFileList = mFileList;
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            getLoaderManager().getLoader(LIST_FILE_LOADER_ID).forceLoad();
+        }
+    }
 
     @Override
     public Loader<File[]> onCreateLoader(int id, Bundle args) {

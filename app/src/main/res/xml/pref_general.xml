@@ -10,13 +10,13 @@
             android:entries="@array/entries"
             android:entryValues="@array/entries_values"
             android:defaultValue="2" />
-        <CheckBoxPreference
-            android:key="stereo"
-            android:title="Stereo mode"
-            android:summary="Record in stereo"
-            android:defaultValue="true">
-
-        </CheckBoxPreference>
+        <ListPreference
+            android:key="format"
+            android:title="Output format"
+            android:summary="Choose output format"
+            android:entries="@array/formats"
+            android:entryValues="@array/formats_values"
+            android:defaultValue="mp4" />
 
 
     </PreferenceCategory>
