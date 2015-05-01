@@ -21,6 +21,7 @@ import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.Bookmark;
 import com.example.mazzers.voicerecorder.bookmarks.adapters.RecordListAdapter;
+import com.example.mazzers.voicerecorder.fragments.base.Player;
 import com.example.mazzers.voicerecorder.utils.FilesLoader;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
     private List<File> mFileList, prevFileList;
     private static final String TAG_LOG = "RecorderListFragment";
     private final File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/");
+    private Player player;
 
 
     @Override
@@ -60,7 +62,7 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Bundle bundle = new Bundle();
-        bundle.putString("dir", Environment.getExternalStorageDirectory() + "/voicerecorder/");
+        bundle.putString("dir", dir.getPath());
         getLoaderManager().initLoader(LIST_FILE_LOADER_ID, bundle, this).forceLoad();
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
@@ -88,9 +90,10 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
 
 
     void toggleList() {
-        PlayerFragment playerFragment = MainActivity.getPlayerFragment();
-        playerFragment.reloadView();
+        //PlayerFragment playerFragment = MainActivity.getPlayerFragment();
+        //playerFragment.reloadView();
         MainActivity activity = (MainActivity) getActivity();
+        //activity.togglePlayer();
         activity.togglePlayer();
     }
 
@@ -122,13 +125,15 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
 
             }
         });
-
+        MainActivity activity = (MainActivity) getActivity();
+        player = activity.getPlayer();
         return rootView;
     }
 
     void changeFile(File file) {
-        PlayerFragment playerFragment = MainActivity.getPlayerFragment();
-        playerFragment.setNewFile(file);
+//        PlayerFragment playerFragment = MainActivity.getPlayerFragment();
+//        playerFragment.setNewFile(file);
+        player.setFile(file.getPath());
         toggleList();
     }
 
@@ -154,11 +159,9 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
         File recordToDelete = mFileList.get(position);
         recordToDelete.delete();
         mFileList.remove(position);
-        String name = recordToDelete.getName().substring(0, recordToDelete.getName().length() - 4);
+        String name = recordToDelete.getPath();
         HashMap<String, List<Bookmark>> mItems = MainActivity.getmItems();
         if (mItems != null) {
-
-
             if (mItems.containsKey(name)) {
                 List<Bookmark> listToRemove = mItems.get(name);
                 for (int j = 0; j < listToRemove.size(); j++) {
@@ -168,7 +171,6 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
                 mItems.remove(name);
             }
             getLoaderManager().getLoader(LIST_FILE_LOADER_ID).forceLoad();
-
         } else {
             Log.i(TAG_LOG, "mItems = null");
         }

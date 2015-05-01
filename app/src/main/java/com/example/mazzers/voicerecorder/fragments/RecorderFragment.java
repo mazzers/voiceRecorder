@@ -18,12 +18,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.R;
 import com.example.mazzers.voicerecorder.bookmarks.WriteToXML;
+import com.example.mazzers.voicerecorder.fragments.base.Recorder;
 import com.example.mazzers.voicerecorder.utils.Utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,6 +55,8 @@ public class RecorderFragment extends Fragment {
     private int state;
     private final String RecordsFolder = Environment.getExternalStorageDirectory() + "/voicerecorder/";
     private MediaRecorder mediaRecorder;
+    private Recorder recorder, prevRecorder;
+    private long prevChrono;
 
     private final View.OnClickListener recorderOnClickListener = new View.OnClickListener() {
         @Override
@@ -110,7 +113,9 @@ public class RecorderFragment extends Fragment {
         setRetainInstance(true);
         //filePath = Environment.getExternalStorageDirectory() + "/";
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mediaRecorder = new MediaRecorder();
+        //mediaRecorder = new MediaRecorder();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        recorder = mainActivity.getRecorder();
 
 
     }
@@ -146,7 +151,12 @@ public class RecorderFragment extends Fragment {
         btnImpBook.setOnClickListener(recorderOnClickListener);
         btnQuestBook.setOnClickListener(recorderOnClickListener);
         btnStop.setOnClickListener(recorderOnClickListener);
-        state = STATE_STOP;
+        if (!recorder.isRecording()) {
+            state = STATE_STOP;
+        } else {
+            state = STATE_RECORDING;
+            startChronoAt(recorder.getBase());
+        }
         newChangeButtonsState();
 
 //        if (state == STATE_RECORDING || state == STATE_PAUSE) {
@@ -164,15 +174,12 @@ public class RecorderFragment extends Fragment {
      */
     private class btnStartRecordClick implements View.OnClickListener {
         public void onClick(View arg0) {
-            if (mediaRecorder == null) {
-                mediaRecorder = new MediaRecorder();
-            }
-            generateNewMediaRecorder();
+            generateRecorder();
         }
     }
 
-    private void generateNewMediaRecorder() {
-        //todo check if 3gpp working
+
+    void generateRecorder() {
         count = 1;
         Log.i(TAG_LOG, "Generating new MediaRecorder");
         if (nameField.getText().toString().equals("")) {
@@ -194,23 +201,7 @@ public class RecorderFragment extends Fragment {
             formatChoice = MediaRecorder.OutputFormat.THREE_GPP;
             filePathAudio = RecordsFolder + fileAudioName + ".3gpp";
         }
-
-
-        mediaRecorder.release();
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        mediaRecorder.setOutputFormat(formatChoice);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mediaRecorder.setAudioEncodingBitRate(16);
-        mediaRecorder.setAudioSamplingRate(qualityChoice);
-        mediaRecorder.setOutputFile(filePathAudio);
-
-        try {
-            mediaRecorder.prepare();
-        } catch (IOException e) {
-            Log.d(TAG_LOG, "prepare fail");
-            e.printStackTrace();
-        }
+        recorder.setMediaRecorder(filePathAudio, qualityChoice, formatChoice);
         startRecording();
     }
 
@@ -246,7 +237,7 @@ public class RecorderFragment extends Fragment {
 
     void startRecording() {
         Log.i(TAG_LOG, "Recording started");
-        mediaRecorder.start();
+        recorder.startRecording();
         state = STATE_RECORDING;
         newChangeButtonsState();
         startChrono();
@@ -254,8 +245,7 @@ public class RecorderFragment extends Fragment {
 
     void stopRecording() {
         Log.i(TAG_LOG, "Recording stopped");
-        mediaRecorder.stop();
-        mediaRecorder.reset();
+        recorder.stopRecording();
         state = STATE_STOP;
         newChangeButtonsState();
         stopChrono();
@@ -304,6 +294,10 @@ public class RecorderFragment extends Fragment {
         chronometer.setBase(SystemClock.elapsedRealtime());
     }
 
+    public void startChronoAt(long base) {
+        chronometer.setBase(base);
+        chronometer.start();
+    }
 
 
     /**
@@ -373,8 +367,12 @@ public class RecorderFragment extends Fragment {
         return new RecorderFragment();
     }
 
+
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDetach() {
+        super.onDetach();
+        Log.i(TAG_LOG, "Fragment is detached");
     }
+
+
 }

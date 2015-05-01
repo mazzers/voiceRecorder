@@ -1,6 +1,5 @@
 package com.example.mazzers.voicerecorder;
 
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.Loader;
@@ -19,6 +18,8 @@ import com.example.mazzers.voicerecorder.fragments.PlayerFragment;
 import com.example.mazzers.voicerecorder.fragments.RecordListFragment;
 import com.example.mazzers.voicerecorder.fragments.RecorderFragment;
 import com.example.mazzers.voicerecorder.fragments.SettingsFragment;
+import com.example.mazzers.voicerecorder.fragments.base.Player;
+import com.example.mazzers.voicerecorder.fragments.base.Recorder;
 import com.example.mazzers.voicerecorder.utils.BookmarksLoader;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
@@ -49,32 +50,29 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private static ArrayList<Bookmark> bookmarks;
     private static File[] files;
     private File recordsDirectory;
-    private static List<String> listDataHeader;
     private static HashMap<String, List<Bookmark>> mItems;
     private final int LOADER_BOOKMARKS_ID = 3;
     private final String bookmarksFolder = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/";
     private boolean pressedOnce = false;
+    private Recorder recorder;
+    private Player player;
+
+    public Recorder getRecorder() {
+        return recorder;
+    }
 
     public static HashMap<String, List<Bookmark>> getmItems() {
         return mItems;
-    }
-
-    public static List<String> getListDataHeader() {
-        return listDataHeader;
     }
 
     public static void setmItems(HashMap<String, List<Bookmark>> mItems) {
         MainActivity.mItems = mItems;
     }
 
-    public static void setListDataHeader(List<String> listDataHeader) {
-        MainActivity.listDataHeader = listDataHeader;
-    }
 
-    public File getRecordsDirectory() {
-        return recordsDirectory;
+    public Player getPlayer() {
+        return player;
     }
-
 
     public static File[] getFiles() {
         return files;
@@ -118,6 +116,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         fragmentManager.addOnBackStackChangedListener(this);
         setContentView(R.layout.activity_main);
         recordsDirectory = new File(bookmarksFolder);
+
         if (!recordsDirectory.exists()) {
             Log.d(TAG_LOG, "Main activity: directory not exist");
             recordsDirectory.mkdirs();
@@ -125,19 +124,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         Bundle loaderBundle = new Bundle();
         loaderBundle.putString("dir_bookmarks", bookmarksFolder);
         getLoaderManager().initLoader(LOADER_BOOKMARKS_ID, loaderBundle, this).forceLoad();
-
-        playerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
-        if (playerFragment == null) {
-            playerFragment = PlayerFragment.createNewInstance();
-        }
-        recorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RecorderFragment.RECORDER_TAG);
-        if (recorderFragment == null) {
-            recorderFragment = RecorderFragment.createNewInstance();
-        }
-        settingsFragment = (SettingsFragment) getFragmentManager().findFragmentByTag(SettingsFragment.SETTINGS_TAG);
-        if (settingsFragment == null) {
-            settingsFragment = new SettingsFragment();
-        }
+        recorder = new Recorder();
+        player = new Player();
 
 
         result = new Drawer()
@@ -156,17 +144,15 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                         if (iDrawerItem instanceof Nameable) {
-                            //Toast.makeText(MainActivity.this, MainActivity.this.getString(((Nameable) iDrawerItem).getNameRes()), Toast.LENGTH_SHORT).show();
-                            Fragment fragment;
                             switch (iDrawerItem.getIdentifier()) {
                                 case 1:
-                                    displayRecorder();
+                                    toggleRecorder();
                                     break;
                                 case 2:
-                                    displayPlayer();
+                                    togglePlayer();
                                     break;
                                 case 3:
-                                    displaySettings();
+                                    toggleSettings();
                                     break;
                                 default:
                                     break;
@@ -175,7 +161,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                     }
                 }).build();
 
-        //Log.d(TAG_LOG, "Main activity: onCreate");
         if (savedInstanceState == null) {
             result.setSelection(0);
         }
@@ -197,152 +182,33 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     }
 
 
-    void displayPlayer() {
-        Toast.makeText(this, "Player", Toast.LENGTH_SHORT).show();
-        PlayerFragment tempPlayerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
-        if (tempPlayerFragment == null) {
-            playerFragment = PlayerFragment.createNewInstance();
-        } else {
-            playerFragment = tempPlayerFragment;
-        }
+    public void toggleRecorder() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if (!playerFragment.isVisible()) {
-            if (recorderFragment != null && recorderFragment.isVisible()) {
-                ft.hide(recorderFragment);
-            }
-            if (settingsFragment != null && settingsFragment.isVisible()) {
-                ft.hide(settingsFragment);
-            }
-            if (recordListFragment != null && recordListFragment.isVisible()) {
-                ft.hide(recordListFragment);
-            }
-            if (!playerFragment.isAdded()) {
-                ft.add(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
-            }
-            ft.show(playerFragment);
-            //ft.addToBackStack(PlayerFragment.PLAYER_TAG);
-            ft.commit();
-        }
-
-
-    }
-
-    void displaySettings() {
-        //Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-        SettingsFragment tempSettingsFragment = (SettingsFragment) getFragmentManager().findFragmentByTag(SettingsFragment.SETTINGS_TAG);
-        if (tempSettingsFragment == null) {
-            settingsFragment = new SettingsFragment();
-        } else {
-            settingsFragment = tempSettingsFragment;
-        }
-        if (!settingsFragment.isVisible()) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-            if (playerFragment != null && playerFragment.isVisible()) {
-                ft.hide(playerFragment);
-            }
-            if (recorderFragment != null && recorderFragment.isVisible()) {
-                ft.hide(recorderFragment);
-            }
-            if (recordListFragment != null && recordListFragment.isVisible()) {
-                ft.hide(recordListFragment);
-            }
-            if (!settingsFragment.isAdded()) {
-                ft.add(R.id.container, settingsFragment, SettingsFragment.SETTINGS_TAG);
-            }
-            ft.show(settingsFragment);
-            //ft.addToBackStack(SettingsFragment.SETTINGS_TAG);
-            ft.commit();
-        }
-
-    }
-
-    public void toggleList() {
-        RecordListFragment tempListFragment = (RecordListFragment) getFragmentManager().findFragmentByTag(RecordListFragment.LIST_TAG);
-        if (tempListFragment == null) {
-            recordListFragment = RecordListFragment.createNewInstance();
-        } else {
-            recordListFragment = tempListFragment;
-        }
-        if (!recordListFragment.isVisible()) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-            if (playerFragment != null && playerFragment.isVisible()) {
-                ft.hide(playerFragment);
-            }
-            if (settingsFragment != null && settingsFragment.isVisible()) {
-                ft.hide(settingsFragment);
-            }
-            if (recorderFragment != null && recorderFragment.isVisible()) {
-                ft.hide(recorderFragment);
-            }
-            if (!recordListFragment.isAdded()) {
-                ft.add(R.id.container, recordListFragment, RecordListFragment.LIST_TAG);
-            }
-            ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
-            ft.show(recordListFragment);
-            //ft.addToBackStack(RecordListFragment.LIST_TAG);
-            ft.commit();
-        }
+        RecorderFragment temp = new RecorderFragment();
+        ft.replace(R.id.container, temp, RecorderFragment.RECORDER_TAG);
+        ft.commit();
     }
 
     public void togglePlayer() {
-        PlayerFragment tempPlayerFragment = (PlayerFragment) getFragmentManager().findFragmentByTag(PlayerFragment.PLAYER_TAG);
-        if (tempPlayerFragment == null) {
-            playerFragment = PlayerFragment.createNewInstance();
-        } else {
-            playerFragment = tempPlayerFragment;
-        }
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if (!playerFragment.isVisible()) {
-            if (recorderFragment != null && recorderFragment.isVisible()) {
-                ft.hide(recorderFragment);
-            }
-            if (settingsFragment != null && settingsFragment.isVisible()) {
-                ft.hide(settingsFragment);
-            }
-            if (recordListFragment != null && recordListFragment.isVisible()) {
-                ft.hide(recordListFragment);
-            }
-            if (!playerFragment.isAdded()) {
-                ft.add(R.id.container, playerFragment, PlayerFragment.PLAYER_TAG);
-            }
-            ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down);
-            ft.show(playerFragment);
-            //ft.addToBackStack(PlayerFragment.PLAYER_TAG);
-            ft.commit();
-        }
+        PlayerFragment temp = new PlayerFragment();
+        ft.replace(R.id.container, temp, PlayerFragment.PLAYER_TAG);
+        ft.commit();
     }
 
+    public void toggleList() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        RecordListFragment temp = new RecordListFragment();
+        ft.setCustomAnimations(R.anim.slide_up, R.anim.slide_down);
+        ft.replace(R.id.container, temp, RecordListFragment.LIST_TAG);
+        ft.commit();
+    }
 
-    void displayRecorder() {
-        //Toast.makeText(this, "Recorder", Toast.LENGTH_SHORT).show();
-        RecorderFragment tempRecorderFragment = (RecorderFragment) getFragmentManager().findFragmentByTag(RecorderFragment.RECORDER_TAG);
-        if (tempRecorderFragment == null) {
-            recorderFragment = RecorderFragment.createNewInstance();
-        } else {
-            recorderFragment = tempRecorderFragment;
-        }
-        if (!recorderFragment.isVisible()) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-            if (playerFragment != null && playerFragment.isVisible()) {
-                ft.hide(playerFragment);
-            }
-            if (settingsFragment != null && settingsFragment.isVisible()) {
-                ft.hide(settingsFragment);
-            }
-            if (recordListFragment != null && recordListFragment.isVisible()) {
-                ft.hide(recordListFragment);
-            }
-            if (!recorderFragment.isAdded()) {
-                ft.add(R.id.container, recorderFragment, RecorderFragment.RECORDER_TAG);
-            }
-            ft.show(recorderFragment);
-            //ft.addToBackStack(PlayerFragment.PLAYER_TAG);
-            ft.commit();
-        }
-
+    public void toggleSettings() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        SettingsFragment temp = new SettingsFragment();
+        ft.replace(R.id.container, temp, SettingsFragment.SETTINGS_TAG);
+        ft.commit();
     }
 
 

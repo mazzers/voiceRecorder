@@ -18,19 +18,24 @@ import java.util.List;
  * * Vashchenko Vitaliy A11B0529P
  * PRJ5 - Voice bookmarks
  * <p/>
- * SimpleListView adapter for groupless view
+ * Adapter for displaying the list from bookmarks
  */
-public class ListViewAdapter extends ArrayAdapter<Bookmark> {
-
-    public ListViewAdapter(Context context, List<Bookmark> items) {
+public class BookmarkListAdapter extends ArrayAdapter<Bookmark> {
+    /**
+     * Class constructor
+     *
+     * @param context adapter context
+     * @param items   adapter data
+     */
+    public BookmarkListAdapter(Context context, List<Bookmark> items) {
 
         super(context, R.layout.listview_item, items);
     }
 
     /**
-     * Get view by position
+     * Generate view bz position
      *
-     * @param position
+     * @param position position in list
      * @param convertView
      * @param parent
      * @return view
