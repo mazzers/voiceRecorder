@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.mazzers.voicerecorder.MainActivity;
 import com.example.mazzers.voicerecorder.R;
@@ -31,18 +32,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by mazzers on 24. 3. 2015.
+ * voiceRecorder application
+ * @author Vitaliy Vashchenko A11B0529P
+ * Record list fragment with UI elements
  */
 public class RecordListFragment extends Fragment implements LoaderManager.LoaderCallbacks<File[]> {
     public static final String LIST_TAG = "RECORD_LIST";
     private final int LIST_FILE_LOADER_ID = 2;
-    private RecordListAdapter recordListAdapter;
-    private ListView listView;
-    private final int FILE_DELETE = 1;
-    private List<File> mFileList, prevFileList;
     private static final String TAG_LOG = "RecorderListFragment";
     private final File dir = new File(Environment.getExternalStorageDirectory() + "/voicerecorder/");
-    private Player player;
+
+    private RecordListAdapter recordListAdapter; // UI elements and data
+    private ListView listView;
+    private List<File> mFileList, prevFileList;
+
+    private final int FILE_DELETE = 1; // context menu item id
+
+    private Player player; // base player
 
 
     @Override
@@ -149,11 +155,11 @@ public class RecordListFragment extends Fragment implements LoaderManager.Loader
         mFileList.addAll(Arrays.asList(data));
         recordListAdapter.notifyDataSetChanged();
         listView.invalidateViews();
+        if (mFileList.size() == 0) {
+            Toast.makeText(getActivity(), "No records", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public static RecordListFragment createNewInstance() {
-        return new RecordListFragment();
-    }
 
     private void deleteFile(int position) {
         File recordToDelete = mFileList.get(position);

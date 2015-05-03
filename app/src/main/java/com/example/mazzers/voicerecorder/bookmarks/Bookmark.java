@@ -1,19 +1,63 @@
 package com.example.mazzers.voicerecorder.bookmarks;
 
 /**
- * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * <p/>
- * Bookmark implementation. Created from parsed files.
+ * voiceRecorder application
+ * @author Vitaliy Vashchenko A11B0529P
+ * Bookmark representation in application
  */
 public class Bookmark {
 
-    private final String path;
-    private final String fileName;
-    private final String message;
-    private final String bookmarkPath;
-    private final int time;
-    private int type;
+    private String path; // audio file path
+    private String fileName; // audio file name
+    private String message; // bookmark text
+    private String bookmarkPath; // bookmark file path
+    private int time; // bookmark time
+    private int type; // bookmark type
+
+    /**
+     * Set bookmark path
+     * @param bookmarkPath new bookmark path
+     */
+    public void setBookmarkPath(String bookmarkPath) {
+        this.bookmarkPath = bookmarkPath;
+    }
+
+    /**
+     * Set bookmark message
+     *
+     * @param message new message
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
+     * Set bookmark path
+     *
+     * @param path new path
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    /**
+     * Set bookmark name
+     *
+     * @param fileName new name
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    /**
+     * Set bookmark time
+     *
+     * @param time new time
+     */
+    public void setTime(int time) {
+        this.time = time;
+    }
+
 
     /**
      * Get bookmark type
@@ -27,11 +71,12 @@ public class Bookmark {
     /**
      * Set bookmark type
      *
-     * @param type
+     * @param type new bookmark type
      */
     public void setType(int type) {
         this.type = type;
     }
+
 
     /**
      * Bookmark constructor
@@ -51,6 +96,13 @@ public class Bookmark {
         this.message = message;
         this.type = type;
 
+
+    }
+
+    /**
+     * Empty bookmark constructor
+     */
+    public Bookmark() {
 
     }
 
@@ -92,14 +144,14 @@ public class Bookmark {
     }
 
 
-
     /**
      * Get bookmark file path
      *
-     * @return
+     * @return bookmark path
      */
     public String getBookmarkPath() {
         return bookmarkPath;
     }
+
 
 }

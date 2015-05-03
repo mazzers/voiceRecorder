@@ -9,27 +9,29 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- * Created by mazzers on 15. 4. 2015.
+ * voiceRecorder application
+ *
+ * @author Vitaliy Vashchenko A11B0529P
+ *         Records loader
  */
 public class FilesLoader extends Loader<File[]> {
-    private File dir;
-    private static final String TAG_LOG = "FILE_LOADER";
+    private File dir; // folder to work with
+    private static final String TAG_LOG = "FILE_LOADER"; //loader tag
 
     /**
-     * Stores away the application context associated with context.
-     * Since Loaders can be used across multiple activities it's dangerous to
-     * store the context directly; always use {@link #getContext()} to retrieve
-     * the Loader's Context, don't use the constructor argument directly.
-     * The Context returned by {@link #getContext} is safe to use across
-     * Activity instances.
+     * New file loader
      *
-     * @param context used to retrieve the application context.
+     * @param context loader context
+     * @param args    loader arguments
      */
     public FilesLoader(Context context, Bundle args) {
         super(context);
         dir = new File(args.getString("dir"));
     }
 
+    /**
+     * Loader main method
+     */
     @Override
     protected void onForceLoad() {
         Log.d(TAG_LOG, hashCode() + " : onForceLoad: " + dir);
@@ -43,12 +45,20 @@ public class FilesLoader extends Loader<File[]> {
 
     }
 
+    /**
+     * Deliver processed data to caller
+     *
+     * @param data return processed data
+     */
     @Override
     public void deliverResult(File[] data) {
         super.deliverResult(data);
         Log.d(TAG_LOG, hashCode() + " deliverResult: " + data.length);
     }
 
+    /**
+     * On loader creation
+     */
     @Override
     protected void onStartLoading() {
         super.onStartLoading();

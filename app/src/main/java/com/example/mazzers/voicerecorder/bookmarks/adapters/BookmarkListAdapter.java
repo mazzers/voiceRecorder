@@ -15,10 +15,10 @@ import com.example.mazzers.voicerecorder.utils.Utils;
 import java.util.List;
 
 /**
- * * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * <p/>
- * Adapter for displaying the list from bookmarks
+ * voiceRecorder application
+ *
+ * @author Vitaliy Vashchenko A11B0529P
+ *         Adapter for bookmark files
  */
 public class BookmarkListAdapter extends ArrayAdapter<Bookmark> {
     /**
@@ -33,11 +33,11 @@ public class BookmarkListAdapter extends ArrayAdapter<Bookmark> {
     }
 
     /**
-     * Generate view bz position
+     * Generate view by position
      *
-     * @param position position in list
-     * @param convertView
-     * @param parent
+     * @param position    position in list
+     * @param convertView view on position
+     * @param parent      view parent
      * @return view
      */
     @Override
@@ -58,7 +58,6 @@ public class BookmarkListAdapter extends ArrayAdapter<Bookmark> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Bookmark item = getItem(position);
-        Utils utils = new Utils();
         viewHolder.itemName.setText(item.getName());
         viewHolder.itemMessage.setText(item.getMessage());
         viewHolder.itemTime.setText(Utils.timeToString(item.getTime()));

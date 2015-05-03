@@ -42,37 +42,40 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * <p/>
- * Player fragment. Handles user action and media file control
+ * voiceRecorder application
+ * @author Vitaliy Vashchenko A11B0529P
+ * Player fragment with UI elements
  */
 
 public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, LoaderManager.LoaderCallbacks<HashMap<String, List<Bookmark>>>, MediaPlayer.OnCompletionListener {
-    public static final String PLAYER_TAG = "PLAYER_TAG";
-    private ImageButton btnPlay, btnFwd, btnBwd;
-    private HashMap<String, List<Bookmark>> mItems;
-    private final int LOAD_BOOKMARKS_ID = 5;
-    private BookmarkListAdapter bookmarkListAdapter;
-    private final int FILE_DELETE = 1;
+    public static final String PLAYER_TAG = "PLAYER_TAG"; // fragment tag
+    private static final String TAG_LOG = "playerFragment"; // Logger tag
+    private final Handler handler = new Handler();
+
+    private ImageButton btnPlay, btnFwd, btnBwd; // UI elements
     private static SeekBar seekBar;
-    private static MediaPlayer mediaPlayer;
-    private static final String TAG_LOG = "playerFragment";
-    private static String path;
     private static ListView listView;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
-    private final Handler handler = new Handler();
-    private ArrayList<Bookmark> bookmarkArrayList;
-    private final int seekValue = 5000;
-    private int[] stamps;
     private ProgressDialog progressDialog;
+
+    private HashMap<String, List<Bookmark>> mItems; // bookmark list elements
+    private final int LOAD_BOOKMARKS_ID = 5;
+    private BookmarkListAdapter bookmarkListAdapter;
+    private ArrayList<Bookmark> bookmarkArrayList;
+    private final int FILE_DELETE = 1;
+    private int[] stamps;
+
+    private static MediaPlayer mediaPlayer; // player elements
+    private static String path;
+    private final int seekValue = 5000;
     private Player player;
+    private boolean fileIsValid = true;
 
     /**
      * On fragment create
      *
-     * @param savedInstanceState
+     * @param savedInstanceState previous state
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,10 +92,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     /**
      * Create player view
      *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     * @param inflater layout inflater
+     * @param container fragment container
+     * @param savedInstanceState fragment state
+     * @return fragment view
      */
     @Nullable
     @Override
@@ -135,14 +138,28 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         MainActivity activity = (MainActivity) getActivity();
         player = activity.getPlayer();
         mediaPlayer = player.getMediaPlayer();
-        //todo clear code
-        //todo docs
+
         mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 if (extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT) {
                     progressDialog.dismiss();
+                    changeButtonsState(false);
                     Toast.makeText(getActivity(), "Load timeout", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG_LOG, "some error");
+                    switch (extra) {
+                        case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                            Toast.makeText(getActivity(), "Unsupported", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                            changeButtonsState(false);
+                            break;
+                        case MediaPlayer.MEDIA_ERROR_MALFORMED:
+                            Toast.makeText(getActivity(), "Malformed", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                            changeButtonsState(false);
+                            break;
+                    }
                 }
                 return false;
             }
@@ -185,7 +202,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         });
         if (player.getPath() != null) { //player has active file
             setNewFile(player.getPath()); // set fragment view based on active file
-            if (mediaPlayer.isPlaying()) {
+            if (fileIsValid && mediaPlayer.isPlaying()) {
                 restorePlaying();
             } else {
                 restorePaused();
@@ -196,6 +213,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         return rootView;
     }
 
+    /**
+     * Create options menu
+     *
+     * @param menu     menu layout
+     * @param inflater menu inflater
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.player_menu, menu);
@@ -203,16 +226,25 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     }
 
+    /**
+     * Selection listener
+     *
+     * @param item selected item
+     * @return action from selected item
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.player_menu_toggle_list:
-                //toggleList();
                 newToggle();
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Change buttons state
+     * @param state new state
+     */
     void changeButtonsState(Boolean state) {
         btnPlay.setEnabled(state);
         btnBwd.setEnabled(state);
@@ -220,6 +252,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         seekBar.setEnabled(state);
     }
 
+    /**
+     * Toggle record list
+     */
     void newToggle() {
         Log.d(TAG_LOG, "newToggle");
         if (mediaPlayer.isPlaying()) {
@@ -232,6 +267,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         activity.toggleList();
     }
 
+    /**
+     * Thread for seekBar updating
+     */
     private final Runnable run = new Runnable() {
         public void run() {
             if (mediaPlayer != null && mediaPlayer.getDuration() > 0) {
@@ -253,11 +291,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             handler.postDelayed(this, 100);
         }
     };
-
+    /**
+     * Thread got list items highlighting
+     */
     private final Runnable highlight = new Runnable() {
 
         public void run() {
-            // while (running) {
             if (stamps != null && stamps.length > 0) {
                 int curr;
                 long curr_long;
@@ -266,24 +305,22 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 curr = (int) (curr_long / 1000);
                 pos = Arrays.binarySearch(stamps, curr);
                 if (pos >= 0) {
-                    Log.d(TAG_LOG, "Time reached");
-                    selectPos(pos);
+                    selectPos(pos); // select active position
                 }
 
 
             }
             handler.postDelayed(this, 500);
-            //  }
         }
     };
 
 
     /**
-     * Seekbar progres changed
+     * SeekBar progress changed
      *
-     * @param seekBar
-     * @param progress
-     * @param fromUser
+     * @param seekBar selected seekBar
+     * @param progress seekBar progress
+     * @param fromUser progress invoked by user
      */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -293,7 +330,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     /**
      * Touch tracking
      *
-     * @param seekBar
+     * @param seekBar selected seekBar
      */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -305,17 +342,15 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     /**
      * Handle action when touch stops
      *
-     * @param seekBar
+     * @param seekBar selected seekBar
      */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         if (mediaPlayer != null) {
             try {
-                //handler.removeCallbacks(run);
                 int totalDuration = mediaPlayer.getDuration();
                 int currentPosition = Utils.progressToTimer(seekBar.getProgress(), totalDuration);
                 mediaPlayer.seekTo(currentPosition);
-                //player.seekTo(currentPosition);
                 updateProgressBar();
                 updateListViewSelection();
                 mediaPlayer.start();
@@ -323,57 +358,47 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             } catch (Exception e) {
                 handler.removeCallbacks(run);
                 handler.removeCallbacks(highlight);
-                //Log.e(TAG_LOG, e.toString());
-            }
-        }
-
-
-    }
-
-    public void reloadView() {
-        Log.d(TAG_LOG, "reloadView");
-        if (path != null) {
-            File tempFile = new File(path);
-            if (!tempFile.exists()) {
-                Log.d(TAG_LOG, "File doesn't exist");
-                Toast.makeText(getActivity(), "Active file doesn't exist", Toast.LENGTH_SHORT).show();
-                mediaPlayer.reset();
-                //player.reset();
-                bookmarkArrayList.clear();
-                bookmarkListAdapter.notifyDataSetChanged();
-                changeButtonsState(false);
-                songTotalDurationLabel.setText("");
-                songCurrentDurationLabel.setText("");
-
             }
         }
     }
-//
 
     /**
      * On playback complete
      *
-     * @param mp
+     * @param mp selected MediaPlayer
      */
     @Override
 
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG_LOG, "onCompletion");
-        mp.seekTo(0);
-        seekBar.setProgress(0);
-        songCurrentDurationLabel.setText("00:00:00");
-        btnPlay.setBackgroundResource(R.drawable.play_icon);
-        deselectPos();
-        handler.removeCallbacks(highlight);
-        handler.removeCallbacks(run);
+        if (fileIsValid) {
+            mp.seekTo(0);  //set player to start on completion
+            seekBar.setProgress(0);
+            songCurrentDurationLabel.setText("00:00:00");
+            btnPlay.setBackgroundResource(R.drawable.play_icon);
+            deselectPos();
+            handler.removeCallbacks(highlight);
+            handler.removeCallbacks(run);
+        }
 
     }
 
+    /**
+     * Create loader
+     * @param id loader id
+     * @param args loader arguments
+     * @return new loader
+     */
     @Override
     public Loader<HashMap<String, List<Bookmark>>> onCreateLoader(int id, Bundle args) {
         return new BookmarksLoader(getActivity(), args);
     }
 
+    /**
+     * Process loader dara
+     * @param loader active loader
+     * @param data loader data
+     */
     @Override
     public void onLoadFinished(Loader<HashMap<String, List<Bookmark>>> loader, HashMap<String, List<Bookmark>> data) {
         updateList(data);
@@ -381,18 +406,26 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         Log.i(TAG_LOG, "onLoadFinished");
     }
 
+    /**
+     * Reset loader
+     * @param loader active loader
+     */
     @Override
     public void onLoaderReset(Loader<HashMap<String, List<Bookmark>>> loader) {
 
     }
 
+    /**
+     * Update list from new data
+     * @param data new data
+     */
     void updateList(HashMap<String, List<Bookmark>> data) {
         Log.d(TAG_LOG, "updateList:" + data.size());
         mItems.clear();
         mItems.putAll(data);
         if (path != null) {
             if (mItems.containsKey(path)) {
-                //bookmarkArrayList.clear();
+                bookmarkArrayList.clear();
                 bookmarkArrayList.addAll(mItems.get(path));
                 Log.d(TAG_LOG, "set adapter, size:" + bookmarkArrayList.size());
 
@@ -431,6 +464,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     }
 
+    /**
+     * Stop threads on fragment destroy
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -439,13 +475,16 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
     /**
-     * Update seekbar
+     * Update seekBar
      */
     void updateProgressBar() {
         //Log.d(TAG_LOG, "PlayerFragment: in updateProgressBar");
         handler.postDelayed(run, 100);
     }
 
+    /**
+     * Start list selection thread
+     */
     void updateListViewSelection() {
         handler.postDelayed(highlight, 500);
     }
@@ -475,6 +514,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             Log.d(TAG_LOG, "Call prepareAsync()");
             mediaPlayer.prepareAsync();
             progressDialog = new ProgressDialog(getActivity());
+            songCurrentDurationLabel.setText("");
+            songTotalDurationLabel.setText("");
             progressDialog.setMessage("Loading...");
             progressDialog.setCancelable(false);
             progressDialog.show();
@@ -484,10 +525,15 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     }
 
+    /**
+     * Set new file
+     * @param path path to new file
+     */
     public void setNewFile(String path) {
         File file = new File(path);
         if (file.exists()) {
-            if (path != this.path) {
+            if (!path.equals(this.path)) {
+                // set new file
                 handler.removeCallbacks(run);
                 handler.removeCallbacks(highlight);
                 btnPlay.setBackgroundResource(R.drawable.play_icon);
@@ -499,10 +545,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 changeButtonsState(false);
             }
         } else {
+            // notify about missing file
             Toast.makeText(getActivity(), "File doesn't exist", Toast.LENGTH_SHORT).show();
             mediaPlayer.reset();
             bookmarkArrayList.clear();
             bookmarkListAdapter.notifyDataSetChanged();
+            fileIsValid = false;
             changeButtonsState(false);
             handler.removeCallbacks(run);
             handler.removeCallbacks(highlight);
@@ -511,6 +559,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     }
 
+    /**
+     * Restore playing state
+     */
     void restorePlaying() {
         changeButtonsState(true);
         updateProgressBar();
@@ -518,6 +569,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         btnPlay.setBackgroundResource(R.drawable.pause_icon);
     }
 
+    /**
+     * Restore pause state
+     */
     void restorePaused() {
         changeButtonsState(true);
         updateProgressBar();
@@ -525,7 +579,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         btnPlay.setBackgroundResource(R.drawable.play_icon);
     }
 
-
+    /**
+     * Select list item
+     * @param i item position
+     */
     private void selectPos(int i) {
         Log.d(TAG_LOG, "Pos is:" + i);
         View activePosition = listView.getChildAt(i);
@@ -549,6 +606,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     }
 
+    /**
+     * Deselect positions
+     */
     void deselectPos() {
         for (int index = 0; index < listView.getCount(); index++) {
             View tempView;
@@ -558,11 +618,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
+    /**
+     * Stop threads on fragment destroy
+     */
     @Override
     public void onDetach() {
         super.onDetach();
@@ -570,6 +628,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         handler.removeCallbacks(highlight);
     }
 
+    /**
+     * Process item selection
+     * @param item selected item
+     * @return action
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -584,12 +647,17 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         return super.onContextItemSelected(item);
     }
 
+    /**
+     * Delete selected item
+     * @param position selected bookmark
+     */
     void deleteBookmark(int position) {
         Bookmark temp = bookmarkArrayList.get(position);
         File bookmarkToRemove = new File(temp.getBookmarkPath());
         bookmarkToRemove.delete();
         bookmarkArrayList.remove(position);
         bookmarkListAdapter.notifyDataSetChanged();
+        Toast.makeText(getActivity(), "Bookmark deleted", Toast.LENGTH_SHORT).show();
         if (bookmarkArrayList.size() > 0) {
             stamps = new int[bookmarkArrayList.size()];
             for (int i = 0; i < bookmarkArrayList.size(); i++) {
@@ -597,6 +665,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             }
         } else {
             handler.removeCallbacks(highlight);
+            Toast.makeText(getActivity(), "No bookmarks left", Toast.LENGTH_SHORT).show();
         }
 
     }

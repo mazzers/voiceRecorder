@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 /**
- * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * XML writer. Create  user bookmarks.
+ * voiceRecorder application
+ *
+ * @author Vitaliy Vashchenko A11B0529P
+ *         Create XML file from new data
  */
-
 public class WriteToXML implements Runnable {
     private final File fileBook;
     private final String message;
@@ -26,17 +26,16 @@ public class WriteToXML implements Runnable {
 
 
     /**
-     * Bookmark constructor
+     * Bookmark file constructor
      *
-     * @param fileBook
-     * @param duration
-     * @param type
-     * @param message
+     * @param fileBook path to bookmark
+     * @param duration bookmark time
+     * @param type bookmark type
+     * @param message bookmark message
      */
     public WriteToXML(File fileBook, long duration, int type, String message, String fileAudioName, String filePathAudio) {
         this.fileBook = fileBook;
         this.duration = duration;
-
         this.message = message;
         this.type = type;
         this.fileAudioName = fileAudioName;
@@ -44,10 +43,11 @@ public class WriteToXML implements Runnable {
 
     }
 
-
+    /**
+     * Thread run method
+     */
     @Override
     public void run() {
-        //Log.d(TAG_LOG, "writexml run");
         createXML();
 
 
@@ -56,7 +56,7 @@ public class WriteToXML implements Runnable {
     /**
      * Write XML file from user input
      *
-     * @return
+     * @return formatted string
      * @throws IOException
      */
     private String WriteDataToXML() throws IOException {
@@ -93,20 +93,13 @@ public class WriteToXML implements Runnable {
      * Create XML writer
      */
     void createXML() {
-
         try {
-            FileOutputStream outputStream = new FileOutputStream(fileBook);
-
-            outputStream.write(WriteDataToXML().getBytes());
-            //Log.d(TAG_LOG, "In try createBookmarkFile: write");
-            outputStream.close();
-            //Log.d(TAG_LOG, "Closed");
-
+            FileOutputStream outputStream = new FileOutputStream(fileBook); // set output stream
+            outputStream.write(WriteDataToXML().getBytes()); // write string to output stream
+            outputStream.close(); // close stream
         } catch (Exception e) {
-            String TAG_LOG = "Write&Parse";
+            String TAG_LOG = "WriteToXML";
             Log.e(TAG_LOG, e.toString());
         }
-
-
     }
 }

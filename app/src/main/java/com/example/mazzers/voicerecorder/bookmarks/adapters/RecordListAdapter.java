@@ -1,7 +1,6 @@
 package com.example.mazzers.voicerecorder.bookmarks.adapters;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +15,30 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Created by mazzers on 23. 3. 2015.
+ * voiceRecorder application
+ *
+ * @author Vitaliy Vashchenko A11B0529P
+ *         Adapter for records list
  */
 public class RecordListAdapter extends ArrayAdapter<File> {
-    //private MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-    private MediaPlayer mediaPlayer;
-
+    /**
+     * Adapter container
+     *
+     * @param context adapter context
+     * @param items   adapter data
+     */
     public RecordListAdapter(Context context, List<File> items) {
         super(context, R.layout.file_listview_item, items);
     }
 
+    /**
+     * Generate items view by position
+     *
+     * @param position    item position
+     * @param convertView item view
+     * @param parent      parent view
+     * @return item view
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -57,6 +70,9 @@ public class RecordListAdapter extends ArrayAdapter<File> {
         return convertView;
     }
 
+    /**
+     * Holder for view elements
+     */
     private static class ViewHolder {
         TextView itemName;
         TextView itemTime;

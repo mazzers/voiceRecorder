@@ -8,70 +8,82 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Created by mazzers on 30. 4. 2015.
+ * voiceRecorder application
+ * @author Vitaliy Vashchenko A11B0529P
+ * Player base for application use
  */
-public class Player {
+public class Player implements MediaPlayer.OnCompletionListener {
     private String TAG_LOG = "viewLessPlayer";
     private MediaPlayer player;
-    private boolean prepared;
     private String path;
 
+    /**
+     * Base constructor
+     */
     public Player() {
         player = new MediaPlayer();
     }
 
+    /**
+     * Set player based on file
+     *
+     * @param path file path
+     */
     public void setPlayer(String path) {
         Log.d(TAG_LOG, "prepareMediaPlayer");
-        player.reset();
+        player.reset(); //reset player
         try {
             player.setDataSource(path);
-            this.path = path;
+            this.path = path; // set player file
         } catch (IOException e) {
             Log.d(TAG_LOG, e.toString());
         }
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC); // set stream type
         try {
             Log.d(TAG_LOG, "Call prepareAsync()");
-            player.prepareAsync();
+            player.prepareAsync();  // prepare player
 
         } catch (Exception e) {
             Log.d(TAG_LOG, e.toString());
         }
     }
 
+    /**
+     * Set new file
+     *
+     * @param newPath new file path
+     */
     public void setFile(String newPath) {
-        if (newPath != path) {
+        if (!newPath.equals(path)) {
             setPlayer(newPath);
         }
     }
 
-    public void pausePlayer() {
-        if (player != null) {
-            player.pause();
-        }
-    }
-
-    public void startMPlayer() {
-        if (player != null) {
-            player.start();
-        }
-    }
-
+    /**
+     * Get active file path
+     * @return file path
+     */
     public String getPath() {
         return path;
     }
 
-
-    public void reset() {
-        player.reset();
-    }
-
+    /**
+     * Get MediaPlayer object
+     * @return active MediaPlayer
+     */
     public MediaPlayer getMediaPlayer() {
         return player;
     }
 
-//    @Override
-//    public boolean onError(MediaPlayer mp, int what, int extra) {
-//        return false;
-//    }
+    /**
+     * MediaPlayer onCompletion listener
+     *
+     * @param mp active MediaPlayer
+     */
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        Log.d(TAG_LOG, "onCompletion");
+        mp.stop();
+    }
+
 }

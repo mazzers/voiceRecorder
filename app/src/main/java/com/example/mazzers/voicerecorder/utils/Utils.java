@@ -4,58 +4,34 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
- * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * Utils class
+ * voiceRecorder application
+ * @author Vitaliy Vashchenko A11B0529P
+ * Utils for data representation
  */
 public class Utils {
     private static String TAG_LOG = "myLogs";
 
+
     /**
-     * Function to convert milliseconds time to
-     * Timer Format
-     * Hours:Minutes:Seconds
+     * Function to convert milliseconds time to Timer Format
+     * @param milliseconds milliseconds
+     * @return time to string
      */
     public static String milliSecondsToTimer(long milliseconds) {
-        //Log.d(TAG_LOG,"Utils: milliSecondsToTimer ");
-        //String finalTimerString = "";
-        //String secondsString = "";
-        StringBuffer buffer = new StringBuffer();
-
+        String stringBuffer = "";
         // Convert total duration into time
         int hours = (int) (milliseconds / (1000 * 60 * 60));
         int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
         int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
-        // Add hours if there
-//        if (hours > 0) {
-//            finalTimerString = hours + ":";
-//        }
-//
-//        // Prepending 0 to seconds if it is one digit
-//        if (seconds < 10) {
-//            secondsString = "0" + seconds;
-//        } else {
-//            secondsString = "" + seconds;
-//        }
-//
-//        finalTimerString = finalTimerString + minutes + ":" + secondsString;
-//
-//        // return timer string
-//        return finalTimerString;
-        buffer
-                .append(String.format("%02d", hours))
-                .append(":")
-                .append(String.format("%02d", minutes))
-                .append(":")
-                .append(String.format("%02d", seconds));
-        return buffer.toString();
+        stringBuffer += String.format("%02d", hours) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+        return stringBuffer;
     }
 
     /**
      * Function to get Progress percentage
      *
-     * @param currentDuration
-     * @param totalDuration
+     * @param currentDuration mediaPlayer current position
+     * @param totalDuration mediaPlayer total length
      */
     public static int getProgressPercentage(long currentDuration, long totalDuration) {
         //Log.d(TAG_LOG,"Utils: get progressPercentage");
@@ -78,7 +54,6 @@ public class Utils {
      * @param totalDuration returns current duration in milliseconds
      */
     public static int progressToTimer(int progress, int totalDuration) {
-        //Log.d(TAG_LOG,"Utils: progressToTimer");
         int currentDuration = 0;
         totalDuration = (totalDuration / 1000);
         currentDuration = (int) ((((double) progress) / 100) * totalDuration);
@@ -87,6 +62,12 @@ public class Utils {
         return currentDuration * 1000;
     }
 
+    /**
+     * System time to string
+     *
+     * @param i time
+     * @return sting from time
+     */
     public static String timeToString(int i) {
         String time;
         int hours = i / 3600;
@@ -98,17 +79,12 @@ public class Utils {
         return time;
     }
 
-    public static String timeToString(long i) {
-        String time;
-        int hours = (int) i / 3600;
-        int remainder = (int) i - hours * 3600;
-        int mins = remainder / 60;
-        remainder = remainder - mins * 60;
-        int secs = remainder;
-        time = hours + ":" + mins + ":" + secs + "";
-        return time;
-    }
-
+    /**
+     * File size to string
+     *
+     * @param size file size
+     * @return file size in string
+     */
     public static String readableFileSize(long size) {
         if (size <= 0) return "0";
         final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
@@ -116,11 +92,11 @@ public class Utils {
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
-    public static String durationToString(long i) {
-        int duration = (int) (i / 1000);
-        return timeToString(duration);
-    }
-
+    /**
+     * Date to string
+     * @param date actual date
+     * @return date in string
+     */
     public static String dateToString(Long date) {
         Date d = new Date(date);
         return d.toString();

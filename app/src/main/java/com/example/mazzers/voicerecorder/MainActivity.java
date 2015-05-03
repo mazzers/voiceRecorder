@@ -35,124 +35,140 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Vashchenko Vitaliy A11B0529P
- * PRJ5 - Voice bookmarks
- * <p/>
- * Main activity with drawer and fragments
+ * voiceRecorder application
+ * @author Vitaliy Vashchenko A11B0529P
+ * Main activity with application fragments
  */
 public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<HashMap<String, List<Bookmark>>>, FragmentManager.OnBackStackChangedListener {
-    private Drawer.Result result = null;
-    private static PlayerFragment playerFragment;
-    private static RecorderFragment recorderFragment;
-    private static SettingsFragment settingsFragment;
-    private static RecordListFragment recordListFragment;
-    private final String TAG_LOG = "MainActivity";
-    private static ArrayList<Bookmark> bookmarks;
-    private static File[] files;
-    private File recordsDirectory;
-    private static HashMap<String, List<Bookmark>> mItems;
-    private final int LOADER_BOOKMARKS_ID = 3;
-    private final String bookmarksFolder = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/";
-    private boolean pressedOnce = false;
-    private Recorder recorder;
-    private Player player;
+    private Drawer.Result result = null; // drawer creation result
+    private final String TAG_LOG = "MainActivity"; // logger tag
+    private static ArrayList<Bookmark> bookmarks; // parsed bookmarks
+    private static File[] files; // parsed records
+    private File recordsDirectory; // directory with record files
+    private static HashMap<String, List<Bookmark>> mItems; // classified bookmarks
+    private final int LOADER_BOOKMARKS_ID = 3; // loader id
+    private final String bookmarksFolder = Environment.getExternalStorageDirectory() + "/voicerecorder/bookmarks/"; // directory with bookmark files
+    private boolean pressedOnce = false; // back key press count
+    private Recorder recorder; // recorder base
+    private Player player; // player base
 
+    /**
+     * Get recorder base
+     *
+     * @return recorder base
+     */
     public Recorder getRecorder() {
         return recorder;
     }
 
+    /**
+     * Get classified bookmarks
+     *
+     * @return hashMap with bookmarks
+     */
     public static HashMap<String, List<Bookmark>> getmItems() {
         return mItems;
     }
 
+    /**
+     * Set hashMap
+     * @param mItems new hashMap
+     */
     public static void setmItems(HashMap<String, List<Bookmark>> mItems) {
         MainActivity.mItems = mItems;
     }
 
-
+    /**
+     * Get player base
+     * @return player base
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Get array of records
+     * @return array of records
+     */
     public static File[] getFiles() {
         return files;
     }
 
+    /**
+     * Set array of records
+     * @param files new array of records
+     */
     public static void setFiles(File[] files) {
         MainActivity.files = files;
     }
 
+    /**
+     * Set bookmarks list
+     * @param bookmarks new list of bookmarks
+     */
     public static void setBookmarks(ArrayList<Bookmark> bookmarks) {
         MainActivity.bookmarks = bookmarks;
     }
 
+    /**
+     * Get bookmarks list
+     * @return bookmarks list
+     */
     public static ArrayList<Bookmark> getBookmarks() {
 
         return bookmarks;
     }
 
-    public RecorderFragment getRecorderFragment() {
-        return recorderFragment;
-    }
-
-    public void setRecorderFragment(RecorderFragment recorderFragment) {
-        this.recorderFragment = recorderFragment;
-    }
-
-    public static void setRecordListFragment(RecordListFragment recordListFragment) {
-        MainActivity.recordListFragment = recordListFragment;
-    }
-
-    public static RecordListFragment getRecordListFragment() {
-        return recordListFragment;
-    }
-
+    /**
+     * Activity creation
+     * @param savedInstanceState previous activity state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         //Log.d(TAG_LOG, "onCreate");
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(this);
-        setContentView(R.layout.activity_main);
-        recordsDirectory = new File(bookmarksFolder);
+        fragmentManager.addOnBackStackChangedListener(this); // set listener
+        setContentView(R.layout.activity_main); // set view file
+        recordsDirectory = new File(bookmarksFolder); //set records folder
 
         if (!recordsDirectory.exists()) {
             Log.d(TAG_LOG, "Main activity: directory not exist");
-            recordsDirectory.mkdirs();
+            recordsDirectory.mkdirs();  // create folder if doesn't exist
         }
-        Bundle loaderBundle = new Bundle();
-        loaderBundle.putString("dir_bookmarks", bookmarksFolder);
-        getLoaderManager().initLoader(LOADER_BOOKMARKS_ID, loaderBundle, this).forceLoad();
-        recorder = new Recorder();
+        Bundle loaderBundle = new Bundle(); // bundle for loader
+        loaderBundle.putString("dir_bookmarks", bookmarksFolder); // set folder for loader
+        getLoaderManager().initLoader(LOADER_BOOKMARKS_ID, loaderBundle, this).forceLoad(); // create loader and start it afterwards
+        recorder = new Recorder(); // initialize bases
         player = new Player();
 
 
-        result = new Drawer()
+        result = new Drawer() // create drawer view
                 .withActivity(this)
                 .withTranslucentStatusBar(false)
 //                .withActionBarDrawerToggle(true)
 
-                .addDrawerItems(
+                .addDrawerItems(  // add drawer items
                         new PrimaryDrawerItem().withName(R.string.title_section1).withIcon(FontAwesome.Icon.faw_microphone).withIdentifier(1),
                         new PrimaryDrawerItem().withName(R.string.title_section2).withIcon(FontAwesome.Icon.faw_play).withIdentifier(2),
                         new SectionDrawerItem().withName(R.string.action_settings),
                         new SecondaryDrawerItem().withName(R.string.action_settings).withIcon(FontAwesome.Icon.faw_gear).withIdentifier(3)
 
                 )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() { // listen for drawer clicks
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                         if (iDrawerItem instanceof Nameable) {
                             switch (iDrawerItem.getIdentifier()) {
                                 case 1:
-                                    toggleRecorder();
+                                    toggleRecorder(); // show recorder fragment
                                     break;
                                 case 2:
-                                    togglePlayer();
+                                    togglePlayer(); // show player fragment
                                     break;
                                 case 3:
-                                    toggleSettings();
+                                    toggleSettings(); // show settings fragment
                                     break;
                                 default:
                                     break;
@@ -166,29 +182,42 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         }
     }
 
+    /**
+     * Save state before activity destroy
+     * @param outState actual activity state
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("selected", result.getCurrentSelection());
+        outState.putInt("selected", result.getCurrentSelection()); // save actual fragments
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Restore state of destroyed activity
+     * @param savedInstanceState previous activity state
+     */
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
 
         super.onRestoreInstanceState(savedInstanceState);
 
-        int curr = savedInstanceState.getInt("selected", 1);
+        int curr = savedInstanceState.getInt("selected", 1); // select previous fragment
         result.setSelection(curr, false);
     }
 
-
+    /**
+     * Show recorder fragment
+     */
     public void toggleRecorder() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        RecorderFragment temp = new RecorderFragment();
-        ft.replace(R.id.container, temp, RecorderFragment.RECORDER_TAG);
-        ft.commit();
+        RecorderFragment temp = new RecorderFragment(); // create new fragment
+        ft.replace(R.id.container, temp, RecorderFragment.RECORDER_TAG); // replace fragment in container
+        ft.commit(); // execute transaction
     }
 
+    /**
+     * Show player fragment
+     */
     public void togglePlayer() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         PlayerFragment temp = new PlayerFragment();
@@ -196,6 +225,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         ft.commit();
     }
 
+    /**
+     * Show record list fragment
+     */
     public void toggleList() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         RecordListFragment temp = new RecordListFragment();
@@ -204,6 +236,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         ft.commit();
     }
 
+    /**
+     * Show settings fragment
+     */
     public void toggleSettings() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         SettingsFragment temp = new SettingsFragment();
@@ -211,7 +246,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         ft.commit();
     }
 
-
+    /**
+     * Process back key press
+     */
     @Override
     public void onBackPressed() {
         int i = getFragmentManager().getBackStackEntryCount();
@@ -222,7 +259,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 super.onBackPressed();
                 return;
             }
-
+            // close application on x2 back button press
             this.pressedOnce = true;
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
@@ -236,37 +273,56 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         }
     }
 
-    public static void setPlayerFragment(PlayerFragment newPlayerFragment) {
-
-        playerFragment = newPlayerFragment;
-    }
-
-    public static PlayerFragment getPlayerFragment() {
-        return playerFragment;
-    }
-
+    /**
+     * Create loader
+     * @param id loader id
+     * @param args loader arguments
+     * @return loader
+     */
     @Override
     public Loader<HashMap<String, List<Bookmark>>> onCreateLoader(int id, Bundle args) {
         Log.d(TAG_LOG, "onCreateLoader");
         return new BookmarksLoader(this, args);
     }
 
+    /**
+     * Get data from loader
+     * @param loader finished loader
+     * @param data data from loader
+     */
     @Override
     public void onLoadFinished(Loader<HashMap<String, List<Bookmark>>> loader, HashMap<String, List<Bookmark>> data) {
-        //Toast.makeText(this, "onLoadFinished", Toast.LENGTH_SHORT).show();
         Log.d(TAG_LOG, "onLoadFinished");
         mItems = data;
     }
 
-
+    /**
+     * Reset loader
+     * @param loader finished loader
+     */
     @Override
     public void onLoaderReset(Loader<HashMap<String, List<Bookmark>>> loader) {
 
     }
 
+    /**
+     * Listen for backStack changes
+     */
     @Override
     public void onBackStackChanged() {
         Log.i(TAG_LOG, "BackStack changed");
+    }
+
+    /**
+     * Stop recoding on application stop
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG_LOG, "onDestroy Activity");
+        if (recorder.isRecording()) {
+            recorder.stopRecording();
+        }
     }
 }
 
